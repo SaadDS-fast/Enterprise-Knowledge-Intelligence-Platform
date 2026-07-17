@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ekip
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 25m
+spec:
+  rules:
+    - host: ekip.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: ekip-backend, port: {number: 8000}}}
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: ekip-frontend, port: {number: 3000}}}

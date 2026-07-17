@@ -1,0 +1,20 @@
+{
+  "project": "Enterprise-Knowledge-Intelligence-Platform",
+  "release": "complete-local-first-v1.0.0",
+  "validated_at": "2026-07-17T14:20:30Z",
+  "file_count": 339,
+  "directory_count": 110,
+  "backend_tests_passed": 17,
+  "backend_imports_passed": 168,
+  "openapi_paths": 14,
+  "yaml_files_parsed": 31,
+  "terraform_files_parsed": 4,
+  "frontend_typecheck": "passed",
+  "frontend_production_build": "passed",
+  "npm_production_audit_vulnerabilities": 0,
+  "local_mandatory_service_fees": 0,
+  "paid_services_required": false,
+  "cloud_infrastructure_included": false,
+  "local_docker_terraform_included": true,
+  "note": "See VALIDATION_REPORT.md for guarantees, limitations, and cost boundaries."
+}

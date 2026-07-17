@@ -1,0 +1,13 @@
+name: Build Local Images
+on: {workflow_dispatch: {}}
+permissions: {contents: read}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t ekip-backend:local backend
+      - run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1 -t ekip-frontend:local frontend
+      - run: docker save ekip-backend:local ekip-frontend:local | gzip > ekip-local-images.tar.gz
+      - uses: actions/upload-artifact@v4
+        with: {name: ekip-local-images, path: ekip-local-images.tar.gz, retention-days: 3}

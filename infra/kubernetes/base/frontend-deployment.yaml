@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: ekip-frontend}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: ekip-frontend}}
+  template:
+    metadata: {labels: {app: ekip-frontend}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true}
+      containers:
+        - name: frontend
+          image: ekip-frontend:local
+          imagePullPolicy: IfNotPresent
+          env: [{name: NEXT_PUBLIC_API_BASE_URL, value: http://localhost:8000/api/v1}]
+          ports: [{containerPort: 3000}]
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          readinessProbe: {httpGet: {path: /, port: 3000}, initialDelaySeconds: 5, periodSeconds: 10}

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ekip
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.local.yaml
+  - service-account.yaml
+  - postgres.yaml
+  - redis.yaml
+  - minio.yaml
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - ingestion-worker-deployment.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - ingress.yaml
+  - network-policy.yaml

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IngestionJobRequested",
+  "type": "object",
+  "required": [
+    "job_id",
+    "organization_id",
+    "workspace_id",
+    "document_version_id",
+    "object_key"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "document_version_id": {
+      "type": "string"
+    },
+    "object_key": {
+      "type": "string"
+    },
+    "idempotency_key": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

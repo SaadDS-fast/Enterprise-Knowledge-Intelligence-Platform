@@ -1,0 +1,82 @@
+name: ekip
+x-backend-env: &backend-env
+  APP_ENV: development
+  SECRET_KEY: local-development-secret-change-before-production-123456
+  DATABASE_URL: postgresql+asyncpg://ekip:ekip@postgres:5432/ekip
+  AUTO_INIT_DB: "true"
+  REDIS_URL: redis://redis:6379/0
+  CELERY_BROKER_URL: redis://redis:6379/1
+  CELERY_RESULT_BACKEND: redis://redis:6379/2
+  OBJECT_STORAGE_PROVIDER: minio
+  OBJECT_STORAGE_ENDPOINT: http://minio:9000
+  OBJECT_STORAGE_ACCESS_KEY: minioadmin
+  OBJECT_STORAGE_SECRET_KEY: minioadmin-change-me
+  OBJECT_STORAGE_BUCKET: documents
+  JOB_EXECUTION_MODE: celery
+  LOCAL_LLM_BACKEND: extractive
+  OTEL_ENABLED: "false"
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment: {POSTGRES_DB: ekip, POSTGRES_USER: ekip, POSTGRES_PASSWORD: ekip}
+    ports: ["5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U ekip -d ekip"], interval: 5s, timeout: 5s, retries: 20}
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6379:6379"]
+    volumes: ["redis_data:/data"]
+    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20}
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment: {MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin-change-me}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio_data:/data"]
+  backend:
+    image: ekip-backend:local
+    build: {context: ./backend}
+    environment: *backend-env
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      minio: {condition: service_started}
+  ingestion-worker:
+    image: ekip-backend:local
+    environment: *backend-env
+    command: ["celery", "-A", "app.jobs.queue.celery_app", "worker", "--loglevel=INFO", "--queues=ingestion"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      minio: {condition: service_started}
+  frontend:
+    build:
+      context: ./frontend
+      args: {NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1}
+    environment: {NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1}
+    ports: ["3000:3000"]
+    depends_on: [backend]
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    ports: ["11434:11434"]
+    volumes: ["ollama_data:/root/.ollama"]
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["observability"]
+    volumes: ["./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ["observability"]
+    volumes: ["./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro"]
+    ports: ["3001:3000"]
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    profiles: ["observability"]
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes: ["./monitoring/opentelemetry/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro"]
+    ports: ["4317:4317", "4318:4318"]
+volumes: {postgres_data: {}, redis_data: {}, minio_data: {}, ollama_data: {}}

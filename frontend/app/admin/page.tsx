@@ -1,0 +1,1 @@
+export default function Admin(){return <div className="page-header"><div><span className="eyebrow">GOVERNANCE</span><h1>Administration</h1><p>RBAC, audit exports, and retention controls are backend-ready for the next release.</p></div></div>}

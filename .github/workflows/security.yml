@@ -1,0 +1,27 @@
+name: Security Checks
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 3 * * 1"
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  python-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install bandit pip-audit
+      - run: bandit -r backend/app workers -x backend/tests
+      - run: pip-audit -r backend/requirements-security.txt
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2

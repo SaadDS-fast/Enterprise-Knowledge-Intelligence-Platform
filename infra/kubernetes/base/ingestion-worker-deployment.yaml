@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: ekip-ingestion-worker}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: ekip-ingestion-worker}}
+  template:
+    metadata: {labels: {app: ekip-ingestion-worker}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true}
+      containers:
+        - name: worker
+          image: ekip-backend:local
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "app.jobs.queue.celery_app", "worker", "--loglevel=INFO", "--queues=ingestion"]
+          envFrom:
+            - {configMapRef: {name: ekip-config}}
+            - {secretRef: {name: ekip-secrets}}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 100m, memory: 192Mi}
+            limits: {cpu: "1", memory: 1Gi}

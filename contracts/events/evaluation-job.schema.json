@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvaluationJobRequested",
+  "type": "object",
+  "required": [
+    "job_id",
+    "dataset_id"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "dataset_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,3 @@
+project_name       = "ekip"
+postgres_password  = "replace-for-local-use"
+minio_password     = "replace-for-local-use"
