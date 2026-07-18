@@ -17,6 +17,7 @@ out/
 dist/
 build/
 *.log
+*.tsbuildinfo
 .DS_Store
 .idea/
 .vscode/

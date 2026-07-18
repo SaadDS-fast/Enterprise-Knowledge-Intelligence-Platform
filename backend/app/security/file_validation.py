@@ -17,6 +17,19 @@ class ValidatedFile:
 
 
 MAGIC_PREFIXES = {".pdf": (b"%PDF-",), ".docx": (b"PK\x03\x04",)}
+EXTENSION_MIME_TYPES = {
+    ".pdf": {"application/pdf"},
+    ".docx": {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+    ".txt": {"text/plain"},
+    ".md": {"text/markdown", "text/plain"},
+    ".html": {"text/html", "text/plain"},
+    ".csv": {"text/csv", "text/plain"},
+    ".py": {"text/x-python", "text/plain", "application/octet-stream"},
+    ".js": {"application/javascript", "text/javascript", "text/plain", "application/octet-stream"},
+    ".ts": {"application/javascript", "text/javascript", "text/plain", "application/octet-stream"},
+    ".java": {"text/plain", "application/octet-stream"},
+    ".cpp": {"text/plain", "application/octet-stream"},
+}
 
 
 def validate_file(filename: str | None, mime_type: str | None, data: bytes) -> ValidatedFile:
@@ -36,6 +49,13 @@ def validate_file(filename: str | None, mime_type: str | None, data: bytes) -> V
     if normalized_mime not in settings.allowed_mime_types:
         raise AppError(
             ErrorCode.VALIDATION_FAILED, f"Unsupported MIME type: {normalized_mime}", 415
+        )
+    expected_mimes = EXTENSION_MIME_TYPES.get(extension, set())
+    if expected_mimes and normalized_mime not in expected_mimes:
+        raise AppError(
+            ErrorCode.VALIDATION_FAILED,
+            "File MIME type does not match its extension",
+            415,
         )
     signatures = MAGIC_PREFIXES.get(extension)
     if signatures and not any(data.startswith(prefix) for prefix in signatures):

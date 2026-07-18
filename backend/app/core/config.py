@@ -199,6 +199,18 @@ class Settings(BaseSettings):
     def normalize_extensions(cls, values: list[str]) -> list[str]:
         return sorted({v.lower() if v.startswith(".") else f".{v.lower()}" for v in values})
 
+    @field_validator("debug", mode="before")
+    @classmethod
+    def parse_debug(cls, value: Any) -> Any:
+        if not isinstance(value, str):
+            return value
+        normalized = value.strip().lower()
+        if normalized in {"release", "prod", "production"}:
+            return False
+        if normalized in {"debug", "dev", "development"}:
+            return True
+        return value
+
     @field_validator("api_v1_prefix")
     @classmethod
     def normalize_prefix(cls, value: str) -> str:

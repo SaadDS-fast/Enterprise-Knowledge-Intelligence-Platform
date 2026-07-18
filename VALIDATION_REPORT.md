@@ -1,42 +1,108 @@
 # Validation Report
 
-Validated on **2026-07-17** for the complete local-first EKIP source archive.
+Validated on 2026-07-18 on Darwin 25.5.0 arm64.
 
-## Passed checks
+## Environment
 
-- Python compilation for `backend/app` and all worker packages
-- Import of 168 backend application modules with zero import failures
-- Backend automated test suite: **17 passed**
-- Ruff static analysis across backend, tests, and workers: **passed**
-- End-to-end integration coverage for registration, authentication, document upload,
-  inline ingestion, grounded retrieval, and answer generation
-- Security tests for upload validation and cross-tenant isolation
-- OpenAPI contract generation: **14 API paths**
-- Frontend TypeScript validation: **passed**
-- Next.js optimized production build: **passed**
-- npm production dependency audit: **0 reported vulnerabilities**
-- YAML parsing: **31 files passed**
-- Terraform HCL parsing: **4 local-only files passed**
-- Archive integrity test: performed after packaging
+- Branch: `validation/current-mvp`
+- Commit at validation start: `33a9eb4`
+- Python: `backend/.venv/bin/python --version` -> Python 3.12.13
+- Node: `node --version` -> v20.20.2
+- npm: `npm --version` -> 10.8.2
+- Docker: `docker --version` -> command not found
 
-## Validation boundaries
+## Overall Status
 
-No responsible engineering process can guarantee a zero percent chance of defects on every
-operating system, CPU architecture, Docker version, browser, or future dependency release.
-This package minimizes that risk through pinned frontend dependencies, constrained backend
-dependencies, automated tests, static analysis, production builds, and deterministic local
-fallback behavior.
+**PARTIAL PASS**
 
-The execution environment did not provide Docker, Terraform, or kubectl command-line tools.
-Therefore, Compose, local Terraform, and Kubernetes definitions were parsed for syntax but
-were not launched here. The application itself was exercised using SQLite and local object
-storage, which are the intended lightweight zero-fee validation mode.
+The local MVP backend and frontend passed source-level, test-suite, and real HTTP validation. The status is not full PASS because Docker runtime validation could not be executed on this machine and frontend lint is only a configured no-op script, not a real linter.
 
-## Cost boundary
+## Commands Run
 
-The default implementation requires no paid cloud account or paid model API. It supports a
-deterministic extractive answer provider locally. PostgreSQL/pgvector, Redis, MinIO, Ollama,
-Prometheus, Grafana, Docker, FastAPI, and Next.js are optional/open-source local components.
-The user's hardware, electricity, storage, and internet access remain real external costs.
-Commercial OpenAI/Azure adapters exist only as optional integrations and are disabled by
-default. No AWS or Azure infrastructure is defined in the included Terraform configuration.
+- `npm ci`
+- `npm run lint`
+- `npm run type-check`
+- `npm run build`
+- `npm audit --omit=dev`
+- `backend/.venv/bin/python -m compileall app tests`
+- `backend/.venv/bin/ruff check app tests`
+- `backend/.venv/bin/ruff format --check app tests`
+- `backend/.venv/bin/pytest -vv`
+- `backend/.venv/bin/pytest --cov=app --cov-report=term-missing`
+- Programmatic import of all backend modules
+- Programmatic FastAPI OpenAPI generation
+- `alembic upgrade head`
+- `alembic check`
+- Real HTTP validation against `uvicorn app.main:app --host 127.0.0.1 --port 8765`
+- `bandit -r app`
+- `pip-audit --cache-dir /tmp/pip-audit-cache`
+- YAML parsing for Docker Compose, Prometheus, Grafana datasource, and OpenTelemetry collector config
+
+## Results
+
+- Backend tests: **20 passed, 0 failed, 0 skipped, 0 errored**
+- Backend coverage: **70%**
+- Python compile: **PASS**
+- Ruff lint/format: **PASS**
+- Module import check: **PASS**, 159 modules imported, 0 failures
+- OpenAPI generation: **PASS**, 14 paths
+- Alembic: **PASS**, fresh `upgrade head` and `check`
+- Frontend `npm ci`: **PASS** from a clean `node_modules` state
+- Frontend lint: **PASS command**, but no real frontend lint configuration exists
+- Frontend type-check: **PASS**
+- Frontend production build: **PASS**
+- npm audit: **PASS**, 0 vulnerabilities
+- Bandit: **PASS**, no issues
+- pip-audit: **PASS**, no known vulnerabilities for audited packages; local editable package not on PyPI
+- Docker Compose syntax: **PARTIAL**, YAML parsed; Docker CLI unavailable for `docker compose config`
+- Docker runtime: **NOT RUN**, Docker command not found
+
+## Runtime API And E2E
+
+The real FastAPI app was started with a disposable SQLite DB and local object storage. A scripted HTTP flow passed **36/36** checks:
+
+- Health, registration, login, invalid login, and current-user request
+- Authenticated upload and ingestion to completed/indexed status
+- TXT, Markdown, HTML, CSV, source-code, PDF, and DOCX upload/ingestion/search
+- Empty file, malformed PDF, unsupported extension, MIME mismatch, and path traversal filename checks
+- Grounded answers for Project Atlas launch date, owner, and budget with evidence
+- Abstention for unrelated fictional-country question
+- Document ID filtering
+- Tenant document-list, document-detail, and search isolation
+- Research create/list
+- Evaluation create/list
+- Metrics endpoint
+- Direct BM25, vector similarity, hybrid fusion, and reranker checks
+
+## Observability
+
+- Request ID middleware produced request IDs in logs and responses.
+- `/metrics` returned Prometheus metrics.
+- Prometheus, Grafana datasource, and OpenTelemetry collector YAML parsed successfully.
+- OpenTelemetry is disabled by default in local validation (`OTEL_ENABLED=false`).
+- Grafana/Prometheus/OTel services were not runtime-launched because Docker is unavailable.
+
+## Fixes Made
+
+- Made frontend dependency installation reproducible by normalizing lockfile resolved URLs to the public npm registry and verifying `npm ci`.
+- Added `lint` and `type-check` scripts expected by validation; lint currently records that no linter is configured.
+- Ignored generated `*.tsbuildinfo`.
+- Hardened `DEBUG=release` parsing so host shell environment does not crash settings initialization.
+- Enforced extension-specific MIME matching for uploads.
+- Tightened evidence sufficiency so stopword overlap does not defeat abstention.
+- Added regression tests for DEBUG parsing, TXT/PDF MIME mismatch rejection, and unrelated-question abstention.
+- Upgraded backend dependency constraints for vulnerable `pypdf` and dev `pytest`; installed verified versions in the local env.
+- Added an initial Alembic schema migration and verified `alembic upgrade head` / `alembic check`.
+- Removed a Bandit false positive in an evaluation helper without suppressing the scanner.
+
+## Remaining Limitations
+
+- Docker runtime validation was not executed because Docker is not installed on PATH.
+- Frontend lint is a no-op script; real ESLint or equivalent is still not configured.
+- Browser automation against the Next.js UI was not executed; frontend validation was build/typecheck plus backend HTTP API flows.
+- Celery worker path, MinIO storage, Redis, PostgreSQL/pgvector, Prometheus, Grafana, and OpenTelemetry were inspected/config-parsed but not launched.
+- Several agent/cache/policy modules remain scaffold-like or unexercised by tests, reflected in 70% backend coverage.
+
+## Zero-Cost Confirmation
+
+Default local validation used FastAPI, SQLite, local object storage, deterministic local embeddings, and extractive local answers. No paid API keys or paid cloud services were required.
