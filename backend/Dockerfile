@@ -3,6 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 RUN groupadd --system app && useradd --system --gid app --create-home app
 WORKDIR /app
 COPY pyproject.toml README.md ./
+COPY alembic.ini ./
 COPY app ./app
 RUN pip install --upgrade pip && pip install .
 USER app

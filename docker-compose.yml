@@ -1,82 +1,240 @@
 name: ekip
+
 x-backend-env: &backend-env
   APP_ENV: development
-  SECRET_KEY: local-development-secret-change-before-production-123456
+  SECRET_KEY: ${SECRET_KEY:-local-development-secret-change-before-production-123456}
   DATABASE_URL: postgresql+asyncpg://ekip:ekip@postgres:5432/ekip
-  AUTO_INIT_DB: "true"
+  AUTO_INIT_DB: "false"
   REDIS_URL: redis://redis:6379/0
   CELERY_BROKER_URL: redis://redis:6379/1
   CELERY_RESULT_BACKEND: redis://redis:6379/2
   OBJECT_STORAGE_PROVIDER: minio
   OBJECT_STORAGE_ENDPOINT: http://minio:9000
-  OBJECT_STORAGE_ACCESS_KEY: minioadmin
-  OBJECT_STORAGE_SECRET_KEY: minioadmin-change-me
-  OBJECT_STORAGE_BUCKET: documents
+  OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+  OBJECT_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin-change-me}
+  OBJECT_STORAGE_BUCKET: ${OBJECT_STORAGE_BUCKET:-documents}
   JOB_EXECUTION_MODE: celery
   LOCAL_LLM_BACKEND: extractive
   OTEL_ENABLED: "false"
+
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    environment: {POSTGRES_DB: ekip, POSTGRES_USER: ekip, POSTGRES_PASSWORD: ekip}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ekip
+      POSTGRES_USER: ekip
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ekip}
     ports: ["5432:5432"]
     volumes: ["postgres_data:/var/lib/postgresql/data"]
-    healthcheck: {test: ["CMD-SHELL", "pg_isready -U ekip -d ekip"], interval: 5s, timeout: 5s, retries: 20}
+    networks: ["ekip-internal"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ekip -d ekip"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports: ["6379:6379"]
     volumes: ["redis_data:/data"]
-    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20}
+    networks: ["ekip-internal"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   minio:
     image: minio/minio:latest
+    restart: unless-stopped
     command: server /data --console-address ":9001"
-    environment: {MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin-change-me}
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin-change-me}
     ports: ["9000:9000", "9001:9001"]
     volumes: ["minio_data:/data"]
+    networks: ["ekip-internal"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: {condition: service_healthy}
+    restart: "no"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin-change-me}
+      OBJECT_STORAGE_BUCKET: ${OBJECT_STORAGE_BUCKET:-documents}
+    networks: ["ekip-internal"]
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"
+        mc mb --ignore-existing "local/$$OBJECT_STORAGE_BUCKET"
+        mc anonymous set none "local/$$OBJECT_STORAGE_BUCKET"
+
   backend:
     image: ekip-backend:local
     build: {context: ./backend}
+    restart: unless-stopped
     environment: *backend-env
+    command:
+      - /bin/sh
+      - -c
+      - |
+        alembic upgrade head
+        uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports: ["8000:8000"]
+    networks: ["ekip-internal"]
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-      minio: {condition: service_started}
+      minio-init: {condition: service_completed_successfully}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/live')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
   ingestion-worker:
     image: ekip-backend:local
+    restart: unless-stopped
     environment: *backend-env
-    command: ["celery", "-A", "app.jobs.queue.celery_app", "worker", "--loglevel=INFO", "--queues=ingestion"]
+    command:
+      [
+        "celery",
+        "-A",
+        "app.jobs.queue.celery_app",
+        "worker",
+        "--loglevel=INFO",
+        "--queues=ingestion",
+        "--hostname=ingestion@%h",
+      ]
+    networks: ["ekip-internal"]
     depends_on:
+      backend: {condition: service_healthy}
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-      minio: {condition: service_started}
+      minio-init: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.jobs.queue.celery_app inspect ping -d ingestion@$$(hostname) | grep -q pong"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+
+  evaluation-worker:
+    image: ekip-backend:local
+    restart: unless-stopped
+    environment: *backend-env
+    command:
+      [
+        "celery",
+        "-A",
+        "app.jobs.queue.celery_app",
+        "worker",
+        "--loglevel=INFO",
+        "--queues=evaluation",
+        "--hostname=evaluation@%h",
+      ]
+    networks: ["ekip-internal"]
+    depends_on:
+      backend: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+  report-worker:
+    image: ekip-backend:local
+    restart: unless-stopped
+    environment: *backend-env
+    command:
+      [
+        "celery",
+        "-A",
+        "app.jobs.queue.celery_app",
+        "worker",
+        "--loglevel=INFO",
+        "--queues=reports",
+        "--hostname=reports@%h",
+      ]
+    networks: ["ekip-internal"]
+    depends_on:
+      backend: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
   frontend:
     build:
       context: ./frontend
       args: {NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1}
+    restart: unless-stopped
     environment: {NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1}
     ports: ["3000:3000"]
-    depends_on: [backend]
+    networks: ["ekip-internal"]
+    depends_on:
+      backend: {condition: service_healthy}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+
   ollama:
     image: ollama/ollama:latest
+    restart: unless-stopped
     profiles: ["ollama"]
     ports: ["11434:11434"]
     volumes: ["ollama_data:/root/.ollama"]
+    networks: ["ekip-internal"]
+
   prometheus:
     image: prom/prometheus:latest
+    restart: unless-stopped
     profiles: ["observability"]
     volumes: ["./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
     ports: ["9090:9090"]
+    networks: ["ekip-internal"]
+
   grafana:
     image: grafana/grafana:latest
+    restart: unless-stopped
     profiles: ["observability"]
     volumes: ["./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro"]
     ports: ["3001:3000"]
+    networks: ["ekip-internal"]
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    restart: unless-stopped
     profiles: ["observability"]
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes: ["./monitoring/opentelemetry/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro"]
     ports: ["4317:4317", "4318:4318"]
-volumes: {postgres_data: {}, redis_data: {}, minio_data: {}, ollama_data: {}}
+    networks: ["ekip-internal"]
+
+volumes:
+  postgres_data: {}
+  redis_data: {}
+  minio_data: {}
+  ollama_data: {}
+
+networks:
+  ekip-internal:
+    driver: bridge
