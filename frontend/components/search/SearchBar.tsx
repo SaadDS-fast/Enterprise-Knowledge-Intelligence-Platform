@@ -1,5 +1,6 @@
 "use client";
-import { FormEvent, useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { api } from "@/lib/api";
 import type { SearchResult } from "@/types";
 import EvidencePanel from "./EvidencePanel";

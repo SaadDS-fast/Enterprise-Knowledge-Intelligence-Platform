@@ -1,5 +1,6 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { EvaluationRun } from "@/types";
 export default function EvaluationWorkspace(){const [runs,setRuns]=useState<EvaluationRun[]>([]);const [error,setError]=useState("");async function load(){try{setRuns(await api<EvaluationRun[]>("/evaluation"))}catch(e){setError(e instanceof Error?e.message:"Failed")}}useEffect(()=>{void load()},[]);async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const form=new FormData(e.currentTarget);try{await api("/evaluation",{method:"POST",body:JSON.stringify({name:String(form.get("name")),cases:[{question:String(form.get("question")),expected_answer:String(form.get("answer"))}]})});e.currentTarget.reset();await load()}catch(err){setError(err instanceof Error?err.message:"Failed")}}return <div><form className="evaluation-form" onSubmit={submit}><input name="name" placeholder="Evaluation name" required/><textarea name="question" placeholder="Question" required/><textarea name="answer" placeholder="Expected answer" required/><button>Run evaluation</button></form>{error&&<p className="error">{error}</p>}<div className="cards">{runs.map(run=><article className="card" key={run.id}><h3>{run.name}</h3><pre>{JSON.stringify(run.metrics_json,null,2)}</pre></article>)}</div></div>}

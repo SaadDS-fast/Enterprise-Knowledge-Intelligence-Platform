@@ -1,5 +1,6 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { ResearchJob } from "@/types";
 import StatusBadge from "@/components/ui/StatusBadge";
