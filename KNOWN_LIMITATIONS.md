@@ -5,6 +5,8 @@
 - Registration, login, current-user lookup, invalid-login rejection.
 - Authenticated document upload and local inline ingestion.
 - Real frontend ESLint baseline and focused component tests.
+- Retrieval diagnosis distinguishes sufficient evidence, recovered retrieval failure, unresolved retrieval failure, knowledge absence, partial evidence, conflicting evidence, and ambiguous queries.
+- Scoped object-storage keys prevent user filenames from becoming raw object paths.
 - TXT, Markdown, HTML, CSV, source-code, PDF, and DOCX loaders through upload/search flow.
 - BM25, vector similarity, hybrid fusion, reranking, grounded evidence, and abstention.
 - Tenant/workspace isolation for document list/detail and search.
@@ -14,6 +16,7 @@
 ## Implemented But Not Runtime-Tested
 
 - Dockerized PostgreSQL/pgvector, Redis, MinIO, frontend, backend, and worker stack.
+- Hardened Docker Compose configuration; YAML parsed locally, but Docker CLI is unavailable for runtime launch.
 - Celery ingestion-worker path; local validation used inline/background FastAPI tasks.
 - PostgreSQL/pgvector migration/index path; optional tests require `POSTGRES_TEST_DATABASE_URL`.
 - Prometheus, Grafana, and OpenTelemetry containers.
@@ -24,6 +27,8 @@
 
 - Frontend browser workflow: build/typecheck passed, but no browser automation was run.
 - Worker orchestration: Celery dispatch metadata, retries, and time limits are configured, but Redis/Celery runtime was not launched.
+- MinIO bucket initialization and object-key scoping are configured, but MinIO runtime tests were not launched.
+- Retrieval diagnosis is implemented and unit-tested, but full corpus-backed Docker/PostgreSQL evaluation was not run.
 - Observability: request IDs and metrics work locally; distributed tracing was not enabled in runtime validation.
 - Security scanning: Bandit, pip-audit, and npm audit passed; deeper DAST/browser security testing was not run.
 

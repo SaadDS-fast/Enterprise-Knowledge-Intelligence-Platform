@@ -119,6 +119,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   ├── datasets.py
 │   │   │   ├── generation_metrics.py
 │   │   │   ├── regression.py
+│   │   │   ├── retrieval_diagnosis.py
 │   │   │   ├── retrieval_metrics.py
 │   │   │   └── runner.py
 │   │   ├── exceptions/
@@ -152,6 +153,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │       ├── __init__.py
 │   │   │       ├── azure_blob.py
 │   │   │       ├── base.py
+│   │   │       ├── keys.py
 │   │   │       ├── local.py
 │   │   │       ├── minio.py
 │   │   │       └── s3.py
@@ -198,6 +200,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   ├── citations.py
 │   │   │   ├── embeddings.py
 │   │   │   ├── evidence.py
+│   │   │   ├── evidence_diagnosis.py
 │   │   │   ├── fusion.py
 │   │   │   ├── hybrid_retriever.py
 │   │   │   ├── query_rewrite.py
@@ -261,10 +264,13 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   ├── test_chunking.py
 │   │   │   ├── test_config.py
 │   │   │   ├── test_embeddings.py
+│   │   │   ├── test_evidence_diagnosis.py
 │   │   │   ├── test_health.py
 │   │   │   ├── test_jobs.py
 │   │   │   ├── test_metrics.py
-│   │   │   └── test_security.py
+│   │   │   ├── test_retrieval_diagnosis_evaluation.py
+│   │   │   ├── test_security.py
+│   │   │   └── test_storage_keys.py
 │   │   ├── __init__.py
 │   │   └── conftest.py
 │   ├── .coverage
@@ -301,11 +307,16 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   ├── architecture/
 │   │   ├── cost-and-local-development.md
 │   │   ├── data-flow.md
+│   │   ├── retrieval-diagnosis.md
+│   │   ├── runtime-data-flow.md
 │   │   └── system-context.md
 │   ├── deployment/
+│   │   ├── docker-runtime-guide.md
 │   │   └── README.md
 │   ├── evaluation/
-│   │   └── README.md
+│   │   ├── README.md
+│   │   ├── retrieval-diagnosis-cases.json
+│   │   └── retrieval-diagnosis-evaluation.md
 │   ├── implementation/
 │   │   ├── enterprise-gap-analysis.md
 │   │   ├── phase-2-frontend-quality.md

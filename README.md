@@ -30,6 +30,8 @@ docker compose up --build
 
 Open the frontend at `http://localhost:3000` and API docs at `http://localhost:8000/docs`.
 The default Docker setup uses PostgreSQL, Redis, MinIO, and a Celery ingestion worker.
+The backend container runs Alembic migrations before starting the API, and `minio-init`
+creates the local object-storage bucket.
 
 ## Lightweight local start without Docker
 
@@ -67,3 +69,10 @@ npm run build
 Before production, use a managed secret store, TLS, enterprise identity provider, immutable
 container tags, backup/restore drills, a real malware scanner, migrations rather than automatic
 table creation, persistent rate limiting, and security review of the chosen local or hosted model.
+
+## Retrieval Diagnosis
+
+Search responses include `retrieval_diagnosis`, a safe structured field that distinguishes
+directly sufficient evidence, evidence recovered after retry, unresolved retrieval failure,
+knowledge absence, partial evidence, conflicting evidence, and ambiguous queries. The retry
+path expands retrieval without relaxing tenant, workspace, document, or security filters.

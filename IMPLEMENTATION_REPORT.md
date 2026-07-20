@@ -12,6 +12,28 @@ Updated on 2026-07-20.
   - `972b44a feat(db): add pgvector migration indexes`
   - `cfb0fd4 feat(workers): strengthen ingestion dispatch`
 
+## Runtime RAG Intelligence Update
+
+Updated on branch `feature/runtime-rag-intelligence`.
+
+New commits in this milestone:
+
+- `8f3cc11 feat(runtime): harden local compose stack`
+- `823da6b feat(storage): scope document object keys`
+- `f3f593a feat(rag): diagnose retrieval failures`
+- `adb7a70 test(evaluation): add retrieval diagnosis metrics`
+
+Completed:
+
+- Hardened `docker-compose.yml` with explicit network, restart policies, health checks, MinIO bucket initialization, migration-capable backend startup, and separate ingestion/evaluation/report worker services.
+- Updated `.env.example` to default to the async Docker stack and document inline fallback overrides.
+- Added scoped object keys under controlled object groups with workspace/document/version prefixes.
+- Added retrieval diagnosis for sufficient evidence, recovered retrieval failure, unresolved retrieval failure, knowledge absence, partial evidence, conflicting evidence, and ambiguous queries.
+- Exposed safe `retrieval_diagnosis` metadata in search responses.
+- Added frontend diagnosis display and tests for all user-facing diagnosis states.
+- Added retrieval/diagnosis/ingestion Prometheus metrics.
+- Added deterministic retrieval-diagnosis evaluation cases and metric helper.
+
 ## Completed In This Stage
 
 - Created `docs/implementation/enterprise-gap-analysis.md`.
@@ -52,19 +74,20 @@ npm audit --omit=dev
 
 - Backend Ruff lint: passed.
 - Backend Ruff format check: passed.
-- Backend tests: 22 passed, 2 skipped.
+- Backend tests: 35 passed, 2 skipped.
+- Backend coverage: 72%.
 - Alembic fresh SQLite upgrade: passed.
 - Alembic check: passed.
 - Frontend clean install: passed.
 - Frontend lint: passed with 0 errors and 1 warning for the standard Next.js `metadata` export.
-- Frontend unit/component tests: 12 passed across 5 files.
+- Frontend unit/component tests: 19 passed across 5 files.
 - Frontend typecheck: passed.
 - Frontend production build: passed.
 - Frontend npm audit: passed, 0 vulnerabilities.
 
 ## Not Run
 
-- Docker runtime stack.
+- Docker runtime stack; Docker CLI is not installed on PATH.
 - PostgreSQL/pgvector runtime tests, because no PostgreSQL service was available.
 - Redis/Celery runtime tests, because no Redis/worker stack was available.
 - MinIO runtime tests.
@@ -74,4 +97,4 @@ npm audit --omit=dev
 
 ## Deferred Major Phases
 
-The full request contains 25 phases. This stage completed auditable slices of Phases 1-4. Phases 5-25 remain partially or fully deferred, including full MinIO lifecycle, local model embeddings, production hybrid retrieval, local reranking, retrieval failure versus knowledge absence diagnosis, claim-level evidence verification, local LLM gateway hardening, controlled research agent state machine, async report exports, conversation streaming, authentication upgrades, admin governance, expanded evaluation framework, experiment registry, security hardening, observability dashboards/alerts, Docker runtime completion, browser automation, load tests, and portfolio documentation.
+The full request contains 25 phases. The prior stage completed auditable slices of Phases 1-4. This milestone completed a local-stack configuration hardening slice and the main retrieval diagnosis differentiator. Remaining deferred work includes runtime Docker service launch, full MinIO lifecycle integration tests, local model embeddings, local reranking, claim-level evidence verification, local LLM gateway hardening, controlled research agent state machine, async report exports, conversation streaming, authentication upgrades, admin governance, broader evaluation framework, experiment registry, deeper security hardening, observability dashboards/alerts, browser automation, load tests, and portfolio documentation.

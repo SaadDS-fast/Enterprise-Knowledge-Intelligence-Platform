@@ -19,6 +19,8 @@ The local MVP backend and frontend passed source-level, test-suite, and real HTT
 
 Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real ESLint configuration and frontend component tests. Phase 3 added PostgreSQL/pgvector migration/index support with optional integration tests. Phase 4 strengthened ingestion worker dispatch. Overall status remains **PARTIAL PASS** because Docker, PostgreSQL, Redis/Celery, MinIO, browser E2E, Ollama, and load-test runtime validation were not executed.
 
+Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`docker: command not found`). The Compose YAML was structurally parsed with 13 services. Retrieval diagnosis, safe API metadata, frontend display, scoped object keys, ingestion/retrieval metrics, and deterministic diagnosis evaluation helpers were implemented and tested. Overall status remains **PARTIAL PASS** because local services were not launched.
+
 ## Commands Run
 
 - `npm ci`
@@ -44,6 +46,8 @@ Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real 
 
 - Backend tests: **20 passed, 0 failed, 0 skipped, 0 errored**
 - Phase 4 backend tests: **22 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
+- Runtime RAG backend tests: **35 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
+- Runtime RAG backend coverage: **72%**
 - Backend coverage: **70%**
 - Python compile: **PASS**
 - Ruff lint/format: **PASS**
@@ -53,6 +57,7 @@ Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real 
 - Frontend `npm ci`: **PASS** from a clean `node_modules` state
 - Frontend lint: **PASS**, real ESLint flat config; 0 errors and 1 warning for the standard Next.js `metadata` export
 - Frontend component tests: **PASS**, 5 files and 12 tests
+- Runtime RAG frontend component tests: **PASS**, 5 files and 19 tests
 - Frontend type-check: **PASS**
 - Frontend production build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
@@ -102,6 +107,7 @@ The real FastAPI app was started with a disposable SQLite DB and local object st
 ## Remaining Limitations
 
 - Docker runtime validation was not executed because Docker is not installed on PATH.
+- Docker Compose YAML structure was parsed successfully, but `docker compose config` could not run because Docker is not installed on PATH.
 - Frontend lint now uses real ESLint configuration, but browser automation against the Next.js UI was not executed.
 - Browser automation against the Next.js UI was not executed; frontend validation was build/typecheck plus backend HTTP API flows.
 - Celery worker path, MinIO storage, Redis, PostgreSQL/pgvector, Prometheus, Grafana, and OpenTelemetry were inspected/config-parsed but not launched.
