@@ -10,7 +10,9 @@ from app.db.session import AsyncSessionLocal
 from app.ingestion.loaders import load_document
 from app.ingestion.processors import build_metadata, deduplicate_chunks, find_pii, normalize_text
 from app.integrations.storage import get_storage
+from app.integrations.storage.keys import document_object_key
 from app.jobs.status import IngestionStage, JobStatus
+from app.observability.metrics import INGESTION_COMPLETED, INGESTION_FAILED
 from app.rag.chunking import chunk_text
 from app.rag.embeddings import embed_text
 
@@ -61,7 +63,14 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 ]
             )
             storage = get_storage()
-            approved_key = version.storage_key.replace("quarantine/", "approved/", 1)
+            approved_key = document_object_key(
+                group="source",
+                workspace_id=document.workspace_id,
+                document_id=document.id,
+                version_id=version.id,
+                filename=version.filename,
+                unique=False,
+            )
             if approved_key != version.storage_key:
                 job.stage = IngestionStage.INDEXING
                 await session.commit()
@@ -82,6 +91,7 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 "pii_findings": pii_count,
             }
             await session.commit()
+            INGESTION_COMPLETED.inc()
             return job.result_json
         except Exception as exc:
             await session.rollback()
@@ -99,4 +109,5 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             if document:
                 document.status = "failed"
             await session.commit()
+            INGESTION_FAILED.inc()
             raise

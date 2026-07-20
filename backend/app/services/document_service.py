@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Document, DocumentVersion, IngestionJob
 from app.integrations.storage import get_storage
+from app.integrations.storage.keys import document_object_key
+from app.observability.metrics import INGESTION_SUBMITTED
 from app.security.file_validation import validate_file
 from app.security.malware_scan import scan_bytes
 from app.utils.hashing import hash_bytes
@@ -37,9 +39,17 @@ async def create_document_upload(
     session.add(document)
     await session.flush()
     checksum = hash_bytes(data)
-    storage_key = f"quarantine/{workspace_id}/{document.id}/{uuid4()}-{validated.filename}"
+    version_id = uuid4()
+    storage_key = document_object_key(
+        group="quarantine",
+        workspace_id=workspace_id,
+        document_id=document.id,
+        version_id=version_id,
+        filename=validated.filename,
+    )
     await get_storage().put(storage_key, data, validated.mime_type)
     version = DocumentVersion(
+        id=version_id,
         document_id=document.id,
         version_number=1,
         filename=validated.filename,
@@ -59,6 +69,7 @@ async def create_document_upload(
     await session.refresh(document)
     await session.refresh(version)
     await session.refresh(job)
+    INGESTION_SUBMITTED.inc()
     return document, version, job
 
 
