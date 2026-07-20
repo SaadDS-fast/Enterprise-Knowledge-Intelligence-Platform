@@ -3,6 +3,16 @@ export type AuthResponse = { access_token: string; token_type: string; expires_i
 export type DocumentItem = { id: string; workspace_id: string; title: string; status: string; description?: string | null; created_by: string; created_at: string; updated_at: string };
 export type Job = { id: string; workspace_id: string; document_version_id: string; status: string; stage: string; error_message?: string | null; result_json: Record<string, unknown>; created_at: string; updated_at: string };
 export type Evidence = { chunk_id: string; document_id: string; document_title: string; content: string; score: number; metadata: Record<string, unknown> };
-export type SearchResult = { answer: string; evidence: Evidence[]; sufficient_evidence: boolean; abstained: boolean; request_id?: string | null };
+export type RetrievalDiagnosis = {
+  status: string;
+  initial_evidence_sufficient: boolean;
+  retry_performed: boolean;
+  retry_strategy: string[];
+  initial_support_score: number;
+  final_support_score: number;
+  evidence_count: number;
+  reason_code: string;
+};
+export type SearchResult = { answer: string; evidence: Evidence[]; sufficient_evidence: boolean; abstained: boolean; request_id?: string | null; retrieval_diagnosis?: RetrievalDiagnosis };
 export type ResearchJob = { id: string; question: string; status: string; report_markdown?: string | null; result_json: Record<string, unknown>; error_message?: string | null; created_at: string; updated_at: string };
 export type EvaluationRun = { id: string; name: string; status: string; metrics_json: Record<string, number>; config_json: Record<string, unknown>; created_at: string; updated_at: string };

@@ -113,6 +113,7 @@ class SearchResponse(BaseModel):
     sufficient_evidence: bool
     abstained: bool
     request_id: str | None = None
+    retrieval_diagnosis: dict = Field(default_factory=dict)
 
 
 class ResearchRequest(BaseModel):

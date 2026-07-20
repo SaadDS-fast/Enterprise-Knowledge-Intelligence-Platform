@@ -52,4 +52,4 @@ async def retrieve(
             )
         )
     ranked.sort(key=lambda item: item.score, reverse=True)
-    return ranked[: min(top_k or settings.rerank_top_k, settings.rerank_top_k)]
+    return ranked[: min(top_k or settings.rerank_top_k, settings.retrieval_top_k)]

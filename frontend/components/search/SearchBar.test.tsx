@@ -61,4 +61,45 @@ describe("SearchBar", () => {
 
     await waitFor(() => expect(screen.getByText("Search failed with 500")).toBeInTheDocument());
   });
+
+  it.each([
+    ["SUFFICIENT_EVIDENCE", "Evidence found directly"],
+    ["RETRIEVAL_FAILURE_RECOVERED", "Evidence found after an additional search"],
+    [
+      "RETRIEVAL_FAILURE_UNRESOLVED",
+      "Relevant evidence may exist, but the search could not verify it",
+    ],
+    ["KNOWLEDGE_ABSENT", "Information does not appear to exist in the selected documents"],
+    ["PARTIAL_EVIDENCE", "Only partial evidence found"],
+    ["CONFLICTING_EVIDENCE", "Conflicting evidence found"],
+    ["AMBIGUOUS_QUERY", "Question needs clarification"],
+  ])("renders diagnosis state %s", async (status, label) => {
+    mockedApi.mockResolvedValueOnce({
+      answer: "I do not have enough evidence to answer that.",
+      evidence: [],
+      sufficient_evidence: false,
+      abstained: true,
+      request_id: "req-1",
+      retrieval_diagnosis: {
+        status,
+        initial_evidence_sufficient: status === "SUFFICIENT_EVIDENCE",
+        retry_performed: status !== "SUFFICIENT_EVIDENCE",
+        retry_strategy: status === "SUFFICIENT_EVIDENCE" ? [] : ["query_reformulation"],
+        initial_support_score: 0.1,
+        final_support_score: 0.42,
+        evidence_count: 0,
+        reason_code: "TEST",
+      },
+    });
+
+    render(<SearchBar />);
+
+    await userEvent.type(
+      screen.getByPlaceholderText("Ask a question grounded in your documents..."),
+      "What happened?",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Search knowledge" }));
+
+    await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
+  });
 });
