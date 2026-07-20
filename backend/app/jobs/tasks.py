@@ -1,8 +1,17 @@
 import asyncio
 from uuid import UUID
 
+from app.db.session import close_database
 from app.ingestion.pipeline import process_ingestion_job
 from app.jobs.queue import celery_app
+
+
+async def _run_ingestion_task(job_id: UUID, request_id: str | None) -> dict:
+    await close_database()
+    try:
+        return await process_ingestion_job(job_id, request_id=request_id)
+    finally:
+        await close_database()
 
 
 @celery_app.task(
@@ -15,4 +24,4 @@ from app.jobs.queue import celery_app
     time_limit=360,
 )
 def ingest(job_id: str, request_id: str | None = None) -> dict:
-    return asyncio.run(process_ingestion_job(UUID(job_id), request_id=request_id))
+    return asyncio.run(_run_ingestion_task(UUID(job_id), request_id))

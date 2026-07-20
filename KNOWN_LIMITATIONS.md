@@ -1,49 +1,27 @@
 # Known Limitations
 
-## Implemented And Tested
+Updated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`.
 
-- Registration, login, current-user lookup, invalid-login rejection.
-- Authenticated document upload and local inline ingestion.
-- Real frontend ESLint baseline and focused component tests.
-- Retrieval diagnosis distinguishes sufficient evidence, recovered retrieval failure, unresolved retrieval failure, knowledge absence, partial evidence, conflicting evidence, and ambiguous queries.
-- Scoped object-storage keys prevent user filenames from becoming raw object paths.
-- TXT, Markdown, HTML, CSV, source-code, PDF, and DOCX loaders through upload/search flow.
-- BM25, vector similarity, hybrid fusion, reranking, grounded evidence, and abstention.
-- Tenant/workspace isolation for document list/detail and search.
-- Research and evaluation endpoints.
-- Prometheus metrics endpoint.
+## Implemented And Runtime-Tested
 
-## Implemented But Not Runtime-Tested
+- Dockerized PostgreSQL/pgvector, Redis, MinIO, backend, frontend, ingestion worker, evaluation worker, report worker, Prometheus, Grafana, and OpenTelemetry collector.
+- PostgreSQL Alembic drift check against the Docker database.
+- Celery ingestion with idempotent completed-task retry.
+- Redis outage handling with automatic retry-pending dispatch recovery.
+- MinIO outage handling with sanitized error response and no persisted document row.
+- Prometheus scraping of backend and worker metrics endpoints.
+- Browser E2E for auth, upload, ingestion, search, evidence display, abstention, tenant isolation, logout, and cleanup.
+- Bandit, pip-audit, npm audit, backend tests, frontend tests, typecheck, lint, and production build.
 
-- Dockerized PostgreSQL/pgvector, Redis, MinIO, frontend, backend, and worker stack.
-- Hardened Docker Compose configuration; YAML parsed locally, but Docker CLI is unavailable for runtime launch.
-- Full runtime stack validation remains blocked on this machine because Docker is not installed on PATH.
-- Celery ingestion-worker path; local validation used inline/background FastAPI tasks.
-- PostgreSQL/pgvector migration/index path; optional tests require `POSTGRES_TEST_DATABASE_URL`.
-- Prometheus, Grafana, and OpenTelemetry containers.
-- MinIO object storage path; local validation used filesystem storage.
-- PostgreSQL/pgvector runtime; validation used SQLite plus migration checks.
+## Remaining Limitations
 
-## Partially Implemented
+- Ollama profile validation was not run.
+- Load/resilience testing was not run.
+- Grafana and OpenTelemetry containers start, but dashboard content, alerting, and trace assertions were not deeply validated.
+- Several scaffolded modules remain low coverage, including agent, cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
+- Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 
-- Frontend browser workflow: build/typecheck passed, but no browser automation was run.
-- Worker orchestration: Celery dispatch metadata, retries, and time limits are configured, but Redis/Celery runtime was not launched.
-- MinIO bucket initialization and object-key scoping are configured, but MinIO runtime tests were not launched.
-- Retrieval diagnosis is implemented and unit-tested, but full corpus-backed Docker/PostgreSQL evaluation was not run.
-- Observability: request IDs and metrics work locally; distributed tracing was not enabled in runtime validation.
-- Security scanning: Bandit, pip-audit, and npm audit passed; deeper DAST/browser security testing was not run.
+## Notes
 
-## Placeholder Or Low-Coverage Areas
-
-- Agent modules under `backend/app/agents`.
-- Cache policy/client paths.
-- Document lifecycle/retention/versioning helper modules.
-- SSRF, egress policy, audit-event persistence, and redaction modules are present but not broadly runtime-tested.
-- Standalone worker packages under `workers/*` were inspected but not executed.
-
-## Planned For Next Stage
-
-- Browser automation for registration, login, upload, search, evidence display, abstention, and logout.
-- Docker runtime validation on a machine with Docker available.
-- Runtime validation with PostgreSQL/pgvector, Redis, MinIO, Celery workers, Prometheus, Grafana, and OpenTelemetry.
-- Broader coverage for scaffolded enterprise/security/agent modules.
+- The Redis outage test intentionally produced broker reconnect warnings in worker logs; workers recovered and processed the retry-pending job.
+- The MinIO outage test intentionally produced backend storage exception logs; the API response stayed sanitized and no document row persisted.

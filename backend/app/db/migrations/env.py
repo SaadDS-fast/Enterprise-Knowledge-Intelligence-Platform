@@ -8,12 +8,31 @@ from app.core.config import settings
 from app.db.base import Base
 
 config = context.config
-config.set_main_option(
-    "sqlalchemy.url", settings.database_url.replace("+asyncpg", "").replace("+aiosqlite", "")
-)
+migration_url = settings.database_url.replace("+asyncpg", "+psycopg").replace("+aiosqlite", "")
+config.set_main_option("sqlalchemy.url", migration_url)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 target_metadata = Base.metadata
+
+MIGRATION_MANAGED_INDEXES = {
+    "ix_chunks_embedding_cosine_ivfflat",
+    "ix_chunks_workspace_version_ordinal",
+    "ix_document_versions_document_version_desc",
+    "ix_documents_workspace_status_updated",
+    "ix_ingestion_jobs_workspace_status_updated",
+}
+
+
+def include_object(
+    object_: object,
+    name: str | None,
+    type_: str,
+    reflected: bool,
+    compare_to: object | None,
+) -> bool:
+    if reflected and compare_to is None and type_ == "index" and name in MIGRATION_MANAGED_INDEXES:
+        return False
+    return True
 
 
 def run_migrations_offline() -> None:
@@ -23,6 +42,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
+        include_object=include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -38,7 +58,12 @@ def run_migrations_online() -> None:
         if connection.dialect.name == "postgresql":
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
             connection.commit()
-        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            include_object=include_object,
+        )
         with context.begin_transaction():
             context.run_migrations()
 

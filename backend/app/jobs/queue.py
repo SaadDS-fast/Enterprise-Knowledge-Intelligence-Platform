@@ -1,5 +1,6 @@
 from celery import Celery
 
+import app.observability.worker_metrics  # noqa: F401
 from app.core.config import settings
 
 celery_app = Celery(

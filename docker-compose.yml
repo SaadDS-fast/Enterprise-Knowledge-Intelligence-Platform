@@ -16,6 +16,7 @@ x-backend-env: &backend-env
   JOB_EXECUTION_MODE: celery
   LOCAL_LLM_BACKEND: extractive
   OTEL_ENABLED: "false"
+  TRUSTED_HOSTS: localhost,127.0.0.1,testserver,backend
 
 services:
   postgres:
@@ -113,7 +114,10 @@ services:
   ingestion-worker:
     image: ekip-backend:local
     restart: unless-stopped
-    environment: *backend-env
+    environment:
+      <<: *backend-env
+      WORKER_ROLE: ingestion
+      WORKER_METRICS_PORT: "9101"
     command:
       [
         "celery",
@@ -123,7 +127,9 @@ services:
         "--loglevel=INFO",
         "--queues=ingestion",
         "--hostname=ingestion@%h",
+        "--pool=solo",
       ]
+    expose: ["9101"]
     networks: ["ekip-internal"]
     depends_on:
       backend: {condition: service_healthy}
@@ -139,7 +145,10 @@ services:
   evaluation-worker:
     image: ekip-backend:local
     restart: unless-stopped
-    environment: *backend-env
+    environment:
+      <<: *backend-env
+      WORKER_ROLE: evaluation
+      WORKER_METRICS_PORT: "9102"
     command:
       [
         "celery",
@@ -149,16 +158,26 @@ services:
         "--loglevel=INFO",
         "--queues=evaluation",
         "--hostname=evaluation@%h",
+        "--pool=solo",
       ]
+    expose: ["9102"]
     networks: ["ekip-internal"]
     depends_on:
       backend: {condition: service_healthy}
       redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.jobs.queue.celery_app inspect ping -d evaluation@$$(hostname) | grep -q pong"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
 
   report-worker:
     image: ekip-backend:local
     restart: unless-stopped
-    environment: *backend-env
+    environment:
+      <<: *backend-env
+      WORKER_ROLE: reports
+      WORKER_METRICS_PORT: "9103"
     command:
       [
         "celery",
@@ -168,11 +187,18 @@ services:
         "--loglevel=INFO",
         "--queues=reports",
         "--hostname=reports@%h",
+        "--pool=solo",
       ]
+    expose: ["9103"]
     networks: ["ekip-internal"]
     depends_on:
       backend: {condition: service_healthy}
       redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.jobs.queue.celery_app inspect ping -d reports@$$(hostname) | grep -q pong"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
 
   frontend:
     build:

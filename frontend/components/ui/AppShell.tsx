@@ -6,5 +6,5 @@ const links = [["/dashboard","Dashboard"],["/documents","Documents"],["/search",
 export default function AppShell({children}:{children:React.ReactNode}) {
   const pathname=usePathname(); const router=useRouter();
   if (pathname === "/login" || pathname === "/") return <>{children}</>;
-  return <div className="shell"><aside className="sidebar"><div className="brand">EKIP<span>Knowledge Intelligence</span></div><nav>{links.map(([href,label])=><Link key={href} className={pathname===href?"active":""} href={href}>{label}</Link>)}</nav><button className="ghost" onClick={()=>{clearSession();router.push("/login")}}>Sign out</button></aside><main className="main">{children}</main></div>;
+  return <div className="shell"><aside className="sidebar"><div className="brand">EKIP<span>Knowledge Intelligence</span></div><nav>{links.map(([href,label])=><Link key={href} className={pathname===href?"active":""} href={href} data-testid={`nav-${label.toLowerCase()}`}>{label}</Link>)}</nav><button className="ghost" data-testid="logout-button" onClick={()=>{clearSession();router.push("/login")}}>Sign out</button></aside><main className="main" data-testid="app-main">{children}</main></div>;
 }

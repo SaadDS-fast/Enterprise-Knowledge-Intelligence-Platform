@@ -3,3 +3,9 @@ scrape_configs:
   - job_name: ekip-backend
     static_configs: [{targets: ["backend:8000"]}]
     metrics_path: /metrics
+  - job_name: ekip-worker-ingestion
+    static_configs: [{targets: ["ingestion-worker:9101"], labels: {service: ingestion}}]
+  - job_name: ekip-worker-evaluation
+    static_configs: [{targets: ["evaluation-worker:9102"], labels: {service: evaluation}}]
+  - job_name: ekip-worker-reports
+    static_configs: [{targets: ["report-worker:9103"], labels: {service: reports}}]

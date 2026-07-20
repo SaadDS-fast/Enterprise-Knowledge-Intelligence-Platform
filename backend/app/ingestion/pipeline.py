@@ -22,16 +22,24 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
         job = await session.get(IngestionJob, job_id)
         if not job:
             raise ValueError(f"Ingestion job {job_id} not found")
+        if job.status == JobStatus.COMPLETED:
+            return job.result_json or {}
         version = await session.get(DocumentVersion, job.document_version_id)
         if not version:
             raise ValueError("Document version not found")
         document = await session.get(Document, version.document_id)
         if not document:
             raise ValueError("Document not found")
+        existing_result = job.result_json or {}
+        effective_request_id = request_id or existing_result.get("request_id")
         try:
             job.status = JobStatus.RUNNING
             job.stage = IngestionStage.PARSING
-            job.result_json = {"request_id": request_id} if request_id else {}
+            job.result_json = (
+                {**existing_result, "request_id": effective_request_id}
+                if effective_request_id
+                else existing_result
+            )
             document.status = "processing"
             await session.commit()
             data = await get_storage().get(version.storage_key)
@@ -85,7 +93,7 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             job.status = JobStatus.COMPLETED
             job.stage = IngestionStage.COMPLETED
             job.result_json = {
-                "request_id": request_id,
+                "request_id": effective_request_id,
                 "chunks": len(raw_chunks),
                 "characters": len(text),
                 "pii_findings": pii_count,
@@ -103,7 +111,7 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 job.error_message = str(exc)[:2000]
                 job.result_json = {
                     **(job.result_json or {}),
-                    "request_id": request_id,
+                    **({"request_id": effective_request_id} if effective_request_id else {}),
                     "error_type": type(exc).__name__,
                 }
             if document:

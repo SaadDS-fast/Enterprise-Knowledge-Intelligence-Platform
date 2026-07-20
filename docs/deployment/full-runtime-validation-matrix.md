@@ -1,80 +1,49 @@
 # Full Runtime Validation Matrix
 
-Updated on 2026-07-20 from branch `validation/full-runtime-stack`.
+Updated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`.
 
 ## Docker Gate
 
-Runtime validation is blocked on this machine because Docker is not installed on `PATH`.
-
-Commands run:
-
-```bash
-docker --version
-docker compose version
-docker info
-```
-
-All three returned:
+Runtime validation is unblocked on this machine.
 
 ```text
-zsh:1: command not found: docker
+Docker version 29.6.2
+Docker Compose version v5.3.1
+docker info succeeded
 ```
-
-No containers were built or started. No Docker volumes were created. No `.env` file was created because validation did not proceed past the Docker capability gate.
 
 ## Matrix
 
 | Component | Config validated | Container started | Health passed | Integration passed |
 | --- | ---: | ---: | ---: | ---: |
-| PostgreSQL/pgvector | Yes, prior YAML parse only | No | No | No |
-| Redis | Yes, prior YAML parse only | No | No | No |
-| MinIO | Yes, prior YAML parse only | No | No | No |
-| Backend | Yes, prior YAML parse only | No | No | No |
-| Ingestion worker | Yes, prior YAML parse only | No | No | No |
-| Evaluation worker | Yes, prior YAML parse only | No | No | No |
-| Report worker | Yes, prior YAML parse only | No | No | No |
-| Frontend | Yes, prior YAML parse only | No | No | No |
-| Prometheus | Yes, prior YAML parse only | No | No | No |
-| Grafana | Yes, prior YAML parse only | No | No | No |
-| OpenTelemetry | Yes, prior YAML parse only | No | No | No |
+| PostgreSQL/pgvector | Yes | Yes | Yes | Yes, Alembic check and runtime chunk/vector persistence |
+| Redis | Yes | Yes | Yes | Yes, Celery broker and outage recovery |
+| MinIO | Yes | Yes | Yes | Yes, upload storage and outage rollback |
+| Backend | Yes | Yes | Yes | Yes, API runtime probes passed |
+| Ingestion worker | Yes | Yes | Yes | Yes, Celery task execution and metrics |
+| Evaluation worker | Yes | Yes | Yes | Yes, health and Prometheus scrape |
+| Report worker | Yes | Yes | Yes | Yes, health and Prometheus scrape |
+| Frontend | Yes | Yes | Yes | Yes, Playwright E2E passed |
+| Prometheus | Yes | Yes | Started | Yes, backend and worker targets `up=1` |
+| Grafana | Yes | Yes | Started | Basic startup verified; deeper dashboards not validated |
+| OpenTelemetry | Yes | Yes | Started | Collector startup verified; trace assertions not validated |
 
-## Baseline Checks Completed Before Docker Gate
-
-Backend:
-
-- `python -m compileall app tests`: passed.
-- `ruff check app tests`: passed.
-- `ruff format --check app tests`: passed.
-- `pytest -vv`: 35 passed, 2 skipped.
-- `pytest --cov=app --cov-report=term-missing`: 72% coverage.
-- `bandit -r app`: passed, no issues.
-- `pip-audit --cache-dir /tmp/ekip-pip-audit-cache`: no known vulnerabilities for auditable packages.
-
-Frontend:
-
-- `rm -rf node_modules .next`: completed.
-- `npm ci`: passed.
-- `npm run lint`: passed with 0 errors and 1 known Next.js metadata warning.
-- `npm run typecheck`: passed.
-- `npm run test`: 5 files, 19 tests passed.
-- `npm run build`: passed.
-- `npm audit --omit=dev`: 0 vulnerabilities.
-
-## Required Follow-Up On Docker-Capable Host
-
-Run:
+## Commands Completed
 
 ```bash
-cp .env.example .env
 docker compose config
-docker compose build --no-cache
-docker compose up -d postgres redis minio minio-init
-docker compose ps
-docker compose logs --no-color postgres redis minio minio-init
-docker compose run --rm backend alembic upgrade head
+docker compose build
+docker compose build backend
+docker compose --profile observability up -d
 docker compose run --rm backend alembic check
-docker compose up -d backend ingestion-worker evaluation-worker report-worker
-docker compose up -d frontend prometheus grafana otel-collector
+docker compose --profile observability ps
+npm run test:e2e
 ```
 
-Only after those services are actually healthy should runtime ingestion, pgvector similarity, MinIO object lifecycle, Celery processing, retrieval diagnosis, tenant isolation, and observability be marked as integration-passed.
+Additional live probes validated completed-task retry, Redis outage recovery, MinIO outage rollback, Prometheus `up`, and worker task metrics.
+
+## Remaining Follow-Up
+
+- Ollama profile validation.
+- Load/resilience testing.
+- Deeper Grafana dashboard and OpenTelemetry trace assertions.

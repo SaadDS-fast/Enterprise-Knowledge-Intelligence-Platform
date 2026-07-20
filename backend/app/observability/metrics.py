@@ -1,4 +1,4 @@
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 from starlette.responses import Response
 
 REQUESTS = Counter("ekip_http_requests_total", "HTTP requests", ["method", "path", "status"])
@@ -19,6 +19,27 @@ DIAGNOSIS_LATENCY = Histogram("ekip_diagnosis_duration_seconds", "Evidence diagn
 INGESTION_SUBMITTED = Counter("ekip_ingestion_jobs_submitted_total", "Ingestion jobs submitted")
 INGESTION_COMPLETED = Counter("ekip_ingestion_jobs_completed_total", "Ingestion jobs completed")
 INGESTION_FAILED = Counter("ekip_ingestion_jobs_failed_total", "Ingestion jobs failed")
+WORKER_TASKS_RECEIVED = Counter(
+    "ekip_worker_tasks_received_total", "Celery tasks received by worker role", ["worker_role"]
+)
+WORKER_TASKS_COMPLETED = Counter(
+    "ekip_worker_tasks_completed_total", "Celery tasks completed by worker role", ["worker_role"]
+)
+WORKER_TASKS_FAILED = Counter(
+    "ekip_worker_tasks_failed_total", "Celery tasks failed by worker role", ["worker_role"]
+)
+WORKER_TASKS_RETRIED = Counter(
+    "ekip_worker_tasks_retried_total", "Celery tasks retried by worker role", ["worker_role"]
+)
+WORKER_TASK_DURATION = Histogram(
+    "ekip_worker_task_duration_seconds", "Celery task duration by worker role", ["worker_role"]
+)
+WORKER_QUEUE_DELAY = Histogram(
+    "ekip_worker_queue_delay_seconds", "Celery task queue delay by worker role", ["worker_role"]
+)
+WORKER_ACTIVE_TASKS = Gauge(
+    "ekip_worker_active_tasks", "Currently active Celery tasks by worker role", ["worker_role"]
+)
 
 
 def metrics_response() -> Response:

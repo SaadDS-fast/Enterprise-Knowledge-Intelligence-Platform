@@ -34,18 +34,13 @@ def test_dispatch_ingestion_uses_deterministic_celery_task_id(monkeypatch):
     task_id = service.dispatch_ingestion(job_id, request_id="req-1")
 
     assert task_id == "task-1"
-    assert celery.calls == [
-        {
-            "args": ("ekip.ingest",),
-            "kwargs": {
-                "args": [str(job_id)],
-                "kwargs": {"request_id": "req-1"},
-                "queue": "ingestion",
-                "task_id": str(job_id),
-                "headers": {"request_id": "req-1"},
-            },
-        }
-    ]
+    assert celery.calls[0]["args"] == ("ekip.ingest",)
+    assert celery.calls[0]["kwargs"]["args"] == [str(job_id)]
+    assert celery.calls[0]["kwargs"]["kwargs"] == {"request_id": "req-1"}
+    assert celery.calls[0]["kwargs"]["queue"] == "ingestion"
+    assert celery.calls[0]["kwargs"]["task_id"] == str(job_id)
+    assert celery.calls[0]["kwargs"]["headers"]["request_id"] == "req-1"
+    assert "published_at" in celery.calls[0]["kwargs"]["headers"]
 
 
 def test_dispatch_ingestion_inline_adds_background_task(monkeypatch):

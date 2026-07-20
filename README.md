@@ -34,8 +34,10 @@ The backend container runs Alembic migrations before starting the API, and `mini
 creates the local object-storage bucket.
 
 Runtime validation requires Docker to be installed and the Docker daemon to be running.
-The latest validation attempt on this machine stopped before Compose execution because
-`docker` was not available on `PATH`; see `docs/deployment/full-runtime-validation-matrix.md`.
+The 2026-07-20 validation on branch `fix/runtime-reliability-and-e2e` passed with
+Docker 29.6.2 and Docker Compose v5.3.1, including the observability profile,
+worker metrics scraping, Redis outage recovery, MinIO outage rollback, and
+Playwright browser E2E; see `docs/deployment/full-runtime-validation-matrix.md`.
 
 ## Lightweight local start without Docker
 
@@ -64,7 +66,10 @@ pytest
 ruff check app tests
 python -m compileall app
 cd ../frontend
+npm run lint
 npm run typecheck
+npm run test
+npm run test:e2e
 npm run build
 ```
 

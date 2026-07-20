@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies.tenancy import Tenant
 from app.db.session import get_db
 from app.exceptions.base import ForbiddenError, NotFoundError
-from app.jobs.service import dispatch_ingestion
+from app.jobs.service import dispatch_ingestion_safely
 from app.models.schemas import DocumentRead, DocumentVersionRead, MessageResponse, UploadResponse
 from app.repositories.documents import get_document, list_documents
 from app.security.authorization import can_manage_documents
@@ -49,7 +49,8 @@ async def upload_document(
         title=title,
         description=description,
     )
-    dispatch_ingestion(
+    await dispatch_ingestion_safely(
+        session,
         job.id,
         background_tasks,
         request_id=getattr(request.state, "request_id", None),

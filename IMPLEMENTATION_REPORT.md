@@ -2,118 +2,56 @@
 
 Updated on 2026-07-20.
 
-## Branch And Commits
+## Branch And Commit
 
-- Branch: `feature/enterprise-completion`
-- Base validation commit: `1e4f3d8 test: complete validation and hardening of current MVP`
-- New commits:
-  - `05b5094 docs: add enterprise gap analysis`
-  - `151dabf test(frontend): add linting and component tests`
-  - `972b44a feat(db): add pgvector migration indexes`
-  - `cfb0fd4 feat(workers): strengthen ingestion dispatch`
+- Current branch: `fix/runtime-reliability-and-e2e`
+- Resumed from: `validation/full-runtime-stack`
+- Current HEAD: `5f7846703dcd7f0ee8bc5a9d6bfd13a54ca12dd2`
+- Commit status: runtime validation changes are present in the working tree and are not committed.
 
-## Runtime RAG Intelligence Update
+## Completed Runtime Reliability Work
 
-Updated on branch `feature/runtime-rag-intelligence`.
+- Made completed ingestion retries idempotent: completed jobs return existing results without rewriting chunks, vectors, status, or request ids.
+- Preserved existing non-null request ids through ingestion status updates.
+- Disposed async database connections around Celery task event loops to avoid asyncpg cross-loop reuse.
+- Added retryable dispatch states and safe Celery publishing when Redis/broker dispatch fails.
+- Added a backend dispatcher loop that republishes `retry_pending` / `dispatch_failed` ingestion jobs after Redis recovery.
+- Added worker Prometheus metrics for task received/completed/failed/retried counts, active tasks, queue delay, and duration.
+- Added worker metrics servers and Prometheus scrape targets for ingestion, evaluation, and report workers.
+- Added Playwright browser E2E coverage for registration, login, upload, ingestion, search, abstention, tenant isolation, logout, and cleanup.
+- Kept Vitest and Playwright suites separate by excluding `tests/e2e/**` from Vitest.
 
-New commits in this milestone:
+## Docker Runtime Validation
 
-- `8f3cc11 feat(runtime): harden local compose stack`
-- `823da6b feat(storage): scope document object keys`
-- `f3f593a feat(rag): diagnose retrieval failures`
-- `adb7a70 test(evaluation): add retrieval diagnosis metrics`
-
-Completed:
-
-- Hardened `docker-compose.yml` with explicit network, restart policies, health checks, MinIO bucket initialization, migration-capable backend startup, and separate ingestion/evaluation/report worker services.
-- Updated `.env.example` to default to the async Docker stack and document inline fallback overrides.
-- Added scoped object keys under controlled object groups with workspace/document/version prefixes.
-- Added retrieval diagnosis for sufficient evidence, recovered retrieval failure, unresolved retrieval failure, knowledge absence, partial evidence, conflicting evidence, and ambiguous queries.
-- Exposed safe `retrieval_diagnosis` metadata in search responses.
-- Added frontend diagnosis display and tests for all user-facing diagnosis states.
-- Added retrieval/diagnosis/ingestion Prometheus metrics.
-- Added deterministic retrieval-diagnosis evaluation cases and metric helper.
-
-## Full Runtime Validation Attempt
-
-Updated on branch `validation/full-runtime-stack`.
-
-Baseline source checks passed:
-
-- Backend: 35 passed, 2 skipped; coverage 72%; Ruff, format, compile, Bandit, and pip-audit passed.
-- Frontend: `npm ci`, lint, typecheck, 19 tests, build, and npm audit passed.
-
-Runtime validation did not proceed because Docker is not installed on PATH:
+The full observability stack was rebuilt and launched:
 
 ```text
-docker --version -> zsh:1: command not found: docker
-docker compose version -> zsh:1: command not found: docker
-docker info -> zsh:1: command not found: docker
+docker compose config -> passed
+docker compose build -> passed
+docker compose build backend -> passed after final backend patch
+docker compose --profile observability up -d -> passed
+docker compose run --rm backend alembic check -> no new upgrade operations
+docker compose --profile observability ps -> services healthy/running
 ```
 
-No `.env` file was created, no Docker images were built, and no containers were launched.
+Runtime probes passed:
 
-## Completed In This Stage
+- Completed retry for job `b1f52514-8a77-489b-afc7-40a90f6d9ae3`.
+- Redis outage recovery for job `54a2de89-f572-4f83-91f3-c8cc22247702`.
+- MinIO outage rollback for workspace `5396ae34-4929-4e10-bd15-254b2fba0d13`.
+- Prometheus `up=1` for backend and all three worker scrape targets.
 
-- Created `docs/implementation/enterprise-gap-analysis.md`.
-- Replaced the frontend no-op lint script with real ESLint flat configuration.
-- Added Vitest, React Testing Library, jsdom, `user-event`, and `jest-dom`.
-- Added 12 frontend component tests covering auth form behavior, route protection, upload states, search states, and evidence rendering.
-- Added accessible labeling for the document upload input.
-- Added an incremental PostgreSQL/pgvector migration for production indexes.
-- Ensured Alembic creates the PostgreSQL `vector` extension before applying migrations that use vector columns.
-- Added optional PostgreSQL/pgvector integration tests gated by `POSTGRES_TEST_DATABASE_URL`.
-- Strengthened ingestion dispatch with deterministic Celery task IDs, request ID propagation, retry jitter, retry limits, task time limits, explicit ingestion stages, and worker dispatch tests.
+## Validation Results
 
-## Validation Run Locally
+- Backend tests: 37 passed, 2 skipped.
+- Backend coverage: 71%.
+- Frontend unit/component tests: 19 passed.
+- Frontend Playwright E2E: 1 passed.
+- Frontend build/typecheck/lint: passed.
+- Bandit, pip-audit, and npm audit: passed.
 
-Backend commands run from `backend/`:
+## Follow-Up
 
-```bash
-.venv/bin/ruff check app tests
-.venv/bin/ruff format --check app tests
-.venv/bin/pytest -vv
-DATABASE_URL=sqlite+aiosqlite:////tmp/ekip_phase3_alembic.db .venv/bin/alembic upgrade head
-DATABASE_URL=sqlite+aiosqlite:////tmp/ekip_phase3_alembic.db .venv/bin/alembic check
-```
-
-Frontend commands run from `frontend/`:
-
-```bash
-rm -rf node_modules .next
-npm ci
-npm run lint
-npm run typecheck
-npm run test
-npm run build
-npm audit --omit=dev
-```
-
-## Results
-
-- Backend Ruff lint: passed.
-- Backend Ruff format check: passed.
-- Backend tests: 35 passed, 2 skipped.
-- Backend coverage: 72%.
-- Alembic fresh SQLite upgrade: passed.
-- Alembic check: passed.
-- Frontend clean install: passed.
-- Frontend lint: passed with 0 errors and 1 warning for the standard Next.js `metadata` export.
-- Frontend unit/component tests: 19 passed across 5 files.
-- Frontend typecheck: passed.
-- Frontend production build: passed.
-- Frontend npm audit: passed, 0 vulnerabilities.
-
-## Not Run
-
-- Docker runtime stack; Docker CLI is not installed on PATH.
-- PostgreSQL/pgvector runtime tests, because no PostgreSQL service was available.
-- Redis/Celery runtime tests, because no Redis/worker stack was available.
-- MinIO runtime tests.
-- Browser E2E tests.
-- Ollama runtime tests.
-- Load/resilience tests.
-
-## Deferred Major Phases
-
-The full request contains 25 phases. The prior stage completed auditable slices of Phases 1-4. This milestone completed a local-stack configuration hardening slice and the main retrieval diagnosis differentiator. Remaining deferred work includes runtime Docker service launch, full MinIO lifecycle integration tests, local model embeddings, local reranking, claim-level evidence verification, local LLM gateway hardening, controlled research agent state machine, async report exports, conversation streaming, authentication upgrades, admin governance, broader evaluation framework, experiment registry, deeper security hardening, observability dashboards/alerts, browser automation, load tests, and portfolio documentation.
+- Ollama profile validation was not run.
+- Load/resilience testing was not run.
+- Coverage remains uneven in scaffolded agent/cache/security modules.

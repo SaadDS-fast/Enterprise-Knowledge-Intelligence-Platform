@@ -48,7 +48,7 @@ export default function DocumentExplorer() {
 
   return (
     <div>
-      <form className="upload-card" onSubmit={upload}>
+      <form className="upload-card" onSubmit={upload} data-testid="document-upload-form">
         <div>
           <h2>Upload a document</h2>
           <p>PDF, DOCX, TXT, Markdown, HTML, CSV, or source code up to 25 MB.</p>
@@ -56,8 +56,10 @@ export default function DocumentExplorer() {
         <label className="sr-only" htmlFor="document-file">
           Document file
         </label>
-        <input id="document-file" name="file" type="file" required />
-        <button disabled={uploading}>{uploading ? "Uploading..." : "Upload"}</button>
+        <input id="document-file" name="file" type="file" required data-testid="document-file-input" />
+        <button disabled={uploading} data-testid="document-upload-submit">
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
       </form>
       {error ? <p className="error">{error}</p> : null}
       <div className="table-card">
@@ -71,13 +73,15 @@ export default function DocumentExplorer() {
           </thead>
           <tbody>
             {documents.map((doc) => (
-              <tr key={doc.id}>
+              <tr key={doc.id} data-testid="document-row">
                 <td>
                   <strong>{doc.title}</strong>
                   <small>{doc.description}</small>
                 </td>
                 <td>
-                  <StatusBadge value={doc.status} />
+                  <span data-testid="document-status">
+                    <StatusBadge value={doc.status} />
+                  </span>
                 </td>
                 <td>{new Date(doc.created_at).toLocaleString()}</td>
               </tr>

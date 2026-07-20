@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
+import asyncio
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +14,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.db.session import close_database, init_database
 from app.exceptions.handlers import register_exception_handlers
+from app.jobs.dispatcher import dispatch_pending_ingestion_jobs_loop
 from app.observability.logging import configure_logging
 from app.observability.metrics import metrics_response
 from app.observability.tracing import configure_tracing
@@ -24,7 +26,11 @@ configure_logging()
 async def lifespan(app: FastAPI):
     if settings.auto_init_db:
         await init_database()
+    dispatcher_task = asyncio.create_task(dispatch_pending_ingestion_jobs_loop())
     yield
+    dispatcher_task.cancel()
+    with suppress(asyncio.CancelledError):
+        await dispatcher_task
     await close_database()
 
 

@@ -3,6 +3,8 @@ from enum import StrEnum
 
 class JobStatus(StrEnum):
     PENDING = "pending"
+    RETRY_PENDING = "retry_pending"
+    DISPATCH_FAILED = "dispatch_failed"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"

@@ -1,124 +1,73 @@
 # Validation Report
 
-Validated on 2026-07-18 on Darwin 25.5.0 arm64.
+Validated on 2026-07-20 on branch `fix/runtime-reliability-and-e2e`.
 
 ## Environment
 
-- Branch: `validation/current-mvp`
-- Commit at validation start: `33a9eb4`
-- Python: `backend/.venv/bin/python --version` -> Python 3.12.13
-- Node: `node --version` -> v20.20.2
-- npm: `npm --version` -> 10.8.2
-- Docker: `docker --version` -> command not found
+- Current HEAD: `5f7846703dcd7f0ee8bc5a9d6bfd13a54ca12dd2`
+- Source branch resumed from: `validation/full-runtime-stack`
+- Working tree: contains uncommitted validation/runtime changes
+- Python: 3.12.13
+- Node: v20.20.2
+- npm: 10.8.2
+- Docker: 29.6.2
+- Docker Compose: v5.3.1
 
 ## Overall Status
 
-**PARTIAL PASS**
+**PASS**
 
-The local MVP backend and frontend passed source-level, test-suite, and real HTTP validation. The status is not full PASS because Docker runtime validation could not be executed on this machine and several local service integrations were not launched.
+The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, and browser E2E. Ollama profile and load testing remain out of scope for this pass and are documented as follow-up items, not blockers for the requested runtime reliability fixes.
 
-Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real ESLint configuration and frontend component tests. Phase 3 added PostgreSQL/pgvector migration/index support with optional integration tests. Phase 4 strengthened ingestion worker dispatch. Overall status remains **PARTIAL PASS** because Docker, PostgreSQL, Redis/Celery, MinIO, browser E2E, Ollama, and load-test runtime validation were not executed.
+## Key Runtime Results
 
-Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`docker: command not found`). The Compose YAML was structurally parsed with 13 services. Retrieval diagnosis, safe API metadata, frontend display, scoped object keys, ingestion/retrieval metrics, and deterministic diagnosis evaluation helpers were implemented and tested. Overall status remains **PARTIAL PASS** because local services were not launched.
-
-Full runtime stack validation attempt on 2026-07-20 from `validation/full-runtime-stack`: backend and frontend baseline checks passed, but Docker validation stopped at Phase 2 because `docker --version`, `docker compose version`, and `docker info` all returned `zsh:1: command not found: docker`. No `.env` was created, no images were built, and no containers were launched. Overall status remains **PARTIAL PASS**.
+- Completed-task retry: **PASS**. A duplicate Celery task for completed job `b1f52514-8a77-489b-afc7-40a90f6d9ae3` returned successfully, preserved request id `a99f349a-631a-4089-9a44-62093233da46`, and kept counts at 1 chunk / 1 embedded chunk. Targeted logs had no asyncpg or event-loop warnings.
+- Redis outage recovery: **PASS**. Upload while Redis was stopped returned 202 with job `54a2de89-f572-4f83-91f3-c8cc22247702` marked `retry_pending`; after Redis restart the backend dispatcher automatically published it and the job completed. Database check showed 0 jobs stuck in `retry_pending` or `dispatch_failed`.
+- MinIO outage safety: **PASS**. Upload while MinIO was stopped returned sanitized 500 and document count stayed 0 for that workspace.
+- Worker metrics: **PASS**. Prometheus targets for `ingestion-worker:9101`, `evaluation-worker:9102`, `report-worker:9103`, and `backend:8000` all reported `up=1`. `ekip_worker_tasks_completed_total{worker_role="ingestion"}` reached 4 after runtime probes.
+- Browser E2E: **PASS**. Playwright Chromium ran against Dockerized frontend/backend: 1 spec passed covering register, login, upload, ingestion, search evidence, abstention, tenant isolation, logout, and cleanup.
 
 ## Commands Run
 
-- `npm ci`
-- `npm run lint`
-- `npm run type-check`
-- `npm run build`
-- `npm audit --omit=dev`
+- `docker compose config`
+- `docker compose build`
+- `docker compose build backend`
+- `docker compose --profile observability up -d`
+- `docker compose run --rm backend alembic check`
+- `docker compose --profile observability ps`
+- Prometheus API queries for `up` and worker completion metrics
+- Live API probes for upload, retry, Redis outage recovery, and MinIO outage safety
 - `backend/.venv/bin/python -m compileall app tests`
 - `backend/.venv/bin/ruff check app tests`
 - `backend/.venv/bin/ruff format --check app tests`
 - `backend/.venv/bin/pytest -vv`
 - `backend/.venv/bin/pytest --cov=app --cov-report=term-missing`
-- Programmatic import of all backend modules
-- Programmatic FastAPI OpenAPI generation
-- `alembic upgrade head`
-- `alembic check`
-- Real HTTP validation against `uvicorn app.main:app --host 127.0.0.1 --port 8765`
-- `bandit -r app`
-- `pip-audit --cache-dir /tmp/pip-audit-cache`
-- YAML parsing for Docker Compose, Prometheus, Grafana datasource, and OpenTelemetry collector config
+- `backend/.venv/bin/bandit -r app`
+- `backend/.venv/bin/pip-audit`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run test`
+- `npm run test:e2e`
+- `npm run build`
+- `npm audit --omit=dev`
 
-## Results
+## Source Validation
 
-- Backend tests: **20 passed, 0 failed, 0 skipped, 0 errored**
-- Phase 4 backend tests: **22 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
-- Runtime RAG backend tests: **35 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
-- Runtime RAG backend coverage: **72%**
-- Full runtime validation baseline backend tests: **35 passed, 2 skipped**
-- Full runtime validation baseline backend coverage: **72%**
-- Backend coverage: **70%**
-- Python compile: **PASS**
-- Ruff lint/format: **PASS**
-- Module import check: **PASS**, 159 modules imported, 0 failures
-- OpenAPI generation: **PASS**, 14 paths
-- Alembic: **PASS**, fresh `upgrade head` and `check`
-- Frontend `npm ci`: **PASS** from a clean `node_modules` state
-- Frontend lint: **PASS**, real ESLint flat config; 0 errors and 1 warning for the standard Next.js `metadata` export
-- Frontend component tests: **PASS**, 5 files and 12 tests
-- Runtime RAG frontend component tests: **PASS**, 5 files and 19 tests
-- Full runtime validation baseline frontend tests: **PASS**, 5 files and 19 tests
-- Frontend type-check: **PASS**
-- Frontend production build: **PASS**
-- npm audit: **PASS**, 0 vulnerabilities
+- Backend compile: **PASS**
+- Backend Ruff lint/format: **PASS**
+- Backend tests: **37 passed, 2 skipped**
+- Backend coverage: **71%**
 - Bandit: **PASS**, no issues
-- pip-audit: **PASS**, no known vulnerabilities for audited packages; local editable package not on PyPI
-- Docker Compose syntax: **PARTIAL**, YAML parsed; Docker CLI unavailable for `docker compose config`
-- Docker runtime: **NOT RUN**, Docker command not found
-- Full runtime stack: **BLOCKED**, Docker CLI not installed on PATH
+- pip-audit: **PASS**, no known vulnerabilities for audited PyPI packages
+- Frontend lint: **PASS**, 0 errors and 1 existing Fast Refresh warning in `app/layout.tsx`
+- Frontend typecheck: **PASS**
+- Frontend unit/component tests: **PASS**, 5 files and 19 tests
+- Frontend Playwright E2E: **PASS**, 1 Chromium spec
+- Frontend build: **PASS**
+- npm audit: **PASS**, 0 vulnerabilities
 
-## Runtime API And E2E
+## Remaining Follow-Up
 
-The real FastAPI app was started with a disposable SQLite DB and local object storage. A scripted HTTP flow passed **36/36** checks:
-
-- Health, registration, login, invalid login, and current-user request
-- Authenticated upload and ingestion to completed/indexed status
-- TXT, Markdown, HTML, CSV, source-code, PDF, and DOCX upload/ingestion/search
-- Empty file, malformed PDF, unsupported extension, MIME mismatch, and path traversal filename checks
-- Grounded answers for Project Atlas launch date, owner, and budget with evidence
-- Abstention for unrelated fictional-country question
-- Document ID filtering
-- Tenant document-list, document-detail, and search isolation
-- Research create/list
-- Evaluation create/list
-- Metrics endpoint
-- Direct BM25, vector similarity, hybrid fusion, and reranker checks
-
-## Observability
-
-- Request ID middleware produced request IDs in logs and responses.
-- `/metrics` returned Prometheus metrics.
-- Prometheus, Grafana datasource, and OpenTelemetry collector YAML parsed successfully.
-- OpenTelemetry is disabled by default in local validation (`OTEL_ENABLED=false`).
-- Grafana/Prometheus/OTel services were not runtime-launched because Docker is unavailable.
-
-## Fixes Made
-
-- Made frontend dependency installation reproducible by normalizing lockfile resolved URLs to the public npm registry and verifying `npm ci`.
-- Added `lint` and `type-check` scripts expected by validation; lint currently records that no linter is configured.
-- Ignored generated `*.tsbuildinfo`.
-- Hardened `DEBUG=release` parsing so host shell environment does not crash settings initialization.
-- Enforced extension-specific MIME matching for uploads.
-- Tightened evidence sufficiency so stopword overlap does not defeat abstention.
-- Added regression tests for DEBUG parsing, TXT/PDF MIME mismatch rejection, and unrelated-question abstention.
-- Upgraded backend dependency constraints for vulnerable `pypdf` and dev `pytest`; installed verified versions in the local env.
-- Added an initial Alembic schema migration and verified `alembic upgrade head` / `alembic check`.
-- Removed a Bandit false positive in an evaluation helper without suppressing the scanner.
-
-## Remaining Limitations
-
-- Docker runtime validation was not executed because Docker is not installed on PATH.
-- Docker Compose YAML structure was parsed successfully, but `docker compose config` could not run because Docker is not installed on PATH.
-- Frontend lint now uses real ESLint configuration, but browser automation against the Next.js UI was not executed.
-- Browser automation against the Next.js UI was not executed; frontend validation was build/typecheck plus backend HTTP API flows.
-- Celery worker path, MinIO storage, Redis, PostgreSQL/pgvector, Prometheus, Grafana, and OpenTelemetry were inspected/config-parsed but not launched.
-- Several agent/cache/policy modules remain scaffold-like or unexercised by tests, reflected in 70% backend coverage.
-
-## Zero-Cost Confirmation
-
-Default local validation used FastAPI, SQLite, local object storage, deterministic local embeddings, and extractive local answers. No paid API keys or paid cloud services were required.
+- Ollama profile validation was not run.
+- Load/resilience testing was not run.
+- Several scaffolded enterprise modules remain low coverage, reflected in the 71% backend coverage.

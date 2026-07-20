@@ -1,55 +1,32 @@
 # Test Results
 
+Validated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`, HEAD `5f7846703dcd7f0ee8bc5a9d6bfd13a54ca12dd2`.
+
 | Area | Test | Result | Evidence |
 | --- | --- | --- | --- |
-| Backend | Compilation | Pass | `python -m compileall app tests` |
-| Backend | Ruff lint | Pass | `ruff check app tests` |
-| Backend | Ruff format | Pass | `ruff format --check app tests` |
-| Backend | Module imports | Pass | 159 imported, 0 failures |
-| Backend | OpenAPI | Pass | 14 paths generated |
-| Backend | Unit/integration/security tests | Pass | 20 passed, 0 failed, 0 skipped, 0 errored |
-| Backend | Phase 3/4 tests | Pass | 22 passed, 2 PostgreSQL tests skipped when `POSTGRES_TEST_DATABASE_URL` is unset |
-| Backend | Runtime RAG intelligence tests | Pass | 35 passed, 2 PostgreSQL tests skipped |
-| Backend | Full runtime baseline tests | Pass | 35 passed, 2 PostgreSQL tests skipped |
-| Backend | Coverage | Pass | 70% total coverage |
-| Backend | Runtime RAG coverage | Pass | 72% total coverage |
-| Backend | Full runtime baseline coverage | Pass | 72% total coverage |
-| Database | Alembic migration | Pass | Fresh `upgrade head`; `check` no new ops |
-| Authentication | Registration/login | Pass | Real HTTP 201/200 |
-| Authentication | Invalid login | Pass | Real HTTP 401 |
-| Ingestion | TXT | Pass | Upload, completed job, search evidence |
-| Ingestion | Markdown | Pass | Upload, completed job, search evidence |
-| Ingestion | HTML | Pass | Upload, completed job, search evidence |
-| Ingestion | CSV | Pass | Upload, completed job, search evidence |
-| Ingestion | Source code | Pass | Upload, completed job, search evidence |
-| Ingestion | PDF | Pass | Upload, completed job, search evidence |
-| Ingestion | DOCX | Pass | Upload, completed job, search evidence |
-| Upload Security | Empty file | Pass | Real HTTP 400 |
-| Upload Security | Malformed PDF | Pass | Real HTTP 415 |
-| Upload Security | Unsupported extension | Pass | Real HTTP 415 |
-| Upload Security | MIME mismatch | Pass | Real HTTP 415 |
-| Retrieval | BM25 | Pass | Direct score check |
-| Retrieval | Vector | Pass | Direct cosine similarity check |
-| Retrieval | Hybrid | Pass | Direct weighted fusion and HTTP search |
-| AI | Grounded answer | Pass | Project Atlas answers returned evidence |
-| AI | Abstention | Pass | Unrelated Virellia question abstained |
-| Tenancy | Cross-tenant document denial | Pass | Other tenant got empty list and 404 detail |
-| Tenancy | Cross-tenant search denial | Pass | Other tenant search abstained with 0 evidence |
-| Research | Create/list | Pass | Real HTTP 201/200 |
-| Evaluation | Create/list | Pass | Real HTTP 201/200 |
-| Frontend | npm ci | Pass | Clean install from lockfile |
-| Frontend | Lint | Pass | Real ESLint flat config; 0 errors, 1 Next.js metadata warning |
-| Frontend | Typecheck | Pass | `npm run type-check` |
-| Frontend | Unit/component tests | Pass | `npm run test`; 5 files, 12 tests passed |
-| Frontend | Diagnosis component tests | Pass | `npm run test`; 5 files, 19 tests passed |
-| Frontend | Full runtime baseline tests | Pass | `npm run test`; 5 files, 19 tests passed |
+| Backend | Compilation | Pass | `.venv/bin/python -m compileall app tests` |
+| Backend | Ruff lint | Pass | `.venv/bin/ruff check app tests` |
+| Backend | Ruff format | Pass | `.venv/bin/ruff format --check app tests` |
+| Backend | Unit/integration/security tests | Pass | `37 passed, 2 skipped` |
+| Backend | Coverage | Pass | `71%` total coverage |
+| Database | Alembic drift | Pass | Docker PostgreSQL `alembic check`: no new upgrade operations |
+| Runtime | Docker stack | Pass | Backend, frontend, PostgreSQL, Redis, MinIO, workers, Prometheus, Grafana, and OTel running |
+| Runtime | Completed-task retry | Pass | Same request id, 1 chunk, 1 embedded chunk, no asyncpg/event-loop log matches |
+| Runtime | Redis outage recovery | Pass | Upload became `retry_pending`; automatic dispatcher completed it after Redis restart |
+| Runtime | Orphan retry jobs | Pass | `0` jobs in `retry_pending` or `dispatch_failed` after recovery |
+| Runtime | MinIO outage | Pass | Sanitized 500 and no document row persisted |
+| Observability | Prometheus targets | Pass | `backend:8000`, `ingestion-worker:9101`, `evaluation-worker:9102`, `report-worker:9103` all `up=1` |
+| Observability | Worker metrics | Pass | `ekip_worker_tasks_completed_total{worker_role="ingestion"} = 4` |
+| Frontend | Lint | Pass | 0 errors, 1 existing Fast Refresh warning |
+| Frontend | Typecheck | Pass | `npm run typecheck` |
+| Frontend | Unit/component tests | Pass | 5 files, 19 tests passed |
+| Frontend | Browser E2E | Pass | 1 Playwright Chromium spec passed against Dockerized frontend/backend |
 | Frontend | Build | Pass | `npm run build` |
 | Security | Bandit | Pass | No issues |
-| Security | pip-audit | Pass | No known vulnerabilities for audited packages |
+| Security | pip-audit | Pass | No known vulnerabilities for audited PyPI packages |
 | Security | npm audit | Pass | 0 vulnerabilities |
-| Observability | Metrics | Pass | `/metrics` returned Prometheus output |
-| Observability | Config parsing | Pass | Prometheus/Grafana/OTel YAML parsed |
-| Docker | Compose config | Not run | Docker CLI unavailable |
-| Docker | Compose YAML structure | Pass | Parsed with backend venv PyYAML; 13 services present |
-| Docker | Full stack | Not run | Docker CLI unavailable |
-| Docker | Full runtime validation | Blocked | `docker`, `docker compose`, and `docker info` commands unavailable |
+
+## Notes
+
+- `npm run test` initially collected `tests/e2e/runtime.spec.ts`; `vitest.config.ts` now excludes `tests/e2e/**`.
+- Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
