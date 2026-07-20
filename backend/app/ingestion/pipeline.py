@@ -10,11 +10,12 @@ from app.db.session import AsyncSessionLocal
 from app.ingestion.loaders import load_document
 from app.ingestion.processors import build_metadata, deduplicate_chunks, find_pii, normalize_text
 from app.integrations.storage import get_storage
+from app.jobs.status import IngestionStage, JobStatus
 from app.rag.chunking import chunk_text
 from app.rag.embeddings import embed_text
 
 
-async def process_ingestion_job(job_id: UUID) -> dict:
+async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> dict:
     async with AsyncSessionLocal() as session:
         job = await session.get(IngestionJob, job_id)
         if not job:
@@ -26,8 +27,9 @@ async def process_ingestion_job(job_id: UUID) -> dict:
         if not document:
             raise ValueError("Document not found")
         try:
-            job.status = "running"
-            job.stage = "loading"
+            job.status = JobStatus.RUNNING
+            job.stage = IngestionStage.PARSING
+            job.result_json = {"request_id": request_id} if request_id else {}
             document.status = "processing"
             await session.commit()
             data = await get_storage().get(version.storage_key)
@@ -35,12 +37,12 @@ async def process_ingestion_job(job_id: UUID) -> dict:
             text = normalize_text(load_document(extension, data))
             if not text:
                 raise ValueError("No readable text could be extracted")
-            job.stage = "chunking"
+            job.stage = IngestionStage.CHUNKING
             await session.commit()
             raw_chunks = deduplicate_chunks(chunk_text(text))
             if not raw_chunks:
                 raise ValueError("No chunks were generated")
-            job.stage = "embedding"
+            job.stage = IngestionStage.EMBEDDING
             await session.commit()
             await session.execute(delete(Chunk).where(Chunk.document_version_id == version.id))
             pii_count = len(find_pii(text))
@@ -61,6 +63,8 @@ async def process_ingestion_job(job_id: UUID) -> dict:
             storage = get_storage()
             approved_key = version.storage_key.replace("quarantine/", "approved/", 1)
             if approved_key != version.storage_key:
+                job.stage = IngestionStage.INDEXING
+                await session.commit()
                 await storage.put(approved_key, data, version.mime_type)
                 await storage.delete(version.storage_key)
                 version.storage_key = approved_key
@@ -69,9 +73,10 @@ async def process_ingestion_job(job_id: UUID) -> dict:
                 version.filename, version.mime_type, version.size_bytes, text
             ) | {"pii_findings": pii_count}
             document.status = "ready"
-            job.status = "completed"
-            job.stage = "indexed"
+            job.status = JobStatus.COMPLETED
+            job.stage = IngestionStage.COMPLETED
             job.result_json = {
+                "request_id": request_id,
                 "chunks": len(raw_chunks),
                 "characters": len(text),
                 "pii_findings": pii_count,
@@ -83,9 +88,14 @@ async def process_ingestion_job(job_id: UUID) -> dict:
             job = await session.get(IngestionJob, job_id)
             document = await session.get(Document, version.document_id)
             if job:
-                job.status = "failed"
-                job.stage = "failed"
+                job.status = JobStatus.FAILED
+                job.stage = IngestionStage.FAILED
                 job.error_message = str(exc)[:2000]
+                job.result_json = {
+                    **(job.result_json or {}),
+                    "request_id": request_id,
+                    "error_type": type(exc).__name__,
+                }
             if document:
                 document.status = "failed"
             await session.commit()

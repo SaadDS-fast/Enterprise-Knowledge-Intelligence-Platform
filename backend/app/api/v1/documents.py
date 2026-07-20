@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies.tenancy import Tenant
@@ -28,6 +28,7 @@ async def documents(
 
 @router.post("", response_model=UploadResponse, status_code=202)
 async def upload_document(
+    request: Request,
     background_tasks: BackgroundTasks,
     tenant: Tenant,
     session: Annotated[AsyncSession, Depends(get_db)],
@@ -48,7 +49,11 @@ async def upload_document(
         title=title,
         description=description,
     )
-    dispatch_ingestion(job.id, background_tasks)
+    dispatch_ingestion(
+        job.id,
+        background_tasks,
+        request_id=getattr(request.state, "request_id", None),
+    )
     return UploadResponse(
         document=DocumentRead.model_validate(document),
         version=DocumentVersionRead.model_validate(version),
