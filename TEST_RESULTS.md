@@ -8,6 +8,7 @@
 | Backend | Module imports | Pass | 159 imported, 0 failures |
 | Backend | OpenAPI | Pass | 14 paths generated |
 | Backend | Unit/integration/security tests | Pass | 20 passed, 0 failed, 0 skipped, 0 errored |
+| Backend | Phase 3/4 tests | Pass | 22 passed, 2 PostgreSQL tests skipped when `POSTGRES_TEST_DATABASE_URL` is unset |
 | Backend | Coverage | Pass | 70% total coverage |
 | Database | Alembic migration | Pass | Fresh `upgrade head`; `check` no new ops |
 | Authentication | Registration/login | Pass | Real HTTP 201/200 |
@@ -33,8 +34,9 @@
 | Research | Create/list | Pass | Real HTTP 201/200 |
 | Evaluation | Create/list | Pass | Real HTTP 201/200 |
 | Frontend | npm ci | Pass | Clean install from lockfile |
-| Frontend | Lint | Partial | Script passes but is a no-op |
+| Frontend | Lint | Pass | Real ESLint flat config; 0 errors, 1 Next.js metadata warning |
 | Frontend | Typecheck | Pass | `npm run type-check` |
+| Frontend | Unit/component tests | Pass | `npm run test`; 5 files, 12 tests passed |
 | Frontend | Build | Pass | `npm run build` |
 | Security | Bandit | Pass | No issues |
 | Security | pip-audit | Pass | No known vulnerabilities for audited packages |

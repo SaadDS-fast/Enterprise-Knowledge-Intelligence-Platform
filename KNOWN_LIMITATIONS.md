@@ -4,6 +4,7 @@
 
 - Registration, login, current-user lookup, invalid-login rejection.
 - Authenticated document upload and local inline ingestion.
+- Real frontend ESLint baseline and focused component tests.
 - TXT, Markdown, HTML, CSV, source-code, PDF, and DOCX loaders through upload/search flow.
 - BM25, vector similarity, hybrid fusion, reranking, grounded evidence, and abstention.
 - Tenant/workspace isolation for document list/detail and search.
@@ -14,14 +15,15 @@
 
 - Dockerized PostgreSQL/pgvector, Redis, MinIO, frontend, backend, and worker stack.
 - Celery ingestion-worker path; local validation used inline/background FastAPI tasks.
+- PostgreSQL/pgvector migration/index path; optional tests require `POSTGRES_TEST_DATABASE_URL`.
 - Prometheus, Grafana, and OpenTelemetry containers.
 - MinIO object storage path; local validation used filesystem storage.
 - PostgreSQL/pgvector runtime; validation used SQLite plus migration checks.
 
 ## Partially Implemented
 
-- Frontend linting: command exists but is a no-op because no linter is configured.
 - Frontend browser workflow: build/typecheck passed, but no browser automation was run.
+- Worker orchestration: Celery dispatch metadata, retries, and time limits are configured, but Redis/Celery runtime was not launched.
 - Observability: request IDs and metrics work locally; distributed tracing was not enabled in runtime validation.
 - Security scanning: Bandit, pip-audit, and npm audit passed; deeper DAST/browser security testing was not run.
 
@@ -35,7 +37,6 @@
 
 ## Planned For Next Stage
 
-- Real frontend lint configuration.
 - Browser automation for registration, login, upload, search, evidence display, abstention, and logout.
 - Docker runtime validation on a machine with Docker available.
 - Runtime validation with PostgreSQL/pgvector, Redis, MinIO, Celery workers, Prometheus, Grafana, and OpenTelemetry.

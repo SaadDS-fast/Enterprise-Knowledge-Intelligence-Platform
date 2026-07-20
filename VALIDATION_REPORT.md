@@ -15,7 +15,9 @@ Validated on 2026-07-18 on Darwin 25.5.0 arm64.
 
 **PARTIAL PASS**
 
-The local MVP backend and frontend passed source-level, test-suite, and real HTTP validation. The status is not full PASS because Docker runtime validation could not be executed on this machine and frontend lint is only a configured no-op script, not a real linter.
+The local MVP backend and frontend passed source-level, test-suite, and real HTTP validation. The status is not full PASS because Docker runtime validation could not be executed on this machine and several local service integrations were not launched.
+
+Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real ESLint configuration and frontend component tests. Phase 3 added PostgreSQL/pgvector migration/index support with optional integration tests. Phase 4 strengthened ingestion worker dispatch. Overall status remains **PARTIAL PASS** because Docker, PostgreSQL, Redis/Celery, MinIO, browser E2E, Ollama, and load-test runtime validation were not executed.
 
 ## Commands Run
 
@@ -41,6 +43,7 @@ The local MVP backend and frontend passed source-level, test-suite, and real HTT
 ## Results
 
 - Backend tests: **20 passed, 0 failed, 0 skipped, 0 errored**
+- Phase 4 backend tests: **22 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
 - Backend coverage: **70%**
 - Python compile: **PASS**
 - Ruff lint/format: **PASS**
@@ -48,7 +51,8 @@ The local MVP backend and frontend passed source-level, test-suite, and real HTT
 - OpenAPI generation: **PASS**, 14 paths
 - Alembic: **PASS**, fresh `upgrade head` and `check`
 - Frontend `npm ci`: **PASS** from a clean `node_modules` state
-- Frontend lint: **PASS command**, but no real frontend lint configuration exists
+- Frontend lint: **PASS**, real ESLint flat config; 0 errors and 1 warning for the standard Next.js `metadata` export
+- Frontend component tests: **PASS**, 5 files and 12 tests
 - Frontend type-check: **PASS**
 - Frontend production build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
@@ -98,7 +102,7 @@ The real FastAPI app was started with a disposable SQLite DB and local object st
 ## Remaining Limitations
 
 - Docker runtime validation was not executed because Docker is not installed on PATH.
-- Frontend lint is a no-op script; real ESLint or equivalent is still not configured.
+- Frontend lint now uses real ESLint configuration, but browser automation against the Next.js UI was not executed.
 - Browser automation against the Next.js UI was not executed; frontend validation was build/typecheck plus backend HTTP API flows.
 - Celery worker path, MinIO storage, Redis, PostgreSQL/pgvector, Prometheus, Grafana, and OpenTelemetry were inspected/config-parsed but not launched.
 - Several agent/cache/policy modules remain scaffold-like or unexercised by tests, reflected in 70% backend coverage.
