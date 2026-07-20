@@ -34,6 +34,25 @@ Completed:
 - Added retrieval/diagnosis/ingestion Prometheus metrics.
 - Added deterministic retrieval-diagnosis evaluation cases and metric helper.
 
+## Full Runtime Validation Attempt
+
+Updated on branch `validation/full-runtime-stack`.
+
+Baseline source checks passed:
+
+- Backend: 35 passed, 2 skipped; coverage 72%; Ruff, format, compile, Bandit, and pip-audit passed.
+- Frontend: `npm ci`, lint, typecheck, 19 tests, build, and npm audit passed.
+
+Runtime validation did not proceed because Docker is not installed on PATH:
+
+```text
+docker --version -> zsh:1: command not found: docker
+docker compose version -> zsh:1: command not found: docker
+docker info -> zsh:1: command not found: docker
+```
+
+No `.env` file was created, no Docker images were built, and no containers were launched.
+
 ## Completed In This Stage
 
 - Created `docs/implementation/enterprise-gap-analysis.md`.

@@ -10,8 +10,10 @@
 | Backend | Unit/integration/security tests | Pass | 20 passed, 0 failed, 0 skipped, 0 errored |
 | Backend | Phase 3/4 tests | Pass | 22 passed, 2 PostgreSQL tests skipped when `POSTGRES_TEST_DATABASE_URL` is unset |
 | Backend | Runtime RAG intelligence tests | Pass | 35 passed, 2 PostgreSQL tests skipped |
+| Backend | Full runtime baseline tests | Pass | 35 passed, 2 PostgreSQL tests skipped |
 | Backend | Coverage | Pass | 70% total coverage |
 | Backend | Runtime RAG coverage | Pass | 72% total coverage |
+| Backend | Full runtime baseline coverage | Pass | 72% total coverage |
 | Database | Alembic migration | Pass | Fresh `upgrade head`; `check` no new ops |
 | Authentication | Registration/login | Pass | Real HTTP 201/200 |
 | Authentication | Invalid login | Pass | Real HTTP 401 |
@@ -40,6 +42,7 @@
 | Frontend | Typecheck | Pass | `npm run type-check` |
 | Frontend | Unit/component tests | Pass | `npm run test`; 5 files, 12 tests passed |
 | Frontend | Diagnosis component tests | Pass | `npm run test`; 5 files, 19 tests passed |
+| Frontend | Full runtime baseline tests | Pass | `npm run test`; 5 files, 19 tests passed |
 | Frontend | Build | Pass | `npm run build` |
 | Security | Bandit | Pass | No issues |
 | Security | pip-audit | Pass | No known vulnerabilities for audited packages |
@@ -49,3 +52,4 @@
 | Docker | Compose config | Not run | Docker CLI unavailable |
 | Docker | Compose YAML structure | Pass | Parsed with backend venv PyYAML; 13 services present |
 | Docker | Full stack | Not run | Docker CLI unavailable |
+| Docker | Full runtime validation | Blocked | `docker`, `docker compose`, and `docker info` commands unavailable |

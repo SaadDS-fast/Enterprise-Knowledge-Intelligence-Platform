@@ -48,3 +48,5 @@ docker compose --profile ollama up -d
 ## Runtime Validation Status
 
 On the current machine, `docker --version`, `docker compose version`, and `docker info` all failed with `command not found`. Runtime launch and service health validation must be performed on a Docker-capable host.
+
+See `docs/deployment/full-runtime-validation-matrix.md` for the latest runtime validation attempt and component matrix.

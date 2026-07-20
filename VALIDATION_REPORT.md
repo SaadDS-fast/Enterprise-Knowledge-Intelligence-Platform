@@ -21,6 +21,8 @@ Update on 2026-07-20: frontend linting is no longer a no-op. Phase 2 added real 
 
 Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`docker: command not found`). The Compose YAML was structurally parsed with 13 services. Retrieval diagnosis, safe API metadata, frontend display, scoped object keys, ingestion/retrieval metrics, and deterministic diagnosis evaluation helpers were implemented and tested. Overall status remains **PARTIAL PASS** because local services were not launched.
 
+Full runtime stack validation attempt on 2026-07-20 from `validation/full-runtime-stack`: backend and frontend baseline checks passed, but Docker validation stopped at Phase 2 because `docker --version`, `docker compose version`, and `docker info` all returned `zsh:1: command not found: docker`. No `.env` was created, no images were built, and no containers were launched. Overall status remains **PARTIAL PASS**.
+
 ## Commands Run
 
 - `npm ci`
@@ -48,6 +50,8 @@ Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`
 - Phase 4 backend tests: **22 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
 - Runtime RAG backend tests: **35 passed, 2 skipped**; skipped tests require `POSTGRES_TEST_DATABASE_URL`
 - Runtime RAG backend coverage: **72%**
+- Full runtime validation baseline backend tests: **35 passed, 2 skipped**
+- Full runtime validation baseline backend coverage: **72%**
 - Backend coverage: **70%**
 - Python compile: **PASS**
 - Ruff lint/format: **PASS**
@@ -58,6 +62,7 @@ Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`
 - Frontend lint: **PASS**, real ESLint flat config; 0 errors and 1 warning for the standard Next.js `metadata` export
 - Frontend component tests: **PASS**, 5 files and 12 tests
 - Runtime RAG frontend component tests: **PASS**, 5 files and 19 tests
+- Full runtime validation baseline frontend tests: **PASS**, 5 files and 19 tests
 - Frontend type-check: **PASS**
 - Frontend production build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
@@ -65,6 +70,7 @@ Runtime RAG intelligence update on 2026-07-20: Docker CLI remains unavailable (`
 - pip-audit: **PASS**, no known vulnerabilities for audited packages; local editable package not on PyPI
 - Docker Compose syntax: **PARTIAL**, YAML parsed; Docker CLI unavailable for `docker compose config`
 - Docker runtime: **NOT RUN**, Docker command not found
+- Full runtime stack: **BLOCKED**, Docker CLI not installed on PATH
 
 ## Runtime API And E2E
 

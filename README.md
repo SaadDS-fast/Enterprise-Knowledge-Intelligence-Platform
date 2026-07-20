@@ -33,6 +33,10 @@ The default Docker setup uses PostgreSQL, Redis, MinIO, and a Celery ingestion w
 The backend container runs Alembic migrations before starting the API, and `minio-init`
 creates the local object-storage bucket.
 
+Runtime validation requires Docker to be installed and the Docker daemon to be running.
+The latest validation attempt on this machine stopped before Compose execution because
+`docker` was not available on `PATH`; see `docs/deployment/full-runtime-validation-matrix.md`.
+
 ## Lightweight local start without Docker
 
 ```bash

@@ -312,6 +312,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   └── system-context.md
 │   ├── deployment/
 │   │   ├── docker-runtime-guide.md
+│   │   ├── full-runtime-validation-matrix.md
 │   │   └── README.md
 │   ├── evaluation/
 │   │   ├── README.md

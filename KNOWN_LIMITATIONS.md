@@ -17,6 +17,7 @@
 
 - Dockerized PostgreSQL/pgvector, Redis, MinIO, frontend, backend, and worker stack.
 - Hardened Docker Compose configuration; YAML parsed locally, but Docker CLI is unavailable for runtime launch.
+- Full runtime stack validation remains blocked on this machine because Docker is not installed on PATH.
 - Celery ingestion-worker path; local validation used inline/background FastAPI tasks.
 - PostgreSQL/pgvector migration/index path; optional tests require `POSTGRES_TEST_DATABASE_URL`.
 - Prometheus, Grafana, and OpenTelemetry containers.
