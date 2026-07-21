@@ -44,6 +44,10 @@ class LocalLLMBackend(StrEnum):
     OLLAMA = "ollama"
 
 
+class AgentPlannerProvider(StrEnum):
+    DETERMINISTIC = "deterministic"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(PROJECT_ROOT / ".env", PROJECT_ROOT / "backend" / ".env"),
@@ -159,6 +163,12 @@ class Settings(BaseSettings):
     otel_service_name: str = "ekip-backend"
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
     metrics_enabled: bool = True
+    agentic_rag_enabled: bool = False
+    agent_max_steps: int = Field(default=6, ge=1, le=25)
+    agent_max_tool_calls: int = Field(default=8, ge=0, le=50)
+    agent_timeout_seconds: float = Field(default=90.0, gt=0, le=600)
+    agent_max_retrieval_retries: int = Field(default=2, ge=0, le=10)
+    agent_planner_provider: AgentPlannerProvider = AgentPlannerProvider.DETERMINISTIC
 
     @field_validator(
         "app_env",
@@ -167,6 +177,7 @@ class Settings(BaseSettings):
         "object_storage_provider",
         "job_execution_mode",
         "local_llm_backend",
+        "agent_planner_provider",
         mode="before",
     )
     @classmethod

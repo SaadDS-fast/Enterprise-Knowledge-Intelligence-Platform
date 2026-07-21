@@ -1,3 +1,6 @@
+from app.db.models.agent_run import AgentRun
+from app.db.models.agent_step import AgentStep
+from app.db.models.agent_tool_call import AgentToolCall
 from app.db.models.api_key import APIKey
 from app.db.models.audit_event import AuditEvent
 from app.db.models.chunk import Chunk
@@ -17,6 +20,9 @@ from app.db.models.workspace import Workspace
 
 __all__ = [
     "APIKey",
+    "AgentRun",
+    "AgentStep",
+    "AgentToolCall",
     "AuditEvent",
     "Chunk",
     "Citation",

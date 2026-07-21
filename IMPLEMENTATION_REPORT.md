@@ -1,13 +1,30 @@
 # Implementation Report
 
-Updated on 2026-07-20.
+Updated on 2026-07-21.
 
 ## Branch And Commit
 
-- Current branch: `fix/runtime-reliability-and-e2e`
-- Resumed from: `validation/full-runtime-stack`
-- Current HEAD: `5f7846703dcd7f0ee8bc5a9d6bfd13a54ca12dd2`
-- Commit status: runtime validation changes are present in the working tree and are not committed.
+- Current branch: `feature/controlled-agentic-rag`
+- Started from validated commit: `469e561d763ac03e6c416f9ac816c8b0873f30da`
+- Release tag: `v0.1.0-enterprise-mvp`
+- Commit status: controlled agentic RAG foundation changes ready for commit.
+
+## Controlled Agentic RAG Foundation
+
+Completed in this phase:
+
+- Added disabled-by-default `POST /api/v1/agent/query`.
+- Added `GET /api/v1/agent/runs/{run_id}` with workspace-scoped access.
+- Preserved existing `POST /api/v1/search` behavior and route contract.
+- Added configuration for agent enablement, step/tool/retry budgets, timeout, and planner provider.
+- Replaced the lightweight agent scaffold with typed state, enum, schema, planner, policy, budget, registry, executor, orchestrator, and error modules.
+- Added deterministic structured planner output validated by Pydantic.
+- Added an allowlisted typed tool registry with enabled internal tools and disabled external placeholders.
+- Added policy checks for unknown tools, disabled/network tools, forbidden arguments, direct SQL/URL/shell-like planner data, and workspace scope changes.
+- Added additive persistence models and migration for `agent_runs`, `agent_steps`, and `agent_tool_calls`.
+- Added audit events for agent run lifecycle.
+- Added docs for controlled agent architecture and tool security.
+- Added tests for transitions, planner validation, tool rejection, budgets, timeout handling, cancellation, tenant/workspace scope, disabled feature flag, safe persistence, no chain-of-thought storage, and `/search` regression.
 
 ## Completed Runtime Reliability Work
 
@@ -43,15 +60,20 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 37 passed, 2 skipped.
-- Backend coverage: 71%.
+- Backend tests: 50 passed, 2 skipped.
+- Backend coverage: 74%.
+- Controlled agent targeted tests: 13 passed.
 - Frontend unit/component tests: 19 passed.
 - Frontend Playwright E2E: 1 passed.
 - Frontend build/typecheck/lint: passed.
 - Bandit, pip-audit, and npm audit: passed.
+- Migration smoke: disposable SQLite Alembic `upgrade head` passed through `c8f4a2d91b77`.
+- Docker smoke: `docker compose config` passed; running observability stack remained healthy.
 
 ## Follow-Up
 
 - Ollama profile validation was not run.
 - Load/resilience testing was not run.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
+- Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
+- Web search, external APIs, autonomous research reports, and major frontend agent UX are intentionally not included in this phase.

@@ -1,3 +1,3 @@
-from app.agents.state import AgentState
+from app.agents.state import AgentRuntimeState
 
-__all__ = ["AgentState"]
+__all__ = ["AgentRuntimeState"]

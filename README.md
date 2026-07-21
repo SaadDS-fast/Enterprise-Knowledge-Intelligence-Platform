@@ -13,6 +13,7 @@ Next.js, PostgreSQL/pgvector, Redis, and optional MinIO/Celery infrastructure.
 - Zero-cost extractive answer generation; optional Ollama mode; optional paid provider adapters
 - Research briefs, evaluation runs, Prometheus metrics, structured logs, and security middleware
 - Next.js interface for authentication, documents, search, research, and evaluation
+- Disabled-by-default controlled agent orchestration foundation under `/api/v1/agent`
 
 ## Zero-cost guarantee boundary
 
@@ -85,3 +86,21 @@ Search responses include `retrieval_diagnosis`, a safe structured field that dis
 directly sufficient evidence, evidence recovered after retry, unresolved retrieval failure,
 knowledge absence, partial evidence, conflicting evidence, and ambiguous queries. The retry
 path expands retrieval without relaxing tenant, workspace, document, or security filters.
+
+## Controlled Agentic RAG
+
+The controlled agent foundation is intentionally disabled by default:
+
+```env
+AGENTIC_RAG_ENABLED=false
+```
+
+`POST /api/v1/search` remains the stable non-agentic RAG endpoint. Agentic behavior is isolated
+under `POST /api/v1/agent/query` and `GET /api/v1/agent/runs/{run_id}`. The foundation uses a
+deterministic structured planner, an allowlisted tool registry, explicit state transitions,
+tenant/workspace scope checks, budgets, timeouts, audit events, and persistence tables for safe
+operational summaries only. It does not add web search, external APIs, or autonomous report
+generation in this phase.
+
+See `docs/architecture/controlled-agentic-rag.md` and
+`docs/security/agent-tool-security.md`.

@@ -1,12 +1,12 @@
 # Validation Report
 
-Validated on 2026-07-20 on branch `fix/runtime-reliability-and-e2e`.
+Validated on 2026-07-21 on branch `feature/controlled-agentic-rag`.
 
 ## Environment
 
-- Current HEAD: `5f7846703dcd7f0ee8bc5a9d6bfd13a54ca12dd2`
-- Source branch resumed from: `validation/full-runtime-stack`
-- Working tree: contains uncommitted validation/runtime changes
+- Base validated commit: `469e561d763ac03e6c416f9ac816c8b0873f30da`
+- Release tag: `v0.1.0-enterprise-mvp`
+- Working tree: controlled agent foundation changes ready for commit
 - Python: 3.12.13
 - Node: v20.20.2
 - npm: 10.8.2
@@ -18,6 +18,8 @@ Validated on 2026-07-20 on branch `fix/runtime-reliability-and-e2e`.
 **PASS**
 
 The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, and browser E2E. Ollama profile and load testing remain out of scope for this pass and are documented as follow-up items, not blockers for the requested runtime reliability fixes.
+
+Controlled agentic RAG update: this phase adds the safe orchestration foundation only. Agentic mode remains disabled by default, `/search` remains unchanged, and the new `/agent` API is isolated behind `AGENTIC_RAG_ENABLED`.
 
 ## Key Runtime Results
 
@@ -50,13 +52,14 @@ The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL
 - `npm run test:e2e`
 - `npm run build`
 - `npm audit --omit=dev`
+- Agent foundation targeted tests for state transitions, planner validation, tool policy, budgets, timeout, disabled feature flag, safe persistence, tenant isolation, and `/search` regression
 
 ## Source Validation
 
 - Backend compile: **PASS**
 - Backend Ruff lint/format: **PASS**
-- Backend tests: **37 passed, 2 skipped**
-- Backend coverage: **71%**
+- Backend tests: **50 passed, 2 skipped**
+- Backend coverage: **74%**
 - Bandit: **PASS**, no issues
 - pip-audit: **PASS**, no known vulnerabilities for audited PyPI packages
 - Frontend lint: **PASS**, 0 errors and 1 existing Fast Refresh warning in `app/layout.tsx`
@@ -65,9 +68,14 @@ The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL
 - Frontend Playwright E2E: **PASS**, 1 Chromium spec
 - Frontend build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
+- Controlled agent targeted tests: **PASS**, 13 passed
+- Existing `/search` regression: **PASS**, `/api/v1/search` still returns answer and retrieval diagnosis payload
+- Migration smoke: **PASS**, disposable SQLite Alembic `upgrade head` reached `c8f4a2d91b77`
+- Docker smoke: **PASS**, `docker compose config` passed and the existing observability stack remained healthy
 
 ## Remaining Follow-Up
 
 - Ollama profile validation was not run.
 - Load/resilience testing was not run.
-- Several scaffolded enterprise modules remain low coverage, reflected in the 71% backend coverage.
+- Several scaffolded enterprise modules remain low coverage, reflected in the 74% backend coverage.
+- Agentic mode is disabled by default; web search, external APIs, autonomous research reports, and major frontend agent UX are future work.

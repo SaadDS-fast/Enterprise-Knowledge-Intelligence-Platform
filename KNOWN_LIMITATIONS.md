@@ -1,6 +1,6 @@
 # Known Limitations
 
-Updated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`.
+Updated on 2026-07-21 from branch `feature/controlled-agentic-rag`.
 
 ## Implemented And Runtime-Tested
 
@@ -12,6 +12,7 @@ Updated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`.
 - Prometheus scraping of backend and worker metrics endpoints.
 - Browser E2E for auth, upload, ingestion, search, evidence display, abstention, tenant isolation, logout, and cleanup.
 - Bandit, pip-audit, npm audit, backend tests, frontend tests, typecheck, lint, and production build.
+- Controlled agent orchestration foundation with disabled-by-default API, deterministic planner, allowlisted tools, budgets, safe persistence, and audit events.
 
 ## Remaining Limitations
 
@@ -20,8 +21,11 @@ Updated on 2026-07-20 from branch `fix/runtime-reliability-and-e2e`.
 - Grafana and OpenTelemetry containers start, but dashboard content, alerting, and trace assertions were not deeply validated.
 - Several scaffolded modules remain low coverage, including agent, cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
+- Agentic RAG is not enabled by default and has no frontend workflow in this phase.
+- External network tools, web search, direct SQL tools, shell tools, and autonomous report generation are intentionally not implemented.
 
 ## Notes
 
 - The Redis outage test intentionally produced broker reconnect warnings in worker logs; workers recovered and processed the retry-pending job.
 - The MinIO outage test intentionally produced backend storage exception logs; the API response stayed sanitized and no document row persisted.
+- Agent persistence stores operational summaries only; private chain-of-thought storage is intentionally excluded.
