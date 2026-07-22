@@ -17,6 +17,9 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 - SSRF/outbound validation for approved provider calls and prompt-injection scanning for external excerpts.
 - Unified multi-source evidence normalization, scoped deduplication, deterministic rank fusion, context-budget management, claim-level verification, conflict detection, citation validation, deterministic grounded synthesis, and evaluation metric aggregation.
 - Disabled-by-default asynchronous cited research reports using the existing controlled agent, report worker queue, PostgreSQL/Redis/Celery, MinIO-compatible storage abstraction, scoped idempotency, cancellation, signed artifact downloads, and markdown/PDF/DOCX exports.
+- Disabled-by-default frontend workspaces for controlled agent queries, safe run timelines,
+  asynchronous research submission, report polling/cancellation, artifact downloads, and gated
+  Docker browser validation.
 
 ## Remaining Limitations
 
@@ -25,8 +28,8 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 - Grafana and OpenTelemetry containers start, but dashboard content, alerting, and trace assertions were not deeply validated.
 - Several scaffolded modules remain low coverage, including cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
-- Agentic RAG is not enabled by default and has no frontend workflow in this phase.
-- Agentic research reports are not enabled by default and have no dedicated frontend workspace in this phase.
+- Agentic RAG and agentic research are still disabled by default and require explicit backend and
+  frontend feature flags.
 - External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. Live SearXNG and live public internet validation were not run.
 - Optional Ollama claim verification/synthesis interfaces are documented as a future path; this phase uses deterministic verification and synthesis by default.
 - Arbitrary browsing, user-supplied URLs, direct SQL tools, shell tools, unrestricted external APIs, admin UI, AWS deployment, and autonomous unrestricted agents are intentionally not implemented.

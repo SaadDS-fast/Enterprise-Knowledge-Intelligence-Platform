@@ -1,17 +1,48 @@
 Enterprise-Knowledge-Intelligence-Platform/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   └── bug_report.md
+│   ├── workflows/
+│   │   ├── backend-ci.yml
+│   │   ├── container-scan.yml
+│   │   ├── dependency-review.yml
+│   │   ├── deploy-dev.yml
+│   │   ├── frontend-ci.yml
+│   │   ├── infrastructure-checks.yml
+│   │   ├── release.yml
+│   │   └── security.yml
+│   └── PULL_REQUEST_TEMPLATE.md
+├── .ruff_cache/
+│   ├── 0.15.22/
+│   ├── .gitignore
+│   └── CACHEDIR.TAG
 ├── backend/
+│   ├── .pytest_cache/
+│   │   ├── v/
+│   │   │   └── cache/
+│   │   │       ├── lastfailed
+│   │   │       └── nodeids
+│   │   ├── .gitignore
+│   │   ├── CACHEDIR.TAG
+│   │   └── README.md
+│   ├── .ruff_cache/
+│   │   ├── 0.15.22/
+│   │   │   ├── 10323192509421373100
+│   │   │   ├── 13630197938567950843
+│   │   │   ├── 16239939061244955472
+│   │   │   ├── 16918256619740566149
+│   │   │   ├── 18445046386587877747
+│   │   │   ├── 5704264577913251630
+│   │   │   ├── 6658451702028230284
+│   │   │   ├── 7235175160302126692
+│   │   │   ├── 9231405835883878935
+│   │   │   └── 9917580148707997322
+│   │   ├── .gitignore
+│   │   └── CACHEDIR.TAG
 │   ├── app/
 │   │   ├── agents/
-│   │   │   ├── __init__.py
-│   │   │   ├── budgets.py
-│   │   │   ├── enums.py
-│   │   │   ├── evidence.py
-│   │   │   ├── errors.py
-│   │   │   ├── executor.py
-│   │   │   ├── orchestrator.py
-│   │   │   ├── planner.py
-│   │   │   ├── policies.py
 │   │   │   ├── providers/
+│   │   │   │   ├── __init__.py
 │   │   │   │   ├── arxiv.py
 │   │   │   │   ├── base.py
 │   │   │   │   ├── deterministic.py
@@ -20,47 +51,561 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   │   ├── http.py
 │   │   │   │   ├── searxng.py
 │   │   │   │   └── wikipedia.py
+│   │   │   ├── __init__.py
+│   │   │   ├── budgets.py
+│   │   │   ├── enums.py
+│   │   │   ├── errors.py
+│   │   │   ├── evidence.py
+│   │   │   ├── evidence_verifier.py
+│   │   │   ├── executor.py
+│   │   │   ├── orchestrator.py
+│   │   │   ├── planner.py
+│   │   │   ├── policies.py
+│   │   │   ├── report_writer.py
+│   │   │   ├── research.py
+│   │   │   ├── retriever.py
+│   │   │   ├── safety_reviewer.py
 │   │   │   ├── schemas.py
 │   │   │   ├── state.py
 │   │   │   └── tool_registry.py
-│   │   ├── api/v1/
-│   │   │   ├── agent.py
-│   │   │   ├── search.py
-│   │   │   └── router.py
-│   │   ├── core/config.py
+│   │   ├── api/
+│   │   │   ├── dependencies/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py
+│   │   │   │   ├── database.py
+│   │   │   │   ├── rate_limit.py
+│   │   │   │   └── tenancy.py
+│   │   │   ├── middleware/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── error_handler.py
+│   │   │   │   ├── logging.py
+│   │   │   │   ├── request_id.py
+│   │   │   │   └── security_headers.py
+│   │   │   ├── v1/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── agent.py
+│   │   │   │   ├── auth.py
+│   │   │   │   ├── documents.py
+│   │   │   │   ├── evaluation.py
+│   │   │   │   ├── health.py
+│   │   │   │   ├── jobs.py
+│   │   │   │   ├── research.py
+│   │   │   │   ├── router.py
+│   │   │   │   └── search.py
+│   │   │   └── __init__.py
+│   │   ├── cache/
+│   │   │   ├── __init__.py
+│   │   │   ├── client.py
+│   │   │   ├── keys.py
+│   │   │   └── policies.py
+│   │   ├── core/
+│   │   │   ├── __init__.py
+│   │   │   └── config.py
 │   │   ├── db/
-│   │   │   ├── migrations/versions/
-│   │   │   │   └── c8f4a2d91b77_agent_orchestration_tables.py
-│   │   │   └── models/
-│   │   │       ├── agent_run.py
-│   │   │       ├── agent_step.py
-│   │   │       └── agent_tool_call.py
-│   │   ├── rag/
+│   │   │   ├── migrations/
+│   │   │   │   ├── versions/
+│   │   │   │   │   ├── .gitkeep
+│   │   │   │   │   ├── af7c7edc7f57_initial_schema.py
+│   │   │   │   │   ├── b4a8e9d12f31_pgvector_indexes.py
+│   │   │   │   │   ├── c8f4a2d91b77_agent_orchestration_tables.py
+│   │   │   │   │   └── d9a1f2c3b4e5_agentic_research_workflow.py
+│   │   │   │   ├── env.py
+│   │   │   │   ├── README.md
+│   │   │   │   └── script.py.mako
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── agent_run.py
+│   │   │   │   ├── agent_step.py
+│   │   │   │   ├── agent_tool_call.py
+│   │   │   │   ├── api_key.py
+│   │   │   │   ├── audit_event.py
+│   │   │   │   ├── chunk.py
+│   │   │   │   ├── citation.py
+│   │   │   │   ├── conversation.py
+│   │   │   │   ├── document.py
+│   │   │   │   ├── document_version.py
+│   │   │   │   ├── evaluation_run.py
+│   │   │   │   ├── ingestion_job.py
+│   │   │   │   ├── membership.py
+│   │   │   │   ├── message.py
+│   │   │   │   ├── organization.py
+│   │   │   │   ├── research_job.py
+│   │   │   │   ├── role.py
+│   │   │   │   ├── user.py
+│   │   │   │   └── workspace.py
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── session.py
+│   │   │   └── types.py
+│   │   ├── documents/
+│   │   │   ├── __init__.py
+│   │   │   ├── lifecycle.py
+│   │   │   ├── permissions.py
+│   │   │   ├── retention.py
+│   │   │   └── versioning.py
 │   │   ├── evaluation/
-│   │   │   └── multi_source_evidence.py
+│   │   │   ├── __init__.py
+│   │   │   ├── datasets.py
+│   │   │   ├── generation_metrics.py
+│   │   │   ├── multi_source_evidence.py
+│   │   │   ├── regression.py
+│   │   │   ├── retrieval_diagnosis.py
+│   │   │   ├── retrieval_metrics.py
+│   │   │   └── runner.py
+│   │   ├── exceptions/
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── codes.py
+│   │   │   └── handlers.py
+│   │   ├── ingestion/
+│   │   │   ├── loaders/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── csv.py
+│   │   │   │   ├── docx.py
+│   │   │   │   ├── html.py
+│   │   │   │   ├── markdown.py
+│   │   │   │   ├── pdf.py
+│   │   │   │   ├── source_code.py
+│   │   │   │   └── text.py
+│   │   │   ├── processors/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── deduplication.py
+│   │   │   │   ├── metadata.py
+│   │   │   │   ├── normalizer.py
+│   │   │   │   └── pii_detection.py
+│   │   │   ├── __init__.py
+│   │   │   └── pipeline.py
+│   │   ├── integrations/
+│   │   │   ├── github/
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── client.py
+│   │   │   └── storage/
+│   │   │       ├── __init__.py
+│   │   │       ├── azure_blob.py
+│   │   │       ├── base.py
+│   │   │       ├── keys.py
+│   │   │       ├── local.py
+│   │   │       ├── minio.py
+│   │   │       └── s3.py
+│   │   ├── jobs/
+│   │   │   ├── __init__.py
+│   │   │   ├── dispatcher.py
+│   │   │   ├── idempotency.py
+│   │   │   ├── models.py
+│   │   │   ├── queue.py
+│   │   │   ├── service.py
+│   │   │   ├── status.py
+│   │   │   └── tasks.py
+│   │   ├── llm/
+│   │   │   ├── prompts/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── answer.py
+│   │   │   │   ├── research.py
+│   │   │   │   └── verification.py
+│   │   │   ├── providers/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── azure_openai.py
+│   │   │   │   ├── local.py
+│   │   │   │   └── openai.py
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── gateway.py
+│   │   │   ├── guardrails.py
+│   │   │   ├── routing.py
+│   │   │   └── token_budget.py
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   ├── domain.py
+│   │   │   └── schemas.py
+│   │   ├── observability/
+│   │   │   ├── __init__.py
+│   │   │   ├── health.py
+│   │   │   ├── logging.py
+│   │   │   ├── metrics.py
+│   │   │   ├── tracing.py
+│   │   │   └── worker_metrics.py
+│   │   ├── rag/
+│   │   │   ├── __init__.py
+│   │   │   ├── abstention.py
+│   │   │   ├── bm25.py
+│   │   │   ├── chunking.py
+│   │   │   ├── citations.py
+│   │   │   ├── embeddings.py
+│   │   │   ├── evidence.py
+│   │   │   ├── evidence_diagnosis.py
+│   │   │   ├── fusion.py
+│   │   │   ├── hybrid_retriever.py
+│   │   │   ├── query_rewrite.py
+│   │   │   ├── reranker.py
+│   │   │   └── vector_store.py
+│   │   ├── repositories/
+│   │   │   ├── __init__.py
+│   │   │   ├── audit_events.py
+│   │   │   ├── documents.py
+│   │   │   ├── jobs.py
+│   │   │   ├── users.py
+│   │   │   └── workspaces.py
+│   │   ├── security/
+│   │   │   ├── __init__.py
+│   │   │   ├── audit.py
+│   │   │   ├── authentication.py
+│   │   │   ├── authorization.py
+│   │   │   ├── egress_policy.py
+│   │   │   ├── file_validation.py
+│   │   │   ├── malware_scan.py
+│   │   │   ├── outbound.py
+│   │   │   ├── prompt_security.py
+│   │   │   ├── rate_limiting.py
+│   │   │   ├── redaction.py
+│   │   │   └── ssrf.py
 │   │   ├── services/
-│   │   └── security/
-│   │       ├── outbound.py
-│   │       └── prompt_security.py
-│   └── tests/
-│       ├── integration/test_agent_api.py
-│       ├── unit/test_agent_foundation.py
-│       ├── unit/test_external_providers.py
-│       ├── unit/test_multi_source_evaluation.py
-│       └── unit/test_multi_source_evidence.py
+│   │   │   ├── __init__.py
+│   │   │   ├── document_service.py
+│   │   │   ├── evaluation_service.py
+│   │   │   ├── job_service.py
+│   │   │   ├── research_service.py
+│   │   │   └── search_service.py
+│   │   ├── tenancy/
+│   │   │   ├── __init__.py
+│   │   │   ├── context.py
+│   │   │   ├── isolation.py
+│   │   │   └── policies.py
+│   │   ├── utils/
+│   │   │   ├── __init__.py
+│   │   │   ├── hashing.py
+│   │   │   ├── ids.py
+│   │   │   └── time.py
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── tests/
+│   │   ├── contract/
+│   │   │   ├── __init__.py
+│   │   │   └── test_openapi.py
+│   │   ├── integration/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_agent_api.py
+│   │   │   ├── test_agent_research_api.py
+│   │   │   ├── test_auth.py
+│   │   │   ├── test_document_search.py
+│   │   │   ├── test_health.py
+│   │   │   ├── test_ingestion_reliability.py
+│   │   │   └── test_postgres_pgvector.py
+│   │   ├── security/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_cross_tenant.py
+│   │   │   ├── test_tenant_isolation.py
+│   │   │   └── test_upload_validation.py
+│   │   ├── unit/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_agent_foundation.py
+│   │   │   ├── test_agent_research.py
+│   │   │   ├── test_chunking.py
+│   │   │   ├── test_config.py
+│   │   │   ├── test_embeddings.py
+│   │   │   ├── test_evidence_diagnosis.py
+│   │   │   ├── test_external_providers.py
+│   │   │   ├── test_health.py
+│   │   │   ├── test_jobs.py
+│   │   │   ├── test_metrics.py
+│   │   │   ├── test_multi_source_evaluation.py
+│   │   │   ├── test_multi_source_evidence.py
+│   │   │   ├── test_retrieval_diagnosis_evaluation.py
+│   │   │   ├── test_security.py
+│   │   │   └── test_storage_keys.py
+│   │   ├── __init__.py
+│   │   └── conftest.py
+│   ├── .coverage
+│   ├── alembic.ini
+│   ├── Dockerfile
+│   ├── ekip.db
+│   ├── pyproject.toml
+│   ├── README.md
+│   └── requirements-security.txt
+├── contracts/
+│   ├── events/
+│   │   ├── evaluation-job.schema.json
+│   │   └── ingestion-job.schema.json
+│   └── openapi/
+│       └── openapi.yaml
+├── data/
+│   ├── evaluation/
+│   │   └── .gitkeep
+│   ├── fixtures/
+│   │   └── .gitkeep
+│   ├── samples/
+│   │   ├── documents/
+│   │   │   └── .gitkeep
+│   │   └── questions/
+│   │       └── .gitkeep
+│   ├── storage/
+│   │   ├── quarantine/
+│   │   │   └── workspaces/
+│   │   │       └── 4b6e723f-0eae-4ffd-acb7-0a7cdd9c4949/
+│   │   │           └── documents/
+│   │   │               └── 9373d362-cd65-4f35-8b25-804a291da08a/
+│   │   │                   └── versions/
+│   │   │                       └── 393dfd27-4e66-43a3-9a84-1e738ed49c13/
+│   │   └── source/
+│   │       └── workspaces/
+│   │           └── 4b6e723f-0eae-4ffd-acb7-0a7cdd9c4949/
+│   │               └── documents/
+│   │                   └── 9373d362-cd65-4f35-8b25-804a291da08a/
+│   │                       └── versions/
+│   │                           └── 393dfd27-4e66-43a3-9a84-1e738ed49c13/
+│   │                               └── preferred.txt
+│   └── README.md
 ├── docs/
-│   ├── architecture/controlled-agentic-rag.md
-│   ├── architecture/external-tool-providers.md
-│   ├── architecture/multi-source-evidence.md
-│   ├── deployment/searxng-local-profile.md
-│   ├── evaluation/multi-source-evidence-evaluation.md
-│   ├── security/agent-tool-security.md
-│   └── security/external-content-threat-model.md
+│   ├── adrs/
+│   │   ├── 0001-use-postgresql-pgvector.md
+│   │   ├── 0002-controlled-agent-workflows.md
+│   │   └── 0003-local-first-open-source.md
+│   ├── api/
+│   │   ├── agent-query-api.md
+│   │   ├── agentic-research-api.md
+│   │   └── README.md
+│   ├── architecture/
+│   │   ├── agentic-frontend-workspace.md
+│   │   ├── controlled-agentic-rag.md
+│   │   ├── cost-and-local-development.md
+│   │   ├── data-flow.md
+│   │   ├── external-tool-providers.md
+│   │   ├── multi-source-evidence.md
+│   │   ├── retrieval-diagnosis.md
+│   │   ├── runtime-data-flow.md
+│   │   └── system-context.md
+│   ├── deployment/
+│   │   ├── docker-runtime-guide.md
+│   │   ├── frontend-agent-runtime.md
+│   │   ├── full-runtime-validation-matrix.md
+│   │   ├── README.md
+│   │   └── searxng-local-profile.md
+│   ├── evaluation/
+│   │   ├── agentic-frontend-evaluation.md
+│   │   ├── multi-source-evidence-evaluation.md
+│   │   ├── README.md
+│   │   ├── retrieval-diagnosis-cases.json
+│   │   └── retrieval-diagnosis-evaluation.md
+│   ├── implementation/
+│   │   ├── enterprise-gap-analysis.md
+│   │   ├── phase-2-frontend-quality.md
+│   │   ├── phase-3-postgres-pgvector.md
+│   │   └── phase-4-worker-system.md
+│   ├── runbooks/
+│   │   ├── cross-tenant-incident.md
+│   │   ├── ingestion-failure.md
+│   │   └── README.md
+│   └── security/
+│       ├── agent-tool-security.md
+│       ├── agentic-frontend-security.md
+│       ├── external-content-threat-model.md
+│       └── README.md
 ├── frontend/
+│   ├── app/
+│   │   ├── (auth)/
+│   │   │   └── login/
+│   │   │       ├── LoginPage.test.tsx
+│   │   │       └── page.tsx
+│   │   ├── admin/
+│   │   │   └── page.tsx
+│   │   ├── agent/
+│   │   │   ├── research/
+│   │   │   │   ├── [jobId]/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── runs/
+│   │   │   │   └── [runId]/
+│   │   │   │       └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   ├── documents/
+│   │   │   └── page.tsx
+│   │   ├── evaluation/
+│   │   │   └── page.tsx
+│   │   ├── research/
+│   │   │   └── page.tsx
+│   │   ├── search/
+│   │   │   └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── agent/
+│   │   │   ├── AgentRunDetail.tsx
+│   │   │   ├── AgentWorkspace.test.tsx
+│   │   │   ├── AgentWorkspace.tsx
+│   │   │   ├── CitationList.test.tsx
+│   │   │   ├── CitationList.tsx
+│   │   │   ├── ClaimStatus.tsx
+│   │   │   ├── ConfidenceIndicator.tsx
+│   │   │   ├── ConflictCard.tsx
+│   │   │   ├── EvidenceCard.tsx
+│   │   │   ├── ExecutionTimeline.tsx
+│   │   │   ├── OutcomeBadge.tsx
+│   │   │   └── RetrievalDiagnosisView.tsx
+│   │   ├── documents/
+│   │   │   ├── .gitkeep
+│   │   │   ├── DocumentExplorer.test.tsx
+│   │   │   └── DocumentExplorer.tsx
+│   │   ├── evaluation/
+│   │   │   └── EvaluationWorkspace.tsx
+│   │   ├── jobs/
+│   │   │   ├── .gitkeep
+│   │   │   └── JobStatus.tsx
+│   │   ├── research/
+│   │   │   ├── .gitkeep
+│   │   │   ├── LegacyResearchWorkspace.tsx
+│   │   │   ├── ResearchJobDetail.test.tsx
+│   │   │   ├── ResearchJobDetail.tsx
+│   │   │   ├── ResearchWorkspace.test.tsx
+│   │   │   └── ResearchWorkspace.tsx
+│   │   ├── search/
+│   │   │   ├── .gitkeep
+│   │   │   ├── EvidencePanel.test.tsx
+│   │   │   ├── EvidencePanel.tsx
+│   │   │   ├── SearchBar.test.tsx
+│   │   │   └── SearchBar.tsx
+│   │   ├── security/
+│   │   │   ├── .gitkeep
+│   │   │   ├── PermissionGuard.test.tsx
+│   │   │   └── PermissionGuard.tsx
+│   │   └── ui/
+│   │       ├── .gitkeep
+│   │       ├── AppShell.tsx
+│   │       └── StatusBadge.tsx
+│   ├── lib/
+│   │   ├── .gitkeep
+│   │   ├── api.ts
+│   │   ├── auth.ts
+│   │   ├── config.ts
+│   │   └── safe-url.ts
+│   ├── public/
+│   │   └── .gitkeep
+│   ├── tests/
+│   │   └── e2e/
+│   │       ├── agentic-workspace.spec.ts
+│   │       └── runtime.spec.ts
+│   ├── types/
+│   │   ├── .gitkeep
+│   │   └── index.ts
+│   ├── Dockerfile
+│   ├── eslint.config.mjs
+│   ├── next-env.d.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── playwright.config.ts
+│   ├── tsconfig.json
+│   ├── tsconfig.tsbuildinfo
+│   ├── vitest.config.ts
+│   └── vitest.setup.ts
+├── infra/
+│   ├── kubernetes/
+│   │   ├── base/
+│   │   │   ├── backend-deployment.yaml
+│   │   │   ├── backend-service.yaml
+│   │   │   ├── configmap.yaml
+│   │   │   ├── frontend-deployment.yaml
+│   │   │   ├── frontend-service.yaml
+│   │   │   ├── ingestion-worker-deployment.yaml
+│   │   │   ├── ingress.yaml
+│   │   │   ├── kustomization.yaml
+│   │   │   ├── minio.yaml
+│   │   │   ├── namespace.yaml
+│   │   │   ├── network-policy.yaml
+│   │   │   ├── postgres.yaml
+│   │   │   ├── redis.yaml
+│   │   │   ├── secret.local.yaml
+│   │   │   └── service-account.yaml
+│   │   └── overlays/
+│   │       ├── dev/
+│   │       │   └── kustomization.yaml
+│   │       ├── prod/
+│   │       │   └── kustomization.yaml
+│   │       └── staging/
+│   │           └── kustomization.yaml
+│   └── terraform/
+│       ├── local/
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   ├── terraform.tfvars.example
+│       │   ├── variables.tf
+│       │   └── versions.tf
+│       └── README.md
 ├── monitoring/
+│   ├── grafana/
+│   │   └── provisioning/
+│   │       ├── dashboards/
+│   │       │   └── .gitkeep
+│   │       └── datasources/
+│   │           └── prometheus.yml
+│   ├── opentelemetry/
+│   │   └── otel-collector-config.yaml
+│   └── prometheus/
+│       └── prometheus.yml
+├── scripts/
+│   ├── bootstrap.ps1
+│   ├── bootstrap.sh
+│   ├── build_k8s_images.sh
+│   ├── generate_tree.py
+│   ├── run_security_checks.ps1
+│   └── run_security_checks.sh
+├── security/
+│   ├── checklists/
+│   │   └── release-security-checklist.md
+│   ├── policies/
+│   │   ├── .gitkeep
+│   │   ├── acceptable-use.md
+│   │   ├── data-classification.md
+│   │   └── retention.md
+│   ├── scripts/
+│   │   └── .gitkeep
+│   ├── threat-models/
+│   │   └── README.md
+│   └── SECURITY.md
+├── workers/
+│   ├── common/
+│   │   ├── __init__.py
+│   │   ├── health.py
+│   │   ├── idempotency.py
+│   │   ├── logging.py
+│   │   ├── queue.py
+│   │   ├── retry.py
+│   │   └── security.py
+│   ├── evaluation_worker/
+│   │   ├── worker/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py
+│   │   │   ├── pipeline.py
+│   │   │   └── tasks.py
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   ├── ingestion_worker/
+│   │   ├── worker/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py
+│   │   │   ├── pipeline.py
+│   │   │   └── tasks.py
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   └── report_worker/
+│       ├── worker/
+│       │   ├── __init__.py
+│       │   ├── main.py
+│       │   ├── pipeline.py
+│       │   └── tasks.py
+│       ├── Dockerfile
+│       └── requirements.txt
+├── .env
+├── .env.example
+├── .gitignore
 ├── docker-compose.yml
-├── README.md
+├── ekip.db
 ├── IMPLEMENTATION_REPORT.md
 ├── KNOWN_LIMITATIONS.md
+├── LICENSE
+├── Makefile
+├── PROJECT_TREE.txt
+├── README.md
+├── SCAFFOLD_MANIFEST.json
 ├── TEST_RESULTS.md
 └── VALIDATION_REPORT.md

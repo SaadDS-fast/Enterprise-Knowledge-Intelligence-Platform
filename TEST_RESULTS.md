@@ -25,9 +25,11 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Observability | Worker metrics | Pass | `ekip_worker_tasks_completed_total{worker_role="ingestion"} = 4` |
 | Frontend | Lint | Pass | 0 errors, 1 existing Fast Refresh warning |
 | Frontend | Typecheck | Pass | `npm run typecheck` |
-| Frontend | Unit/component tests | Pass | 5 files, 19 tests passed |
-| Frontend | Browser E2E | Pass | 1 Playwright Chromium spec passed against Dockerized frontend/backend |
+| Frontend | Unit/component tests | Pass | 9 files, 24 tests passed |
+| Frontend | Browser E2E | Pass | 1 Playwright Chromium spec passed with default flags; gated agentic Docker run passed 2 Chromium specs |
 | Frontend | Build | Pass | `npm run build` |
+| Frontend | Agentic workspace | Pass | `/agent`, `/agent/runs/{run_id}`, `/agent/research`, `/agent/research/{job_id}` build and render behind disabled-by-default feature flags |
+| Runtime | Agentic frontend Docker E2E | Pass | With backend/frontend agentic flags enabled, Playwright validated registration, upload, agent query, async research creation, `/search` route visibility, and cleanup through PostgreSQL/Redis/MinIO/Celery |
 | Security | Bandit | Pass | No issues |
 | Security | pip-audit | Pass | No known vulnerabilities for audited PyPI packages |
 | Security | npm audit | Pass | 0 vulnerabilities |
@@ -73,4 +75,4 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 - `npm run test` initially collected `tests/e2e/runtime.spec.ts`; `vitest.config.ts` now excludes `tests/e2e/**`.
 - `npm audit --omit=dev` identified vulnerable transitive `sharp <0.35.0`; a targeted `sharp@0.35.3` override was applied instead of the audit-suggested breaking Next downgrade, and the audit now reports 0 vulnerabilities.
 - Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
-- Research report Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery and the stack was restored to default disabled agent/research flags afterward.
+- Agentic frontend Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery with feature flags enabled for the probe.

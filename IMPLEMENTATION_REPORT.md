@@ -7,7 +7,31 @@ Updated on 2026-07-22.
 - Current branch: `feature/controlled-agentic-rag`
 - Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: controlled asynchronous research workflow ready for validation.
+- Commit status: agentic frontend workspace ready for validation.
+
+## Agentic Frontend Workspace
+
+Completed in this phase:
+
+- Added disabled-by-default `/agent` workspace for controlled document-grounded agent queries.
+- Added `/agent/runs/[runId]` run detail view that displays safe step summaries, tool names,
+  statuses, durations, and sanitized errors without hidden reasoning.
+- Added disabled-by-default `/agent/research` asynchronous report workspace and
+  `/agent/research/[jobId]` job detail view for polling, cancellation, artifact listing, and
+  authenticated downloads.
+- Preserved the existing `/search` endpoint and frontend route.
+- Preserved the legacy `/research` route by keeping its synchronous workflow separate from the
+  new agentic report workspace.
+- Added typed frontend models for agent outcomes, citations, internal/external evidence,
+  conflicts, claims, run timelines, research jobs, and artifacts.
+- Added safe external URL rendering and expired signed-artifact URL refresh without persisting
+  signed URLs.
+- Added frontend feature flags and Docker build/runtime plumbing for agentic RAG, agentic
+  research, external-source visibility, and polling interval.
+- Added component tests for internal-only agent submission, safe citations, async research
+  submission, and expired artifact download refresh.
+- Added gated Playwright coverage for registration, upload, agent query, async research creation,
+  `/search` route visibility, and cleanup through the real Docker stack.
 
 ## Controlled Agentic Research Reports
 
@@ -121,8 +145,8 @@ Runtime probes passed:
 - Backend tests: 113 passed, 2 skipped.
 - Backend coverage: 77%.
 - Controlled agent, external provider, and multi-source evidence targeted tests: 65 passed.
-- Frontend unit/component tests: 19 passed.
-- Frontend Playwright E2E: 1 passed.
+- Frontend unit/component tests: 24 passed.
+- Frontend Playwright E2E: 1 default spec passed; 2 specs passed with gated agentic Docker mode.
 - Frontend build/typecheck/lint: passed.
 - Bandit, pip-audit, and npm audit: passed.
 - Migration smoke: disposable SQLite Alembic `upgrade head` passed through `c8f4a2d91b77`.
@@ -131,6 +155,7 @@ Runtime probes passed:
 - External-disabled runtime: job `792e40b9-3357-47e7-b0db-5a4d816f5110`, internal run `4b52e7e2-2dd2-46cc-bd89-e0a5c5f16310`, public-disabled run `1db97c59-c459-4765-93ba-a8b03c4cf0ab`.
 - Deterministic external runtime: public external run `e4271e7e-b199-458e-a217-f4064478cdf6`, internal-preference run `01a2870f-5ab1-4086-828c-d710c6a84f3c`.
 - Research report runtime: document `d4a0ee81-3247-4cb1-92ca-8b4813589b03`, ingestion job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6`, research job `b4653536-ffd1-4132-b513-4bd19680e5dd`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c`, 1 source, 1 verified citation, markdown/PDF/DOCX downloads passed.
+- Agentic frontend runtime: Docker rebuilt backend/frontend with agentic flags enabled and Playwright passed 2 specs against PostgreSQL/Redis/MinIO/Celery.
 
 ## Follow-Up
 
@@ -139,4 +164,4 @@ Runtime probes passed:
 - Load/resilience testing was not run.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
-- Arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are intentionally not included in this phase.
+- Arbitrary browsing, unrestricted external APIs, admin UI, and AWS deployment are intentionally not included in this phase.

@@ -124,7 +124,10 @@ idempotency, and exposes short-lived signed download parameters. It does not add
 browsing, unrestricted external APIs, report email delivery, or a major frontend workspace.
 
 See `docs/architecture/controlled-agentic-rag.md` and
+`docs/architecture/agentic-frontend-workspace.md`,
 `docs/architecture/external-tool-providers.md`,
 `docs/architecture/multi-source-evidence.md`,
+`docs/api/agent-query-api.md`,
+`docs/api/agentic-research-api.md`,
 `docs/security/agent-tool-security.md`, and
 `docs/security/external-content-threat-model.md`.

@@ -40,6 +40,12 @@ On 2026-07-20, Docker runtime validation passed on this machine with Docker 29.6
 
 On 2026-07-22, the controlled research-report workflow was additionally validated against the real PostgreSQL/Redis/MinIO/Celery stack. With `AGENTIC_RAG_ENABLED=true` and `AGENT_RESEARCH_ENABLED=true` for the probe only, document `d4a0ee81-3247-4cb1-92ca-8b4813589b03` ingested through Celery, research job `b4653536-ffd1-4132-b513-4bd19680e5dd` completed through `report-worker`, and markdown/PDF/DOCX downloads from object storage passed. The stack was restored to default disabled agent/research flags afterward.
 
+On 2026-07-22, the agentic frontend workspace was validated against the real stack with backend
+and frontend agentic flags enabled. Docker rebuilt backend/frontend images, all core services
+reported healthy, and `E2E_AGENTIC_ENABLED=true npm run test:e2e` passed both Chromium specs,
+covering registration, upload, Celery ingestion, `/agent`, `/agent/research`, `/search` route
+visibility, and cleanup.
+
 Prometheus scrapes:
 
 - `backend:8000`
