@@ -4,7 +4,7 @@ Updated on 2026-07-22.
 
 ## Scope
 
-The controlled agent remains disabled by default and fully supports an internal-document-only mode. This phase also adds optional approved external-source tools for web search, Wikipedia, and arXiv. It does not add arbitrary browsing, research reports, report exports, major frontend changes, or autonomous multi-agent behavior.
+The controlled agent remains disabled by default and fully supports an internal-document-only mode. It also has optional approved external-source tools for web search, Wikipedia, and arXiv. This phase adds a disabled-by-default asynchronous cited research-report workflow. It does not add arbitrary browsing, major frontend changes, autonomous multi-agent behavior, AWS deployment, or unrestricted external APIs.
 
 Existing search remains unchanged:
 
@@ -14,8 +14,16 @@ Agentic behavior is separate:
 
 - `POST /api/v1/agent/query`
 - `GET /api/v1/agent/runs/{run_id}`
+- `POST /api/v1/agent/research`
+- `GET /api/v1/agent/research`
+- `GET /api/v1/agent/research/{job_id}`
+- `POST /api/v1/agent/research/{job_id}/cancel`
+- `GET /api/v1/agent/research/{job_id}/artifacts`
+- `GET /api/v1/agent/research/{job_id}/download/{format}`
 
 When `AGENTIC_RAG_ENABLED=false`, `/agent/query` returns a clear feature-disabled response and does not run the orchestrator.
+
+When `AGENT_RESEARCH_ENABLED=false`, `/agent/research` returns a clear feature-disabled response and does not dispatch a report job.
 
 ## State Machine
 
@@ -144,6 +152,32 @@ Registered tools:
 
 Every enabled tool returns structured output with `tool`, `status`, safe summary fields, and tool-specific metadata. Tool outputs never include hidden reasoning.
 
+## Research Report Workflow
+
+The report workflow reuses the controlled agent and validated services instead of creating a separate retrieval path. A request is persisted as a `research_jobs` row, dispatched to the existing `report-worker` queue when `JOB_EXECUTION_MODE=celery`, and run through a bounded state machine:
+
+- `PENDING`
+- `AUTHORIZING`
+- `PLANNING`
+- `RETRIEVING`
+- `RETRIEVAL_RETRY`
+- `AGGREGATING_EVIDENCE`
+- `VERIFYING_EVIDENCE`
+- `WRITING`
+- `VERIFYING_CITATIONS`
+- `SAFETY_REVIEW`
+- `EXPORTING`
+- `COMPLETED`
+- `FAILED`
+- `CANCEL_REQUESTED`
+- `CANCELLED`
+
+The workflow enforces tenant and workspace scope before dispatch and again in the worker. Optional `document_ids` are validated against the authorized workspace. Idempotency is scoped by tenant, workspace, user, request idempotency key, question, document scope, formats, and source policy.
+
+Structured reports include executive summary, methodology, key findings, detailed analysis, internal evidence, optional external evidence, conflicting evidence, information gaps, limitations, conclusions, citations, and generation metadata. Artifacts are written through the object-storage abstraction under tenant/workspace/job-scoped `reports/...` keys and exposed through short-lived signed download parameters.
+
+Export formats are controlled by `AGENT_RESEARCH_ALLOWED_FORMATS` and currently support `markdown`, `pdf`, and `docx`.
+
 ## Persistence
 
 The additive migration `c8f4a2d91b77_agent_orchestration_tables.py` creates:
@@ -178,6 +212,15 @@ Configured budgets:
 - `EVIDENCE_MAX_ITEMS=12`
 - `EVIDENCE_MAX_INTERNAL_ITEMS=8`
 - `EVIDENCE_MAX_EXTERNAL_ITEMS=6`
+- `AGENT_RESEARCH_ENABLED=false`
+- `AGENT_RESEARCH_MAX_STEPS=12`
+- `AGENT_RESEARCH_MAX_TOOL_CALLS=20`
+- `AGENT_RESEARCH_MAX_SOURCES=20`
+- `AGENT_RESEARCH_TIMEOUT_SECONDS=300`
+- `AGENT_RESEARCH_MAX_REPORT_WORDS=5000`
+- `AGENT_RESEARCH_EXTERNAL_SOURCES_DEFAULT=false`
+- `AGENT_RESEARCH_ALLOWED_FORMATS=markdown,pdf,docx`
+- `AGENT_RESEARCH_SIGNED_URL_TTL_SECONDS=600`
 - `EVIDENCE_CONTEXT_MAX_CHARS=12000`
 - `EVIDENCE_RRF_K=60`
 - `EVIDENCE_INTERNAL_PRIORITY_WEIGHT=1.0`

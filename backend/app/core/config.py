@@ -201,6 +201,17 @@ class Settings(BaseSettings):
             "deterministic": 0.6,
         }
     )
+    agent_research_enabled: bool = False
+    agent_research_max_steps: int = Field(default=12, ge=1, le=50)
+    agent_research_max_tool_calls: int = Field(default=20, ge=1, le=100)
+    agent_research_max_sources: int = Field(default=20, ge=1, le=100)
+    agent_research_timeout_seconds: float = Field(default=300.0, gt=0, le=1800)
+    agent_research_max_report_words: int = Field(default=5000, ge=100, le=50_000)
+    agent_research_external_sources_default: bool = False
+    agent_research_allowed_formats: list[str] = Field(
+        default_factory=lambda: ["markdown", "pdf", "docx"]
+    )
+    agent_research_signed_url_ttl_seconds: int = Field(default=600, ge=60, le=3600)
 
     @field_validator(
         "app_env",
@@ -222,6 +233,7 @@ class Settings(BaseSettings):
         "trusted_hosts",
         "allowed_file_extensions",
         "allowed_mime_types",
+        "agent_research_allowed_formats",
         "evidence_trust_weights",
         mode="before",
     )
@@ -258,6 +270,15 @@ class Settings(BaseSettings):
             if weight < 0.0 or weight > 1.0:
                 raise ValueError("Evidence trust weights must be between 0 and 1")
             normalized[str(key)] = weight
+        return normalized
+
+    @field_validator("agent_research_allowed_formats")
+    @classmethod
+    def validate_research_formats(cls, values: list[str]) -> list[str]:
+        allowed = {"markdown", "pdf", "docx"}
+        normalized = sorted({value.strip().lower() for value in values if value.strip()})
+        if not normalized or any(value not in allowed for value in normalized):
+            raise ValueError("Research formats must be markdown, pdf, or docx")
         return normalized
 
     @field_validator("debug", mode="before")

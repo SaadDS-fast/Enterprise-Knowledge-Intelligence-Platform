@@ -99,10 +99,13 @@ AGENT_EXTERNAL_APIS_ENABLED=false
 EVIDENCE_MAX_ITEMS=12
 EVIDENCE_RRF_K=60
 EVIDENCE_MIN_SUPPORT_SCORE=0.65
+AGENT_RESEARCH_ENABLED=false
+AGENT_RESEARCH_ALLOWED_FORMATS=markdown,pdf,docx
 ```
 
 `POST /api/v1/search` remains the stable non-agentic RAG endpoint. Agentic behavior is isolated
-under `POST /api/v1/agent/query` and `GET /api/v1/agent/runs/{run_id}`. The agent now executes
+under `POST /api/v1/agent/query`, `GET /api/v1/agent/runs/{run_id}`, and disabled-by-default
+research report endpoints under `/api/v1/agent/research`. The agent now executes
 typed internal tools for metadata inspection, query reformulation, internal retrieval, evidence
 verification, retrieval diagnosis, answer synthesis, and safety review. It reuses the existing
 hybrid retriever, reranker, retrieval retry, evidence sufficiency, citations, diagnosis, and
@@ -113,6 +116,12 @@ The agent normalizes internal and external results into a unified evidence model
 deterministic deduplication and reciprocal-rank fusion, verifies claims against cited evidence,
 validates citations, detects practical conflicts, and exposes a safe outcome without hidden
 reasoning.
+
+The research workflow runs asynchronously through the existing report worker when Celery is
+enabled. It creates cited markdown/PDF/DOCX artifacts through the configured object-storage
+provider, scopes artifact keys by tenant/workspace/job, supports cancellation and scoped
+idempotency, and exposes short-lived signed download parameters. It does not add arbitrary
+browsing, unrestricted external APIs, report email delivery, or a major frontend workspace.
 
 See `docs/architecture/controlled-agentic-rag.md` and
 `docs/architecture/external-tool-providers.md`,

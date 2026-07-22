@@ -19,7 +19,7 @@ Validated on 2026-07-22 on branch `feature/controlled-agentic-rag`.
 
 The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, and browser E2E. Ollama profile and load testing remain out of scope for this pass and are documented as follow-up items, not blockers for the requested runtime reliability fixes.
 
-Controlled agentic RAG update: this phase adds unified multi-source evidence aggregation, claim-level verification, conflict detection, citation validation, deterministic grounded synthesis, and evaluation metrics while keeping agentic mode and external access disabled by default. `/search` remains unchanged, internal agent behavior remains working, and external access requires both a feature flag and `allow_external_sources=true`.
+Controlled agentic RAG update: this phase adds unified multi-source evidence aggregation, claim-level verification, conflict detection, citation validation, deterministic grounded synthesis, evaluation metrics, and a disabled-by-default asynchronous cited research-report workflow while keeping agentic mode and external access disabled by default. `/search` remains unchanged, internal agent behavior remains working, and external access requires both a feature flag and `allow_external_sources=true`.
 
 ## Key Runtime Results
 
@@ -35,6 +35,8 @@ Controlled agentic RAG update: this phase adds unified multi-source evidence agg
 - External metrics: **PASS**. `/metrics` exposed `ekip_agent_external_tool_calls_total`, `ekip_agent_external_tool_failures_total`, `ekip_agent_external_tool_duration_seconds`, `ekip_agent_external_sources_used_total`, `ekip_agent_ssrf_blocks_total`, and `ekip_agent_external_timeouts_total`.
 - Multi-source evidence metrics: **PASS**. `/metrics` exposes evidence, deduplication, claim, conflict, citation, synthesis-fallback, and context-budget metric families with low-cardinality labels only.
 - Multi-source Docker runtime probes: **PASS**. Deterministic no-internet runtime covered internal supported run `30a13d77-efaf-4cd8-99ec-da772fc5fc2b`, public external run `854fac77-0904-4aaf-b156-abd43c8142df`, internal-preferred mixed run `9d7a5e72-f089-4d6b-9ace-54c6f7a0865c`, partial run `c71c9c10-f24e-4b8b-9138-2f43c1820cc0`, internal conflict run `08704576-8908-4635-9095-52f57e3bf4cd`, internal/external conflict run `ef36a0f9-be84-43f0-923a-1ee2b430200b`, knowledge-absence run `e9896f8c-a078-42f4-94f1-b29a6935493b`, ambiguous run `0c6580ce-c538-4140-b1b6-bbf0266ba6b7`, prompt-injection run `1c591745-b41d-448f-8d8b-e3a50064a8ea`, and tenant-isolation run `30a54d73-9b9d-4914-8179-eed436c7a155`. Backend was restored to default disabled-agent/external settings afterward.
+- Research report tests: **PASS**. Targeted backend research tests passed: 12 tests covering feature flag denial, lifecycle, exports, signed download tampering, idempotency, knowledge absence, conflicts, cancellation, tenant isolation, workspace document-scope denial, and `/search` regression.
+- Research report Docker runtime: **PASS**. With `AGENTIC_RAG_ENABLED=true` and `AGENT_RESEARCH_ENABLED=true` for the probe only, Docker API upload job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6` completed through PostgreSQL/Redis/MinIO/Celery, research job `b4653536-ffd1-4132-b513-4bd19680e5dd` completed through `report-worker`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c` returned 1 source and 1 verified citation, and markdown/PDF/DOCX downloads passed. Backend and workers were restored to default disabled agent/research flags afterward.
 
 ## Commands Run
 
@@ -65,13 +67,14 @@ Controlled agentic RAG update: this phase adds unified multi-source evidence agg
 - `npm run build`
 - `npm audit --omit=dev`
 - Agent targeted tests for state transitions, planner validation, typed tools, query reformulation, retrieval retry, evidence diagnosis, safety review, fallback, scoped denial, prompt injection handling, and `/search` regression
+- Research targeted tests for async lifecycle, exports, idempotency, cancellation, scoped denial, conflict/absence report cases, signed downloads, and `/search` regression
 
 ## Source Validation
 
 - Backend compile: **PASS**
 - Backend Ruff lint/format: **PASS**
-- Backend tests: **101 passed, 2 skipped**
-- Backend coverage: **78%**
+- Backend tests: **113 passed, 2 skipped**
+- Backend coverage: **77%**
 - Bandit: **PASS**, no issues
 - pip-audit: **PASS**, no known vulnerabilities for audited PyPI packages
 - Frontend lint: **PASS**, 0 errors and 1 existing Fast Refresh warning in `app/layout.tsx`
@@ -97,7 +100,10 @@ Controlled agentic RAG update: this phase adds unified multi-source evidence agg
 - External prompt injection: **PASS**, malicious external excerpt forced abstention and cleared citations
 - External provenance: **PASS**, external citations retain provider/title/canonical URL/retrieval date/excerpt and remain separate from internal citations
 - Existing `/search` regression: **PASS**, `/api/v1/search` still returns answer and retrieval diagnosis payload
-- Migration smoke: **PASS**, disposable SQLite Alembic `upgrade head` reached `c8f4a2d91b77`
+- Research report targeted tests: **PASS**, 12 passed
+- Research exports: **PASS**, markdown, PDF, and DOCX artifacts are generated through the storage abstraction
+- Research citation validation: **PASS**, verified citation counts and citation metadata are persisted in the structured report response
+- Migration smoke: **PASS**, disposable SQLite Alembic `upgrade head` reached `d9a1f2c3b4e5` and Docker PostgreSQL `alembic check` reported no new upgrade operations
 - Docker smoke: **PASS**, `docker compose config` passed and the existing observability stack remained healthy
 
 ## Remaining Follow-Up
@@ -105,4 +111,4 @@ Controlled agentic RAG update: this phase adds unified multi-source evidence agg
 - Ollama profile validation was not run.
 - Load/resilience testing was not run.
 - Several scaffolded enterprise modules remain low coverage, reflected in the 78% backend coverage.
-- Agentic mode and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, autonomous research reports, report exports, unrestricted external APIs, and major frontend agent UX are future work.
+- Agentic mode, research mode, and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are future work.

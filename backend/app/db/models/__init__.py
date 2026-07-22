@@ -13,7 +13,7 @@ from app.db.models.ingestion_job import IngestionJob
 from app.db.models.membership import Membership
 from app.db.models.message import Message
 from app.db.models.organization import Organization
-from app.db.models.research_job import ResearchJob
+from app.db.models.research_job import ResearchArtifact, ResearchJob
 from app.db.models.role import RoleName
 from app.db.models.user import User
 from app.db.models.workspace import Workspace
@@ -35,6 +35,7 @@ __all__ = [
     "Message",
     "Organization",
     "ResearchJob",
+    "ResearchArtifact",
     "RoleName",
     "User",
     "Workspace",

@@ -38,6 +38,8 @@ docker compose --profile ollama up -d
 
 On 2026-07-20, Docker runtime validation passed on this machine with Docker 29.6.2 and Docker Compose v5.3.1. Backend and frontend images built, the observability profile launched, Alembic drift check passed, all core containers were healthy, Prometheus scraped backend and worker targets with `up=1`, and Playwright E2E passed against the Dockerized frontend/backend.
 
+On 2026-07-22, the controlled research-report workflow was additionally validated against the real PostgreSQL/Redis/MinIO/Celery stack. With `AGENTIC_RAG_ENABLED=true` and `AGENT_RESEARCH_ENABLED=true` for the probe only, document `d4a0ee81-3247-4cb1-92ca-8b4813589b03` ingested through Celery, research job `b4653536-ffd1-4132-b513-4bd19680e5dd` completed through `report-worker`, and markdown/PDF/DOCX downloads from object storage passed. The stack was restored to default disabled agent/research flags afterward.
+
 Prometheus scrapes:
 
 - `backend:8000`

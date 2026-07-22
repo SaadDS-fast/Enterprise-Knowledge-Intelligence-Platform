@@ -7,7 +7,23 @@ Updated on 2026-07-22.
 - Current branch: `feature/controlled-agentic-rag`
 - Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: multi-source evidence aggregation and verification ready for commit.
+- Commit status: controlled asynchronous research workflow ready for validation.
+
+## Controlled Agentic Research Reports
+
+Completed in this phase:
+
+- Added disabled-by-default `POST /api/v1/agent/research` with feature flag `AGENT_RESEARCH_ENABLED`.
+- Added scoped list/read/cancel/artifact/download endpoints under `/api/v1/agent/research`.
+- Added a typed research request/response schema, structured report schema, report format enum, signed download token helpers, and deterministic state machine.
+- Reused the existing controlled agent, hybrid retriever, reranker, retrieval retry, evidence diagnosis, citations, abstention, claim verification, conflict detection, and safety review paths.
+- Added scoped idempotency for tenant, workspace, user, request key, question, document scope, formats, and source policy.
+- Added `research_artifacts` persistence and extended `research_jobs` for tenant scope, agent run linkage, state/progress, artifact refs, source/citation counts, cancellation, errors, and pipeline version.
+- Added a Celery `ekip.research_report` task for the existing `report-worker` queue and dispatcher recovery for failed research dispatches.
+- Added markdown, PDF, and DOCX exports through the existing object-storage abstraction with tenant/workspace/job-scoped object keys.
+- Added short-lived signed download parameters for artifact links.
+- Added Prometheus metrics for research job starts/completions/failures/cancellations, stage and total duration, sources used, claims/citations validated, exports, export failures, and dispatch retries without sensitive labels.
+- Added tests for feature flag denial, report lifecycle, export downloads, signed URL tampering, idempotency, knowledge absence, conflicting evidence, cancellation, cross-tenant denial, cross-workspace document-scope denial, existing `/search` regression, state transitions, scoped object keys, renderers, and token signatures.
 
 ## Controlled Agentic RAG
 
@@ -102,8 +118,8 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 101 passed, 2 skipped.
-- Backend coverage: 78%.
+- Backend tests: 113 passed, 2 skipped.
+- Backend coverage: 77%.
 - Controlled agent, external provider, and multi-source evidence targeted tests: 65 passed.
 - Frontend unit/component tests: 19 passed.
 - Frontend Playwright E2E: 1 passed.
@@ -114,6 +130,7 @@ Runtime probes passed:
 - Agent Docker runtime: job `4982e894-bc00-4c54-b069-f79f44f7f71f` and run `20bc2a99-e839-468d-87b6-4d970909f327` passed against PostgreSQL/Redis/MinIO/Celery.
 - External-disabled runtime: job `792e40b9-3357-47e7-b0db-5a4d816f5110`, internal run `4b52e7e2-2dd2-46cc-bd89-e0a5c5f16310`, public-disabled run `1db97c59-c459-4765-93ba-a8b03c4cf0ab`.
 - Deterministic external runtime: public external run `e4271e7e-b199-458e-a217-f4064478cdf6`, internal-preference run `01a2870f-5ab1-4086-828c-d710c6a84f3c`.
+- Research report runtime: document `d4a0ee81-3247-4cb1-92ca-8b4813589b03`, ingestion job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6`, research job `b4653536-ffd1-4132-b513-4bd19680e5dd`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c`, 1 source, 1 verified citation, markdown/PDF/DOCX downloads passed.
 
 ## Follow-Up
 
@@ -122,4 +139,4 @@ Runtime probes passed:
 - Load/resilience testing was not run.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
-- Arbitrary browsing, autonomous research reports, report exports, unrestricted external APIs, and major frontend agent UX are intentionally not included in this phase.
+- Arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are intentionally not included in this phase.

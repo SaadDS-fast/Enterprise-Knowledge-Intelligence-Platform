@@ -121,6 +121,54 @@ AGENT_CONTEXT_BUDGET_TRUNCATIONS = Counter(
     "Agent context budget truncations",
     ["outcome"],
 )
+AGENT_RESEARCH_JOBS_STARTED = Counter(
+    "ekip_agent_research_jobs_started_total", "Agent research jobs started"
+)
+AGENT_RESEARCH_JOBS_COMPLETED = Counter(
+    "ekip_agent_research_jobs_completed_total", "Agent research jobs completed"
+)
+AGENT_RESEARCH_JOBS_FAILED = Counter(
+    "ekip_agent_research_jobs_failed_total", "Agent research jobs failed"
+)
+AGENT_RESEARCH_JOBS_CANCELLED = Counter(
+    "ekip_agent_research_jobs_cancelled_total", "Agent research jobs cancelled"
+)
+AGENT_RESEARCH_STAGE_DURATION = Histogram(
+    "ekip_agent_research_stage_duration_seconds",
+    "Agent research stage duration",
+    ["stage", "outcome"],
+)
+AGENT_RESEARCH_TOTAL_DURATION = Histogram(
+    "ekip_agent_research_total_duration_seconds", "Agent research total duration"
+)
+AGENT_RESEARCH_SOURCES_USED = Counter(
+    "ekip_agent_research_sources_used_total",
+    "Agent research sources used",
+    ["source_type"],
+)
+AGENT_RESEARCH_CLAIMS_VERIFIED = Counter(
+    "ekip_agent_research_claims_verified_total",
+    "Agent research claims verified",
+    ["outcome"],
+)
+AGENT_RESEARCH_CITATIONS_VALIDATED = Counter(
+    "ekip_agent_research_citations_validated_total",
+    "Agent research citations validated",
+    ["outcome"],
+)
+AGENT_RESEARCH_EXPORTS = Counter(
+    "ekip_agent_research_exports_total",
+    "Agent research exports",
+    ["format", "outcome"],
+)
+AGENT_RESEARCH_EXPORT_FAILURES = Counter(
+    "ekip_agent_research_export_failures_total",
+    "Agent research export failures",
+    ["format", "outcome"],
+)
+AGENT_RESEARCH_RETRIES = Counter(
+    "ekip_agent_research_retries_total", "Agent research task retries", ["outcome"]
+)
 
 
 def metrics_response() -> Response:

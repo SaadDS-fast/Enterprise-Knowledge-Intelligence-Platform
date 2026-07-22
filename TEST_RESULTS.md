@@ -7,8 +7,8 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Backend | Compilation | Pass | `.venv/bin/python -m compileall app tests` |
 | Backend | Ruff lint | Pass | `.venv/bin/ruff check app tests` |
 | Backend | Ruff format | Pass | `.venv/bin/ruff format --check app tests` |
-| Backend | Unit/integration/security tests | Pass | `101 passed, 2 skipped` |
-| Backend | Coverage | Pass | `78%` total coverage |
+| Backend | Unit/integration/security tests | Pass | `113 passed, 2 skipped` |
+| Backend | Coverage | Pass | `77%` total coverage |
 | Database | Alembic drift | Pass | Docker PostgreSQL `alembic check`: no new upgrade operations |
 | Runtime | Docker stack | Pass | Backend, frontend, PostgreSQL, Redis, MinIO, workers, Prometheus, Grafana, and OTel running |
 | Runtime | Agent internal RAG | Pass | Docker API probe job `4982e894-bc00-4c54-b069-f79f44f7f71f`, run `20bc2a99-e839-468d-87b6-4d970909f327`, 1 citation, 1 evidence item |
@@ -16,6 +16,7 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Runtime | External deterministic | Pass | Public run `e4271e7e-b199-458e-a217-f4064478cdf6`; deterministic provider, external citation, provenance returned |
 | Runtime | Internal preferred | Pass | Run `01a2870f-5ab1-4086-828c-d710c6a84f3c`; no external tool called when internal evidence was sufficient |
 | Runtime | Multi-source evidence probes | Pass | Jobs `bd8e3807-6a6c-45e0-84ac-6712b277ce6e`, `7cb907de-fd1c-4d71-b2c7-3521c6d0d556`, `2d41452f-b96c-4728-a84f-10c8ef07f73d`, `4839fd15-1234-4420-b692-10e56d169a2a`; runs `30a13d77-efaf-4cd8-99ec-da772fc5fc2b`, `854fac77-0904-4aaf-b156-abd43c8142df`, `9d7a5e72-f089-4d6b-9ace-54c6f7a0865c`, `08704576-8908-4635-9095-52f57e3bf4cd`, `ef36a0f9-be84-43f0-923a-1ee2b430200b`, `e9896f8c-a078-42f4-94f1-b29a6935493b`, `0c6580ce-c538-4140-b1b6-bbf0266ba6b7`, `c71c9c10-f24e-4b8b-9138-2f43c1820cc0`, `1c591745-b41d-448f-8d8b-e3a50064a8ea`, `30a54d73-9b9d-4914-8179-eed436c7a155` |
+| Runtime | Research report worker | Pass | Docker API probe document `d4a0ee81-3247-4cb1-92ca-8b4813589b03`, ingestion job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6`, research job `b4653536-ffd1-4132-b513-4bd19680e5dd`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c`, markdown/PDF/DOCX downloads passed |
 | Runtime | Completed-task retry | Pass | Same request id, 1 chunk, 1 embedded chunk, no asyncpg/event-loop log matches |
 | Runtime | Redis outage recovery | Pass | Upload became `retry_pending`; automatic dispatcher completed it after Redis restart |
 | Runtime | Orphan retry jobs | Pass | `0` jobs in `retry_pending` or `dispatch_failed` after recovery |
@@ -55,6 +56,12 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Agent | Deterministic synthesis | Pass | Grounded extractive synthesis and unsupported-claim removal tested |
 | Evaluation | Multi-source metrics | Pass | Fixture metrics computed: support rate 0.5, precision 1.0, recall 0.75 |
 | Agent | Cancellation | Pass | Cancelled orchestrator run persisted as `cancelled` |
+| Research | Targeted backend tests | Pass | Included in full backend suite; direct targeted run also passed 12 tests |
+| Research | Feature flag and lifecycle | Pass | Disabled response, async job creation, status read, artifact listing, signed downloads |
+| Research | Report cases | Pass | Simple supported question, knowledge absence, conflicting evidence, cancellation, idempotency, cross-tenant denial, cross-workspace document denial |
+| Research | Exports | Pass | Markdown contains grounded answer; PDF starts `%PDF`; DOCX starts `PK` |
+| Research | Citation validation | Pass | Report stores verified citation count and citation metadata from controlled agent response |
+| Research | Existing search regression | Pass | `/api/v1/search` unchanged in research integration test |
 | Regression | Existing search endpoint | Pass | `/api/v1/search` still returns answer and retrieval diagnosis |
 | Migration | Agent tables | Pass | Disposable SQLite Alembic `upgrade head` reached `c8f4a2d91b77` |
 | Docker | Smoke | Pass | `docker compose config`; rebuilt backend and frontend images; observability stack healthy |
@@ -66,3 +73,4 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 - `npm run test` initially collected `tests/e2e/runtime.spec.ts`; `vitest.config.ts` now excludes `tests/e2e/**`.
 - `npm audit --omit=dev` identified vulnerable transitive `sharp <0.35.0`; a targeted `sharp@0.35.3` override was applied instead of the audit-suggested breaking Next downgrade, and the audit now reports 0 vulnerabilities.
 - Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
+- Research report Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery and the stack was restored to default disabled agent/research flags afterward.
