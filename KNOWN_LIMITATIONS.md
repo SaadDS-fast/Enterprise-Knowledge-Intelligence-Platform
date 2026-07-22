@@ -15,16 +15,18 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 - Controlled internal-document agent with disabled-by-default API, deterministic planner, typed internal tools, retrieval retry, evidence diagnosis, citation-aware synthesis, safety review, budgets, safe persistence, audit events, and fallback to adaptive RAG.
 - Optional approved external-source tools for disabled, deterministic, SearXNG, Wikipedia, and arXiv providers, gated by request opt-in and disabled-by-default feature flags.
 - SSRF/outbound validation for approved provider calls and prompt-injection scanning for external excerpts.
+- Unified multi-source evidence normalization, scoped deduplication, deterministic rank fusion, context-budget management, claim-level verification, conflict detection, citation validation, deterministic grounded synthesis, and evaluation metric aggregation.
 
 ## Remaining Limitations
 
 - Ollama profile validation was not run.
 - Load/resilience testing was not run.
 - Grafana and OpenTelemetry containers start, but dashboard content, alerting, and trace assertions were not deeply validated.
-- Several scaffolded modules remain low coverage, including agent, cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
+- Several scaffolded modules remain low coverage, including cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 - Agentic RAG is not enabled by default and has no frontend workflow in this phase.
 - External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. Live SearXNG and live public internet validation were not run.
+- Optional Ollama claim verification/synthesis interfaces are documented as a future path; this phase uses deterministic verification and synthesis by default.
 - Arbitrary browsing, user-supplied URLs, direct SQL tools, shell tools, unrestricted external APIs, report exports, and autonomous report generation are intentionally not implemented.
 
 ## Notes

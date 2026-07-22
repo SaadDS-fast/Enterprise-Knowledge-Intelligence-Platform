@@ -83,11 +83,15 @@ Disallowed examples:
 
 Agent run creation, completion, and cancellation create audit events with sanitized summaries. Audit details do not contain prompts beyond the stored user query already present on `agent_runs`.
 
-## Prompt Injection
+## Evidence And Prompt Injection
 
-The safety reviewer scans the user query, retrieved evidence, and drafted answer for prompt-injection signals. Uploaded documents that ask the model to ignore prior or system instructions force safe abstention.
+Retrieved internal and external text remains evidence only. It cannot modify the plan, enable tools, weaken authorization, change ranking policy, or become executable instructions.
+
+The safety reviewer scans the user query, cited evidence in the unified evidence path, and drafted answer for prompt-injection signals. Uploaded documents that ask the model to ignore prior or system instructions force safe abstention when that document is cited or used.
 
 External excerpts are scanned the same way. They are treated as untrusted source text and cannot authorize tools, change tenant/workspace scope, request credentials, trigger shell commands, or override evidence rules.
+
+Claim verification and citation validation happen before the safety review, so unrelated retrieved text does not poison a response that is grounded in different cited evidence.
 
 ## Future Tool Review
 

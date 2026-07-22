@@ -6,7 +6,7 @@ Validated on 2026-07-22 on branch `feature/controlled-agentic-rag`.
 
 - Base agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Working tree: safe web and approved API tool changes ready for commit
+- Working tree: multi-source evidence aggregation changes ready for commit
 - Python: 3.12.13
 - Node: v20.20.2
 - npm: 10.8.2
@@ -19,7 +19,7 @@ Validated on 2026-07-22 on branch `feature/controlled-agentic-rag`.
 
 The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, and browser E2E. Ollama profile and load testing remain out of scope for this pass and are documented as follow-up items, not blockers for the requested runtime reliability fixes.
 
-Controlled agentic RAG update: this phase adds optional approved external-source tools while keeping agentic mode and external access disabled by default. `/search` remains unchanged, internal agent behavior remains working, and external access requires both a feature flag and `allow_external_sources=true`.
+Controlled agentic RAG update: this phase adds unified multi-source evidence aggregation, claim-level verification, conflict detection, citation validation, deterministic grounded synthesis, and evaluation metrics while keeping agentic mode and external access disabled by default. `/search` remains unchanged, internal agent behavior remains working, and external access requires both a feature flag and `allow_external_sources=true`.
 
 ## Key Runtime Results
 
@@ -33,6 +33,8 @@ Controlled agentic RAG update: this phase adds optional approved external-source
 - External-disabled runtime: **PASS**. With agent enabled and external providers disabled, internal run `4b52e7e2-2dd2-46cc-bd89-e0a5c5f16310` answered from internal evidence, and public-disabled run `1db97c59-c459-4765-93ba-a8b03c4cf0ab` abstained with no external access.
 - Deterministic external runtime: **PASS**. With `WEB_SEARCH_PROVIDER=deterministic`, public run `e4271e7e-b199-458e-a217-f4064478cdf6` returned external provenance and citation; internal-preference run `01a2870f-5ab1-4086-828c-d710c6a84f3c` did not call external search when internal evidence was sufficient.
 - External metrics: **PASS**. `/metrics` exposed `ekip_agent_external_tool_calls_total`, `ekip_agent_external_tool_failures_total`, `ekip_agent_external_tool_duration_seconds`, `ekip_agent_external_sources_used_total`, `ekip_agent_ssrf_blocks_total`, and `ekip_agent_external_timeouts_total`.
+- Multi-source evidence metrics: **PASS**. `/metrics` exposes evidence, deduplication, claim, conflict, citation, synthesis-fallback, and context-budget metric families with low-cardinality labels only.
+- Multi-source Docker runtime probes: **PASS**. Deterministic no-internet runtime covered internal supported run `30a13d77-efaf-4cd8-99ec-da772fc5fc2b`, public external run `854fac77-0904-4aaf-b156-abd43c8142df`, internal-preferred mixed run `9d7a5e72-f089-4d6b-9ace-54c6f7a0865c`, partial run `c71c9c10-f24e-4b8b-9138-2f43c1820cc0`, internal conflict run `08704576-8908-4635-9095-52f57e3bf4cd`, internal/external conflict run `ef36a0f9-be84-43f0-923a-1ee2b430200b`, knowledge-absence run `e9896f8c-a078-42f4-94f1-b29a6935493b`, ambiguous run `0c6580ce-c538-4140-b1b6-bbf0266ba6b7`, prompt-injection run `1c591745-b41d-448f-8d8b-e3a50064a8ea`, and tenant-isolation run `30a54d73-9b9d-4914-8179-eed436c7a155`. Backend was restored to default disabled-agent/external settings afterward.
 
 ## Commands Run
 
@@ -68,8 +70,8 @@ Controlled agentic RAG update: this phase adds optional approved external-source
 
 - Backend compile: **PASS**
 - Backend Ruff lint/format: **PASS**
-- Backend tests: **83 passed, 2 skipped**
-- Backend coverage: **76%**
+- Backend tests: **101 passed, 2 skipped**
+- Backend coverage: **78%**
 - Bandit: **PASS**, no issues
 - pip-audit: **PASS**, no known vulnerabilities for audited PyPI packages
 - Frontend lint: **PASS**, 0 errors and 1 existing Fast Refresh warning in `app/layout.tsx`
@@ -79,7 +81,15 @@ Controlled agentic RAG update: this phase adds optional approved external-source
 - Frontend build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
 - Frontend dependency security: **PASS**, `sharp@0.35.3` override resolves the transitive libvips advisory without downgrading Next
-- Controlled agent and external provider targeted tests: **PASS**, 46 passed
+- Controlled agent, external provider, and multi-source evidence targeted tests: **PASS**, 65 passed
+- Evidence normalization: **PASS**, internal, SearXNG, Wikipedia, arXiv, and approved API paths tested
+- Deduplication: **PASS**, external URL duplicates merge and cross-tenant internal evidence never merges
+- Rank fusion: **PASS**, deterministic RRF preserves internal priority for organization-specific questions
+- Claim verification: **PASS**, supported, partially supported, unsupported, and conflicted statuses tested
+- Conflict detection: **PASS**, numeric, date, and owner/entity contradictions tested
+- Citation validation: **PASS**, unknown and unrelated citation labels rejected
+- Deterministic synthesis: **PASS**, grounded extractive answer and unsupported-claim removal tested
+- Evaluation metrics: **PASS**, fixture execution measured support rate 0.5, citation precision 1.0, citation recall 0.75, unsupported claim rate 0.3333, abstention accuracy 1.0, conflict detection accuracy 1.0, and average evidence count 2.5
 - SearXNG adapter: **PASS**, parser tests and optional Compose profile config passed; live SearXNG launch was not required for this zero-internet validation pass
 - Wikipedia adapter: **PASS**, mocked response parsing passed
 - arXiv adapter: **PASS**, mocked Atom parsing passed with hardened XML parser
@@ -94,5 +104,5 @@ Controlled agentic RAG update: this phase adds optional approved external-source
 
 - Ollama profile validation was not run.
 - Load/resilience testing was not run.
-- Several scaffolded enterprise modules remain low coverage, reflected in the 74% backend coverage.
+- Several scaffolded enterprise modules remain low coverage, reflected in the 78% backend coverage.
 - Agentic mode and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, autonomous research reports, report exports, unrestricted external APIs, and major frontend agent UX are future work.

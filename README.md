@@ -96,6 +96,9 @@ AGENTIC_RAG_ENABLED=false
 AGENT_WEB_SEARCH_ENABLED=false
 WEB_SEARCH_PROVIDER=disabled
 AGENT_EXTERNAL_APIS_ENABLED=false
+EVIDENCE_MAX_ITEMS=12
+EVIDENCE_RRF_K=60
+EVIDENCE_MIN_SUPPORT_SCORE=0.65
 ```
 
 `POST /api/v1/search` remains the stable non-agentic RAG endpoint. Agentic behavior is isolated
@@ -106,8 +109,13 @@ hybrid retriever, reranker, retrieval retry, evidence sufficiency, citations, di
 abstention paths. Optional external-source tools are also available behind explicit request and
 feature-flag gates for approved providers only: deterministic tests, self-hosted SearXNG,
 Wikipedia, and arXiv. Disabled mode makes no network call and remains zero-cost.
+The agent normalizes internal and external results into a unified evidence model, performs
+deterministic deduplication and reciprocal-rank fusion, verifies claims against cited evidence,
+validates citations, detects practical conflicts, and exposes a safe outcome without hidden
+reasoning.
 
 See `docs/architecture/controlled-agentic-rag.md` and
 `docs/architecture/external-tool-providers.md`,
+`docs/architecture/multi-source-evidence.md`,
 `docs/security/agent-tool-security.md`, and
 `docs/security/external-content-threat-model.md`.

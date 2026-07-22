@@ -14,6 +14,13 @@ from app.agents.enums import (
     AgentToolStatus,
 )
 from app.agents.errors import AgentBudgetError, AgentCancelledError, AgentError, AgentPolicyError
+from app.agents.evidence import (
+    AnswerOutcome,
+    aggregate_evidence,
+    map_diagnosis_to_outcome,
+    normalize_external_sources,
+    normalize_internal_evidence,
+)
 from app.agents.executor import ToolExecutor
 from app.agents.planner import PlannerProvider, get_planner
 from app.agents.policies import safe_operational_summary, validate_plan
@@ -299,6 +306,24 @@ class AgentOrchestrator:
                 provider = external_result.metadata.get("provider")
                 if provider and provider not in runtime.providers_used:
                     runtime.providers_used.append(str(provider))
+            unified_internal = normalize_internal_evidence(
+                final_evidence,
+                tenant_id=tenant.organization_id,
+                workspace_id=tenant.workspace_id,
+            )
+            unified_external = normalize_external_sources(external_sources)
+            aggregation = aggregate_evidence(
+                payload.query,
+                [*unified_internal, *unified_external],
+            )
+            runtime.unified_evidence = [
+                item.model_dump(mode="json") for item in aggregation.evidence
+            ]
+            runtime.evidence_ranking = aggregation.ranking
+            runtime.evidence_deduplication = [
+                item.model_dump(mode="json") for item in aggregation.deduplication
+            ]
+            runtime.context_budget = aggregation.context_budget
             synthesized = await self._execute_tool(
                 session,
                 run,
@@ -309,6 +334,7 @@ class AgentOrchestrator:
                     "query": payload.query,
                     "evidence": final_evidence,
                     "external_sources": external_sources,
+                    "unified_evidence": runtime.unified_evidence,
                     "sufficient_evidence": final_sufficient or bool(external_sources),
                     "diagnosis": runtime.retrieval_diagnosis,
                 },
@@ -328,6 +354,8 @@ class AgentOrchestrator:
                     "answer": synthesized.answer,
                     "evidence": final_evidence,
                     "external_sources": external_sources,
+                    "unified_evidence": runtime.unified_evidence,
+                    "citations": synthesized.citations,
                 },
                 payload,
             )
@@ -344,11 +372,62 @@ class AgentOrchestrator:
             runtime.internal_evidence = final_evidence
             runtime.external_evidence = external_sources
             runtime.citations = [] if reviewed.abstained else reviewed.citations
+            runtime.claims = synthesized.claims if not reviewed.abstained else []
+            runtime.conflicts = synthesized.conflicts
+            runtime.unsupported_claims_removed = synthesized.unsupported_claims_removed
+            runtime.confidence_category = (
+                reviewed.confidence_category
+                or synthesized.confidence_category
+                or runtime.confidence_category
+            )
+            runtime.outcome = (
+                reviewed.outcome
+                or synthesized.outcome
+                or map_diagnosis_to_outcome(
+                    runtime.retrieval_diagnosis,
+                    safety_blocked=False,
+                    has_conflict=bool(runtime.conflicts),
+                ).value
+            )
             if (
                 runtime.retrieval_diagnosis.get("status") in TERMINAL_DIAGNOSES
                 and not external_sources
             ):
-                runtime.abstained = True
+                diagnosis_status = runtime.retrieval_diagnosis.get("status")
+                has_supported_claim = any(
+                    claim.get("verification_status") == "SUPPORTED" for claim in runtime.claims
+                )
+                should_preserve_supported_partial = (
+                    diagnosis_status == DiagnosisStatus.PARTIAL_EVIDENCE.value
+                    and has_supported_claim
+                )
+                should_preserve_supported_conflict = (
+                    diagnosis_status == DiagnosisStatus.CONFLICTING_EVIDENCE.value
+                    and has_supported_claim
+                    and not runtime.conflicts
+                )
+                should_preserve_supported = (
+                    should_preserve_supported_partial or should_preserve_supported_conflict
+                )
+                runtime.abstained = not should_preserve_supported
+                if (
+                    diagnosis_status != DiagnosisStatus.CONFLICTING_EVIDENCE.value
+                    and not should_preserve_supported
+                ):
+                    runtime.outcome = map_diagnosis_to_outcome(
+                        runtime.retrieval_diagnosis,
+                        safety_blocked=False,
+                        has_conflict=False,
+                    ).value
+                elif (
+                    runtime.outcome == AnswerOutcome.ANSWER_SUPPORTED.value
+                    and not should_preserve_supported
+                ):
+                    runtime.outcome = map_diagnosis_to_outcome(
+                        runtime.retrieval_diagnosis,
+                        safety_blocked=False,
+                        has_conflict=bool(runtime.conflicts),
+                    ).value
             runtime.total_duration_ms = int((time.perf_counter() - started) * 1000)
             runtime.status = AgentRunStatus.COMPLETED
             runtime.transition(AgentStateName.COMPLETE)
@@ -502,6 +581,10 @@ class AgentOrchestrator:
             runtime.evidence = fallback.evidence
             runtime.internal_evidence = fallback.evidence
             runtime.retrieval_diagnosis = fallback.retrieval_diagnosis
+            runtime.outcome = map_diagnosis_to_outcome(
+                runtime.retrieval_diagnosis,
+                safety_blocked=False,
+            ).value
             runtime.citations = [
                 {
                     "index": index,
@@ -646,6 +729,15 @@ class AgentOrchestrator:
             "providers_used": runtime.providers_used,
             "external_access_allowed": runtime.external_access_allowed,
             "external_access_performed": runtime.external_access_performed,
+            "outcome": runtime.outcome,
+            "claims": runtime.claims,
+            "conflicts": runtime.conflicts,
+            "unsupported_claims_removed": runtime.unsupported_claims_removed,
+            "confidence_category": runtime.confidence_category,
+            "unified_evidence": runtime.unified_evidence,
+            "evidence_ranking": runtime.evidence_ranking,
+            "evidence_deduplication": runtime.evidence_deduplication,
+            "context_budget": runtime.context_budget,
         }
 
     def _response(self, run_id: UUID, runtime: AgentRuntimeState) -> AgentQueryResponse:
@@ -670,6 +762,15 @@ class AgentOrchestrator:
             fallback_used=runtime.fallback_used,
             request_id=runtime.request_id,
             retrieval_diagnosis=runtime.retrieval_diagnosis,
+            outcome=runtime.outcome,
+            claims=runtime.claims,
+            conflicts=runtime.conflicts,
+            unsupported_claims_removed=runtime.unsupported_claims_removed,
+            confidence_category=runtime.confidence_category,
+            unified_evidence=runtime.unified_evidence,
+            evidence_ranking=runtime.evidence_ranking,
+            evidence_deduplication=runtime.evidence_deduplication,
+            context_budget=runtime.context_budget,
         )
 
     def _select_external_tool(self, query: str) -> str:

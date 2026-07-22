@@ -75,6 +75,15 @@ class AgentRuntimeState:
     external_sources_used: bool = False
     external_access_allowed: bool = False
     external_access_performed: bool = False
+    outcome: str = "INSUFFICIENT_EVIDENCE"
+    claims: list[dict] = field(default_factory=list)
+    conflicts: list[dict] = field(default_factory=list)
+    unsupported_claims_removed: list[str] = field(default_factory=list)
+    confidence_category: str = "none"
+    unified_evidence: list[dict] = field(default_factory=list)
+    evidence_ranking: dict = field(default_factory=dict)
+    evidence_deduplication: list[dict] = field(default_factory=list)
+    context_budget: dict = field(default_factory=dict)
     tools_used: list[str] = field(default_factory=list)
     safe_step_summaries: list[str] = field(default_factory=list)
     fallback_used: bool = False

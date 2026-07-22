@@ -175,6 +175,14 @@ Configured budgets:
 - `WEB_SEARCH_MAX_RESPONSE_BYTES=1000000`
 - `AGENT_EXTERNAL_APIS_ENABLED=false`
 - `SEARXNG_URL=http://searxng:8080`
+- `EVIDENCE_MAX_ITEMS=12`
+- `EVIDENCE_MAX_INTERNAL_ITEMS=8`
+- `EVIDENCE_MAX_EXTERNAL_ITEMS=6`
+- `EVIDENCE_CONTEXT_MAX_CHARS=12000`
+- `EVIDENCE_RRF_K=60`
+- `EVIDENCE_INTERNAL_PRIORITY_WEIGHT=1.0`
+- `EVIDENCE_EXTERNAL_TRUST_WEIGHT=0.8`
+- `EVIDENCE_MIN_SUPPORT_SCORE=0.65`
 
 The policy layer rejects:
 
@@ -208,8 +216,19 @@ Failures are persisted as safe summaries and surfaced through controlled API err
 - `safe_step_summaries`
 - `total_duration_ms`
 - `fallback_used`
+- `outcome`
+- `claims`
+- `conflicts`
+- `unsupported_claims_removed`
+- `confidence_category`
+- `unified_evidence`
+- `evidence_ranking`
+- `evidence_deduplication`
+- `context_budget`
 
 The response does not expose hidden reasoning. If the agent fails before producing a safe result, it may invoke the existing adaptive `/search` service internally, sets `fallback_used=true`, logs the reason on the run, and preserves the same authorization scope.
+
+Unified evidence normalization, source-aware rank fusion, context-budget trimming, claim verification, conflict detection, citation validation, and deterministic synthesis are described in `docs/architecture/multi-source-evidence.md`.
 
 ## Metrics
 
@@ -229,3 +248,12 @@ Prometheus exports agent counters and histograms without query, document, user, 
 - `ekip_agent_external_sources_used_total{provider=...,tool=...}`
 - `ekip_agent_ssrf_blocks_total{provider=...,outcome=...}`
 - `ekip_agent_external_timeouts_total{provider=...,tool=...}`
+- `ekip_agent_evidence_items_total{source_type=...}`
+- `ekip_agent_evidence_deduplicated_total{source_type=...}`
+- `ekip_agent_claims_verified_total{verification_status=...}`
+- `ekip_agent_claims_unsupported_total{outcome=...}`
+- `ekip_agent_conflicts_detected_total{outcome=...}`
+- `ekip_agent_citations_validated_total{source_type=...,outcome=...}`
+- `ekip_agent_citations_rejected_total{outcome=...}`
+- `ekip_agent_synthesis_fallbacks_total{outcome=...}`
+- `ekip_agent_context_budget_truncations_total{outcome=...}`

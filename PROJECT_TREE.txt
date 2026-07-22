@@ -5,6 +5,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   ├── __init__.py
 │   │   │   ├── budgets.py
 │   │   │   ├── enums.py
+│   │   │   ├── evidence.py
 │   │   │   ├── errors.py
 │   │   │   ├── executor.py
 │   │   │   ├── orchestrator.py
@@ -35,6 +36,8 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │       ├── agent_step.py
 │   │   │       └── agent_tool_call.py
 │   │   ├── rag/
+│   │   ├── evaluation/
+│   │   │   └── multi_source_evidence.py
 │   │   ├── services/
 │   │   └── security/
 │   │       ├── outbound.py
@@ -42,11 +45,15 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   └── tests/
 │       ├── integration/test_agent_api.py
 │       ├── unit/test_agent_foundation.py
-│       └── unit/test_external_providers.py
+│       ├── unit/test_external_providers.py
+│       ├── unit/test_multi_source_evaluation.py
+│       └── unit/test_multi_source_evidence.py
 ├── docs/
 │   ├── architecture/controlled-agentic-rag.md
 │   ├── architecture/external-tool-providers.md
+│   ├── architecture/multi-source-evidence.md
 │   ├── deployment/searxng-local-profile.md
+│   ├── evaluation/multi-source-evidence-evaluation.md
 │   ├── security/agent-tool-security.md
 │   └── security/external-content-threat-model.md
 ├── frontend/

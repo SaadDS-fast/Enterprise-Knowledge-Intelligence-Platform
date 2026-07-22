@@ -7,11 +7,26 @@ Updated on 2026-07-22.
 - Current branch: `feature/controlled-agentic-rag`
 - Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: safe web and approved API tool integration ready for commit.
+- Commit status: multi-source evidence aggregation and verification ready for commit.
 
 ## Controlled Agentic RAG
 
 Completed in this phase:
+
+- Added a unified Pydantic evidence model for `internal_document`, `web_search`, `wikipedia`, `arxiv`, and `approved_api` sources.
+- Added normalization adapters for internal retrieval results and approved external provider results.
+- Added scoped deduplication that never merges internal evidence across tenants or workspaces.
+- Added deterministic source-aware reciprocal-rank fusion with configurable trust, freshness, and internal-priority weights.
+- Added context-budget management that caps evidence count/characters while preserving citation labels.
+- Added structured claim extraction, claim support verification, unsupported-claim removal, and deterministic grounded synthesis.
+- Added numeric, date, status, owner/entity, and negation conflict detection with cited conflict responses.
+- Added citation validation for retained evidence labels and distinct internal/external citation schemas.
+- Added response fields for `outcome`, `claims`, `conflicts`, `unsupported_claims_removed`, `confidence_category`, `unified_evidence`, ranking metadata, deduplication metadata, and context-budget metadata.
+- Added multi-source evidence evaluation metrics computed only from executed cases.
+- Added Prometheus metrics for evidence normalization, deduplication, claim verification, unsupported claims, conflicts, citation validation/rejection, synthesis fallback, and context-budget truncation.
+- Added tests for normalization, malformed evidence rejection, deduplication, ranking, context budget, claim verification, contradiction detection, citation validation, deterministic synthesis, mixed prompt injection, evaluation metrics, external regression, tenant/workspace isolation, and `/search` regression.
+
+Completed in the previous external-tools phase:
 
 - Added optional, disabled-by-default external-source tools: `web_search`, `wikipedia_lookup`, and `arxiv_search`.
 - Added provider interfaces and adapters for disabled, deterministic test, self-hosted SearXNG, Wikipedia, and arXiv providers.
@@ -87,9 +102,9 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 83 passed, 2 skipped.
-- Backend coverage: 76%.
-- Controlled agent and external provider targeted tests: 46 passed.
+- Backend tests: 101 passed, 2 skipped.
+- Backend coverage: 78%.
+- Controlled agent, external provider, and multi-source evidence targeted tests: 65 passed.
 - Frontend unit/component tests: 19 passed.
 - Frontend Playwright E2E: 1 passed.
 - Frontend build/typecheck/lint: passed.

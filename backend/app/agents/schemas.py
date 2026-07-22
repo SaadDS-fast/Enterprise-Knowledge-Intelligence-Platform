@@ -65,6 +65,12 @@ class AgentToolResult(BaseModel):
     query: str | None = Field(default=None, max_length=4000)
     citations: list[dict[str, Any]] = Field(default_factory=list)
     abstained: bool = False
+    unified_evidence: list[dict[str, Any]] = Field(default_factory=list)
+    claims: list[dict[str, Any]] = Field(default_factory=list)
+    conflicts: list[dict[str, Any]] = Field(default_factory=list)
+    unsupported_claims_removed: list[str] = Field(default_factory=list)
+    outcome: str | None = Field(default=None, max_length=80)
+    confidence_category: str | None = Field(default=None, max_length=40)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -139,6 +145,15 @@ class AgentQueryResponse(BaseModel):
     fallback_used: bool = False
     request_id: str | None = None
     retrieval_diagnosis: dict[str, Any] = Field(default_factory=dict)
+    outcome: str = "INSUFFICIENT_EVIDENCE"
+    claims: list[dict[str, Any]] = Field(default_factory=list)
+    conflicts: list[dict[str, Any]] = Field(default_factory=list)
+    unsupported_claims_removed: list[str] = Field(default_factory=list)
+    confidence_category: str = "none"
+    unified_evidence: list[dict[str, Any]] = Field(default_factory=list)
+    evidence_ranking: dict[str, Any] = Field(default_factory=dict)
+    evidence_deduplication: list[dict[str, Any]] = Field(default_factory=list)
+    context_budget: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentFeatureDisabledResponse(BaseModel):

@@ -10,6 +10,12 @@ from pydantic import BaseModel
 
 from app.agents.enums import AgentErrorCode
 from app.agents.errors import AgentPolicyError
+from app.agents.evidence import (
+    UnifiedEvidence,
+    deterministic_synthesize,
+    normalize_external_sources,
+    normalize_internal_evidence,
+)
 from app.agents.providers import build_web_search_provider
 from app.agents.providers.arxiv import ArxivProvider
 from app.agents.providers.base import ExternalProviderError, ProviderResponse
@@ -26,6 +32,7 @@ from app.observability.metrics import (
     AGENT_EXTERNAL_TOOL_CALLS,
     AGENT_EXTERNAL_TOOL_DURATION,
     AGENT_EXTERNAL_TOOL_FAILURES,
+    AGENT_SYNTHESIS_FALLBACKS,
 )
 from app.rag.abstention import abstention_message
 from app.rag.citations import append_citations
@@ -124,6 +131,7 @@ class AnswerSynthesizerInput(BaseModel):
     query: str
     evidence: list[EvidenceItem]
     external_sources: list[ExternalSource] = []
+    unified_evidence: list[dict[str, Any]] = []
     sufficient_evidence: bool
     diagnosis: dict[str, Any] = {}
 
@@ -133,6 +141,8 @@ class SafetyReviewerInput(BaseModel):
     answer: str | None = None
     evidence: list[EvidenceItem] = []
     external_sources: list[ExternalSource] = []
+    unified_evidence: list[dict[str, Any]] = []
+    citations: list[dict[str, Any]] = []
 
 
 class ExternalSearchInput(BaseModel):
@@ -254,6 +264,38 @@ async def _answer_synthesizer_handler(
     payload: BaseModel, context: dict[str, Any]
 ) -> AgentToolResult:
     data = AnswerSynthesizerInput.model_validate(payload)
+    if data.unified_evidence:
+        try:
+            unified = [UnifiedEvidence.model_validate(item) for item in data.unified_evidence]
+            synthesis = deterministic_synthesize(data.query, unified, data.diagnosis)
+            return AgentToolResult(
+                tool="answer_synthesizer",
+                status="success",
+                summary=(
+                    "Grounded answer synthesized with validated citations"
+                    if not synthesis.abstained
+                    else "Agent abstained safely after claim verification"
+                ),
+                evidence=data.evidence,
+                external_sources=data.external_sources,
+                unified_evidence=[item.model_dump(mode="json") for item in unified],
+                answer=synthesis.answer,
+                sufficient_evidence=not synthesis.abstained,
+                citations=synthesis.citations,
+                abstained=synthesis.abstained,
+                claims=[item.model_dump(mode="json") for item in synthesis.claims],
+                conflicts=[item.model_dump(mode="json") for item in synthesis.conflicts],
+                unsupported_claims_removed=synthesis.unsupported_claims_removed,
+                outcome=synthesis.outcome.value,
+                confidence_category=synthesis.confidence_category.value,
+                metadata={
+                    "retrieval_diagnosis": data.diagnosis,
+                    "synthesizer": "deterministic_extractive",
+                    "citation_validation": "validated",
+                },
+            )
+        except Exception:
+            AGENT_SYNTHESIS_FALLBACKS.labels(outcome="validation_failure").inc()
     diagnosis_status = data.diagnosis.get("status")
     has_external = bool(data.external_sources)
     terminal_internal_diagnosis = diagnosis_status in {
@@ -299,11 +341,33 @@ async def _answer_synthesizer_handler(
 
 def _safety_reviewer_handler(payload: BaseModel, context: dict[str, Any]) -> AgentToolResult:
     data = SafetyReviewerInput.model_validate(payload)
+    cited_labels = {
+        str(citation.get("citation_label") or citation.get("external_source_label") or "")
+        for citation in data.citations
+    }
+    cited_unified = [
+        item
+        for item in data.unified_evidence
+        if not cited_labels or str(item.get("citation_label")) in cited_labels
+    ]
     query_scan = scan_prompt(data.query)
-    evidence_scan = scan_prompt(" ".join(item.content for item in data.evidence[:5]))
-    external_scan = scan_prompt(" ".join(item.excerpt for item in data.external_sources[:5]))
+    evidence_scan = scan_prompt(
+        "" if data.unified_evidence else " ".join(item.content for item in data.evidence[:5])
+    )
+    external_scan = scan_prompt(
+        ""
+        if data.unified_evidence
+        else " ".join(item.excerpt for item in data.external_sources[:5])
+    )
+    unified_scan = scan_prompt(" ".join(str(item.get("excerpt", "")) for item in cited_unified[:5]))
     answer_scan = scan_prompt(data.answer or "")
-    safe = query_scan.safe and evidence_scan.safe and external_scan.safe and answer_scan.safe
+    safe = (
+        query_scan.safe
+        and evidence_scan.safe
+        and external_scan.safe
+        and unified_scan.safe
+        and answer_scan.safe
+    )
     return AgentToolResult(
         tool="safety_reviewer",
         status="success" if safe else "failed",
@@ -311,15 +375,25 @@ def _safety_reviewer_handler(payload: BaseModel, context: dict[str, Any]) -> Age
         answer=data.answer if safe else abstention_message(data.query),
         evidence=data.evidence,
         external_sources=data.external_sources,
+        unified_evidence=data.unified_evidence,
         abstained=not safe,
-        citations=(_citations(data.evidence) + _external_citations(data.external_sources))
-        if safe
-        else [],
+        citations=(
+            data.citations
+            if safe and data.citations
+            else (
+                _citations(data.evidence) + _external_citations(data.external_sources)
+                if safe
+                else []
+            )
+        ),
+        outcome=None if safe else "SAFETY_BLOCKED",
+        confidence_category=None if safe else "none",
         metadata={
             "safe": safe,
             "query_matches": query_scan.matches,
             "evidence_matches": evidence_scan.matches,
             "external_matches": external_scan.matches,
+            "unified_evidence_matches": unified_scan.matches,
             "answer_matches": answer_scan.matches,
         },
     )
@@ -503,6 +577,20 @@ def _external_citations(sources: list[ExternalSource]) -> list[dict[str, Any]]:
         }
         for index, item in enumerate(sources, 1)
     ]
+
+
+def normalize_tool_evidence(
+    internal: list[EvidenceItem],
+    external: list[ExternalSource],
+    *,
+    tenant_id: Any,
+    workspace_id: Any,
+) -> list[UnifiedEvidence]:
+    return normalize_internal_evidence(
+        internal,
+        tenant_id=tenant_id,
+        workspace_id=workspace_id,
+    ) + normalize_external_sources(external)
 
 
 def build_default_registry() -> ToolRegistry:

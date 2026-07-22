@@ -215,6 +215,7 @@ def test_existing_search_regression(client, auth_headers) -> None:
     body = response.json()
     assert "answer" in body
     assert "retrieval_diagnosis" in body
+    assert "claims" not in body
 
 
 def test_agent_simple_document_question(client, auth_headers, monkeypatch) -> None:
@@ -229,6 +230,12 @@ def test_agent_simple_document_question(client, auth_headers, monkeypatch) -> No
     assert body["abstained"] is False
     assert "Operations Analytics" in body["answer"]
     assert body["citations"]
+    assert body["outcome"] == "ANSWER_SUPPORTED"
+    assert body["claims"]
+    assert body["claims"][0]["verification_status"] == "SUPPORTED"
+    assert body["unified_evidence"]
+    assert body["unified_evidence"][0]["source_type"] == "internal_document"
+    assert body["evidence_ranking"]["method"] == "reciprocal_rank_fusion"
 
 
 def test_agent_query_reformulation_and_retry(client, auth_headers, monkeypatch) -> None:
@@ -247,6 +254,7 @@ def test_agent_query_reformulation_and_retry(client, auth_headers, monkeypatch) 
 def test_agent_knowledge_absence(client, auth_headers, monkeypatch) -> None:
     body = agent_query(client, auth_headers, monkeypatch, "What is the capital of Virellia?")
     assert body["abstained"] is True
+    assert body["outcome"] in {"KNOWLEDGE_ABSENT", "INSUFFICIENT_EVIDENCE"}
     assert body["retrieval_diagnosis"]["status"] in {
         "KNOWLEDGE_ABSENT",
         "RETRIEVAL_FAILURE_UNRESOLVED",
@@ -284,12 +292,15 @@ def test_agent_conflicting_evidence(client, auth_headers, monkeypatch) -> None:
     body = agent_query(client, auth_headers, monkeypatch, "When did Project Chronos launch?")
     assert body["abstained"] is True
     assert body["retrieval_diagnosis"]["status"] == "CONFLICTING_EVIDENCE"
+    assert body["outcome"] == "CONFLICTING_EVIDENCE"
+    assert body["conflicts"]
 
 
 def test_agent_ambiguous_query(client, auth_headers, monkeypatch) -> None:
     body = agent_query(client, auth_headers, monkeypatch, "Atlas")
     assert body["abstained"] is True
     assert body["retrieval_diagnosis"]["status"] == "AMBIGUOUS_QUERY"
+    assert body["outcome"] == "CLARIFICATION_REQUIRED"
 
 
 def test_agent_prompt_injection_inside_uploaded_document(client, auth_headers, monkeypatch) -> None:
@@ -342,22 +353,31 @@ def test_agent_external_enabled_deterministic_provider(client, auth_headers, mon
     assert body["providers_used"] == ["deterministic"]
     assert body["external_evidence"][0]["provider"] == "deterministic"
     assert body["citations"][0]["source"] == "external"
+    assert body["external_evidence"][0]["provider"] in body["providers_used"]
+    assert body["unified_evidence"][0]["untrusted_external_content"] is True
+    assert body["outcome"] in {"ANSWER_SUPPORTED", "ANSWER_PARTIALLY_SUPPORTED"}
 
 
 def test_agent_internal_evidence_preferred_when_external_allowed(
     client, auth_headers, monkeypatch
 ) -> None:
+    internal_headers = register_user(
+        client,
+        "agent-internal-preferred@example.com",
+        "Agent Internal Preferred",
+        "Internal Preferred Workspace",
+    )
     monkeypatch.setattr(settings, "agent_web_search_enabled", True)
     monkeypatch.setattr(settings, "web_search_provider", WebSearchProvider.DETERMINISTIC)
     upload_ready_document(
         client,
-        auth_headers,
+        internal_headers,
         "agent-preferred.txt",
         "Project Preferred is owned by the Internal Knowledge team.",
     )
     body = agent_query(
         client,
-        auth_headers,
+        internal_headers,
         monkeypatch,
         "Who owns Project Preferred?",
         allow_external_sources=True,

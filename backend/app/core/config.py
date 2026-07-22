@@ -182,6 +182,25 @@ class Settings(BaseSettings):
     web_search_max_response_bytes: int = Field(default=1_000_000, ge=1024, le=5_000_000)
     agent_external_apis_enabled: bool = False
     searxng_url: str = "http://searxng:8080"
+    evidence_max_items: int = Field(default=12, ge=1, le=50)
+    evidence_max_internal_items: int = Field(default=8, ge=0, le=50)
+    evidence_max_external_items: int = Field(default=6, ge=0, le=50)
+    evidence_context_max_chars: int = Field(default=12_000, ge=500, le=100_000)
+    evidence_rrf_k: int = Field(default=60, ge=1, le=1000)
+    evidence_internal_priority_weight: float = Field(default=1.0, ge=0.0, le=5.0)
+    evidence_external_trust_weight: float = Field(default=0.8, ge=0.0, le=5.0)
+    evidence_min_support_score: float = Field(default=0.65, ge=0.0, le=1.0)
+    evidence_trust_weights: dict[str, float] = Field(
+        default_factory=lambda: {
+            "internal_document": 1.0,
+            "web_search": 0.55,
+            "searxng": 0.6,
+            "wikipedia": 0.8,
+            "arxiv": 0.85,
+            "approved_api": 0.75,
+            "deterministic": 0.6,
+        }
+    )
 
     @field_validator(
         "app_env",
@@ -203,15 +222,21 @@ class Settings(BaseSettings):
         "trusted_hosts",
         "allowed_file_extensions",
         "allowed_mime_types",
+        "evidence_trust_weights",
         mode="before",
     )
     @classmethod
-    def parse_list(cls, value: Any) -> Any:
+    def parse_jsonish(cls, value: Any) -> Any:
         if not isinstance(value, str):
             return value
         value = value.strip()
         if not value:
-            return []
+            return {} if value.startswith("{") else []
+        if value.startswith("{"):
+            result = json.loads(value)
+            if not isinstance(result, dict):
+                raise ValueError("Expected a JSON object")
+            return result
         if value.startswith("["):
             result = json.loads(value)
             if not isinstance(result, list):
@@ -223,6 +248,17 @@ class Settings(BaseSettings):
     @classmethod
     def normalize_extensions(cls, values: list[str]) -> list[str]:
         return sorted({v.lower() if v.startswith(".") else f".{v.lower()}" for v in values})
+
+    @field_validator("evidence_trust_weights")
+    @classmethod
+    def validate_trust_weights(cls, values: dict[str, Any]) -> dict[str, float]:
+        normalized: dict[str, float] = {}
+        for key, value in values.items():
+            weight = float(value)
+            if weight < 0.0 or weight > 1.0:
+                raise ValueError("Evidence trust weights must be between 0 and 1")
+            normalized[str(key)] = weight
+        return normalized
 
     @field_validator("debug", mode="before")
     @classmethod

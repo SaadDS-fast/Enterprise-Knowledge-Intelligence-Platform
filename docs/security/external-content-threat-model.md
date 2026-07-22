@@ -34,8 +34,10 @@ The safety reviewer scans external excerpts and drafted answers for attempts to:
 - trigger shell commands or arbitrary URLs
 - override evidence or safety rules
 
-If external content contains a prompt-injection signal, the agent abstains and returns no external citations.
+If cited external content contains a prompt-injection signal, the agent abstains and returns no external citations. Non-cited retrieved text remains untrusted evidence text and cannot alter execution.
 
 ## Provenance
 
 External citations use external fields: provider, title, canonical URL, retrieval date, and excerpt. Internal document citations keep document, version, and chunk provenance. The two provenance types are not mixed.
+
+External evidence never receives tenant or workspace identifiers. Internal evidence never inherits external provenance.

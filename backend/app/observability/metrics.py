@@ -76,6 +76,51 @@ AGENT_EXTERNAL_TIMEOUTS = Counter(
     "Agent external tool timeouts",
     ["provider", "tool"],
 )
+AGENT_EVIDENCE_ITEMS = Counter(
+    "ekip_agent_evidence_items_total",
+    "Agent evidence items normalized",
+    ["source_type"],
+)
+AGENT_EVIDENCE_DEDUPLICATED = Counter(
+    "ekip_agent_evidence_deduplicated_total",
+    "Agent evidence duplicates merged",
+    ["source_type"],
+)
+AGENT_CLAIMS_VERIFIED = Counter(
+    "ekip_agent_claims_verified_total",
+    "Agent claims verified",
+    ["verification_status"],
+)
+AGENT_CLAIMS_UNSUPPORTED = Counter(
+    "ekip_agent_claims_unsupported_total",
+    "Agent unsupported claims",
+    ["outcome"],
+)
+AGENT_CONFLICTS_DETECTED = Counter(
+    "ekip_agent_conflicts_detected_total",
+    "Agent evidence conflicts detected",
+    ["outcome"],
+)
+AGENT_CITATIONS_VALIDATED = Counter(
+    "ekip_agent_citations_validated_total",
+    "Agent citations validated",
+    ["source_type", "outcome"],
+)
+AGENT_CITATIONS_REJECTED = Counter(
+    "ekip_agent_citations_rejected_total",
+    "Agent citations rejected",
+    ["outcome"],
+)
+AGENT_SYNTHESIS_FALLBACKS = Counter(
+    "ekip_agent_synthesis_fallbacks_total",
+    "Agent deterministic synthesis fallbacks",
+    ["outcome"],
+)
+AGENT_CONTEXT_BUDGET_TRUNCATIONS = Counter(
+    "ekip_agent_context_budget_truncations_total",
+    "Agent context budget truncations",
+    ["outcome"],
+)
 
 
 def metrics_response() -> Response:
