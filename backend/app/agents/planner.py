@@ -20,6 +20,18 @@ class DeterministicPlanner(PlannerProvider):
             intent=intent,
             steps=[
                 PlannerStep(
+                    tool="document_metadata",
+                    purpose="Document metadata scoped to workspace selected",
+                    required=True,
+                    arguments={},
+                ),
+                PlannerStep(
+                    tool="query_reformulation",
+                    purpose="Query normalization selected",
+                    required=True,
+                    arguments={},
+                ),
+                PlannerStep(
                     tool="internal_search",
                     purpose="Internal document search selected",
                     required=True,
@@ -28,6 +40,24 @@ class DeterministicPlanner(PlannerProvider):
                 PlannerStep(
                     tool="evidence_verifier",
                     purpose="Evidence verification selected",
+                    required=True,
+                    arguments={},
+                ),
+                PlannerStep(
+                    tool="retrieval_diagnosis",
+                    purpose="Retrieval diagnosis selected",
+                    required=True,
+                    arguments={},
+                ),
+                PlannerStep(
+                    tool="answer_synthesizer",
+                    purpose="Answer synthesis selected",
+                    required=True,
+                    arguments={},
+                ),
+                PlannerStep(
+                    tool="safety_reviewer",
+                    purpose="Safety review selected",
                     required=True,
                     arguments={},
                 ),

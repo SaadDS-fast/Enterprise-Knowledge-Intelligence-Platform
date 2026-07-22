@@ -40,6 +40,14 @@ WORKER_QUEUE_DELAY = Histogram(
 WORKER_ACTIVE_TASKS = Gauge(
     "ekip_worker_active_tasks", "Currently active Celery tasks by worker role", ["worker_role"]
 )
+AGENT_RUNS_STARTED = Counter("ekip_agent_runs_started_total", "Agent runs started")
+AGENT_RUNS_COMPLETED = Counter("ekip_agent_runs_completed_total", "Agent runs completed")
+AGENT_RUNS_FAILED = Counter("ekip_agent_runs_failed_total", "Agent runs failed")
+AGENT_TOOL_CALLS = Counter("ekip_agent_tool_calls_total", "Agent tool calls", ["tool"])
+AGENT_REPLANS = Counter("ekip_agent_replans_total", "Agent replans")
+AGENT_FALLBACKS = Counter("ekip_agent_fallbacks_total", "Agent fallbacks")
+AGENT_DURATION = Histogram("ekip_agent_duration_seconds", "Agent run duration")
+AGENT_TOOL_DURATION = Histogram("ekip_agent_tool_duration_seconds", "Agent tool duration", ["tool"])
 
 
 def metrics_response() -> Response:

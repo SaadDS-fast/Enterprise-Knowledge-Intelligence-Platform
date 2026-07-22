@@ -18,7 +18,7 @@ def validate_plan(
     budget: AgentBudget,
     workspace_id: UUID,
 ) -> None:
-    budget.ensure_steps(len(plan.steps))
+    budget.ensure_tool_call(len(plan.steps))
     for step in plan.steps:
         if FORBIDDEN_ARGUMENT_KEYS.intersection(step.arguments):
             raise AgentPolicyError(

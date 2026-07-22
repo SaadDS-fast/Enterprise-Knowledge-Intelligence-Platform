@@ -7,6 +7,7 @@ from typing import Any
 from app.agents.budgets import AgentBudget
 from app.agents.schemas import AgentToolResult, PlannerStep
 from app.agents.tool_registry import ToolRegistry
+from app.observability.metrics import AGENT_TOOL_CALLS, AGENT_TOOL_DURATION
 
 
 class ToolExecutor:
@@ -25,4 +26,7 @@ class ToolExecutor:
             timeout=tool.timeout_seconds,
         )
         self.budget.ensure_time()
-        return result, int((time.perf_counter() - started) * 1000)
+        duration_seconds = time.perf_counter() - started
+        AGENT_TOOL_CALLS.labels(tool=step.tool).inc()
+        AGENT_TOOL_DURATION.labels(tool=step.tool).observe(duration_seconds)
+        return result, int(duration_seconds * 1000)

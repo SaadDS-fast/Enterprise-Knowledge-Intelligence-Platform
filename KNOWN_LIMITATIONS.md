@@ -1,6 +1,6 @@
 # Known Limitations
 
-Updated on 2026-07-21 from branch `feature/controlled-agentic-rag`.
+Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 
 ## Implemented And Runtime-Tested
 
@@ -12,7 +12,7 @@ Updated on 2026-07-21 from branch `feature/controlled-agentic-rag`.
 - Prometheus scraping of backend and worker metrics endpoints.
 - Browser E2E for auth, upload, ingestion, search, evidence display, abstention, tenant isolation, logout, and cleanup.
 - Bandit, pip-audit, npm audit, backend tests, frontend tests, typecheck, lint, and production build.
-- Controlled agent orchestration foundation with disabled-by-default API, deterministic planner, allowlisted tools, budgets, safe persistence, and audit events.
+- Controlled internal-document agent with disabled-by-default API, deterministic planner, typed internal tools, retrieval retry, evidence diagnosis, citation-aware synthesis, safety review, budgets, safe persistence, audit events, and fallback to adaptive RAG.
 
 ## Remaining Limitations
 
@@ -22,7 +22,7 @@ Updated on 2026-07-21 from branch `feature/controlled-agentic-rag`.
 - Several scaffolded modules remain low coverage, including agent, cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 - Agentic RAG is not enabled by default and has no frontend workflow in this phase.
-- External network tools, web search, direct SQL tools, shell tools, and autonomous report generation are intentionally not implemented.
+- External network tools, web search, external APIs, direct SQL tools, shell tools, report exports, and autonomous report generation are intentionally not implemented.
 
 ## Notes
 

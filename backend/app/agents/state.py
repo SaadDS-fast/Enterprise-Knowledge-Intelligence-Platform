@@ -20,19 +20,29 @@ ALLOWED_TRANSITIONS: dict[AgentStateName, frozenset[AgentStateName]] = {
         {
             AgentStateName.SELECT_TOOL,
             AgentStateName.ASSEMBLE_EVIDENCE,
+            AgentStateName.VERIFY_EVIDENCE,
             AgentStateName.REPLAN,
+            AgentStateName.SYNTHESIZE,
+            AgentStateName.SAFETY_REVIEW,
             AgentStateName.FAILED,
             AgentStateName.CANCELLED,
         }
     ),
     AgentStateName.ASSEMBLE_EVIDENCE: frozenset({AgentStateName.VERIFY_EVIDENCE}),
     AgentStateName.VERIFY_EVIDENCE: frozenset(
-        {AgentStateName.SYNTHESIZE, AgentStateName.REPLAN, AgentStateName.FAILED}
+        {
+            AgentStateName.SELECT_TOOL,
+            AgentStateName.SYNTHESIZE,
+            AgentStateName.REPLAN,
+            AgentStateName.FAILED,
+        }
     ),
     AgentStateName.REPLAN: frozenset(
         {AgentStateName.SELECT_TOOL, AgentStateName.SYNTHESIZE, AgentStateName.FAILED}
     ),
-    AgentStateName.SYNTHESIZE: frozenset({AgentStateName.SAFETY_REVIEW}),
+    AgentStateName.SYNTHESIZE: frozenset(
+        {AgentStateName.SELECT_TOOL, AgentStateName.SAFETY_REVIEW}
+    ),
     AgentStateName.SAFETY_REVIEW: frozenset({AgentStateName.COMPLETE, AgentStateName.FAILED}),
     AgentStateName.COMPLETE: frozenset(),
     AgentStateName.FAILED: frozenset(),
@@ -55,6 +65,13 @@ class AgentRuntimeState:
     plan_summary: str | None = None
     evidence: list[EvidenceItem] = field(default_factory=list)
     answer: str | None = None
+    abstained: bool = False
+    citations: list[dict] = field(default_factory=list)
+    retrieval_diagnosis: dict = field(default_factory=dict)
+    tools_used: list[str] = field(default_factory=list)
+    safe_step_summaries: list[str] = field(default_factory=list)
+    fallback_used: bool = False
+    total_duration_ms: int | None = None
     tool_calls: int = 0
     retrieval_retries: int = 0
     cancelled: bool = False

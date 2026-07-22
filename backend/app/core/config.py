@@ -165,7 +165,7 @@ class Settings(BaseSettings):
     metrics_enabled: bool = True
     agentic_rag_enabled: bool = False
     agent_max_steps: int = Field(default=6, ge=1, le=25)
-    agent_max_tool_calls: int = Field(default=8, ge=0, le=50)
+    agent_max_tool_calls: int = Field(default=12, ge=0, le=50)
     agent_timeout_seconds: float = Field(default=90.0, gt=0, le=600)
     agent_max_retrieval_retries: int = Field(default=2, ge=0, le=10)
     agent_planner_provider: AgentPlannerProvider = AgentPlannerProvider.DETERMINISTIC

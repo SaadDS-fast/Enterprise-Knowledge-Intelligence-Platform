@@ -1,17 +1,32 @@
 # Implementation Report
 
-Updated on 2026-07-21.
+Updated on 2026-07-22.
 
 ## Branch And Commit
 
 - Current branch: `feature/controlled-agentic-rag`
-- Started from validated commit: `469e561d763ac03e6c416f9ac816c8b0873f30da`
+- Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: controlled agentic RAG foundation changes ready for commit.
+- Commit status: internal RAG tool integration ready for final validation and commit.
 
-## Controlled Agentic RAG Foundation
+## Controlled Agentic RAG
 
 Completed in this phase:
+
+- Preserved existing `POST /api/v1/search` behavior and route contract.
+- Kept agentic mode disabled by default behind `AGENTIC_RAG_ENABLED`.
+- Extended `POST /api/v1/agent/query` into a working internal-document agent.
+- Kept `GET /api/v1/agent/runs/{run_id}` workspace-scoped.
+- Added typed internal tools for document metadata, query reformulation, internal search, evidence verification, retrieval diagnosis, answer synthesis, and safety review.
+- Reused the validated hybrid retriever, reranker, retrieval retry, evidence sufficiency, retrieval diagnosis, citations, abstention, and LLM gateway paths.
+- Added deterministic execution loop for authorization, planning, tool calls, optional retry, synthesis, citation verification, safety review, and safe fallback.
+- Added structured API response fields for evidence, citations, retrieval diagnosis, tools used, safe step summaries, total duration, and fallback status.
+- Added Prometheus metrics for agent runs, tool calls, replans, fallbacks, run duration, and per-tool duration without sensitive labels.
+- Added tests for simple document answers, reformulation and retry, recovered retrieval, knowledge absence, partial evidence, conflicting evidence, ambiguity, max-step/tool termination, tool failure fallback, citation verification, cross-tenant denial, cross-workspace denial, prompt injection in documents, and `/search` regression.
+- Added Docker Compose wiring to enable agentic mode explicitly for runtime validation while preserving the default disabled posture.
+- Added a targeted frontend `sharp@0.35.3` override to resolve the transitive Next image dependency advisory while keeping Next on 16.2.10.
+
+Completed in the previous foundation phase:
 
 - Added disabled-by-default `POST /api/v1/agent/query`.
 - Added `GET /api/v1/agent/runs/{run_id}` with workspace-scoped access.
@@ -60,15 +75,16 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 50 passed, 2 skipped.
+- Backend tests: 60 passed, 2 skipped.
 - Backend coverage: 74%.
-- Controlled agent targeted tests: 13 passed.
+- Controlled agent targeted tests: 23 passed.
 - Frontend unit/component tests: 19 passed.
 - Frontend Playwright E2E: 1 passed.
 - Frontend build/typecheck/lint: passed.
 - Bandit, pip-audit, and npm audit: passed.
 - Migration smoke: disposable SQLite Alembic `upgrade head` passed through `c8f4a2d91b77`.
 - Docker smoke: `docker compose config` passed; running observability stack remained healthy.
+- Agent Docker runtime: job `4982e894-bc00-4c54-b069-f79f44f7f71f` and run `20bc2a99-e839-468d-87b6-4d970909f327` passed against PostgreSQL/Redis/MinIO/Celery.
 
 ## Follow-Up
 
@@ -76,4 +92,4 @@ Runtime probes passed:
 - Load/resilience testing was not run.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
-- Web search, external APIs, autonomous research reports, and major frontend agent UX are intentionally not included in this phase.
+- Web search, external APIs, autonomous research reports, report exports, and major frontend agent UX are intentionally not included in this phase.

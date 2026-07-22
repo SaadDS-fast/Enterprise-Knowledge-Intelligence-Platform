@@ -40,10 +40,15 @@ class AgentPlan(BaseModel):
 
 
 class AgentToolResult(BaseModel):
+    tool: str = Field(default="unknown", min_length=1, max_length=80)
+    status: str = Field(default="success", max_length=40)
     summary: str = Field(max_length=500)
     evidence: list[EvidenceItem] = Field(default_factory=list)
     answer: str | None = Field(default=None, max_length=8000)
     sufficient_evidence: bool | None = None
+    query: str | None = Field(default=None, max_length=4000)
+    citations: list[dict[str, Any]] = Field(default_factory=list)
+    abstained: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -102,8 +107,14 @@ class AgentQueryResponse(BaseModel):
     status: AgentRunStatus
     current_state: AgentStateName
     answer: str | None = None
+    abstained: bool = False
+    citations: list[dict[str, Any]] = Field(default_factory=list)
     evidence: list[EvidenceItem] = Field(default_factory=list)
+    tools_used: list[str] = Field(default_factory=list)
+    safe_step_summaries: list[str] = Field(default_factory=list)
     safe_plan_summary: str | None = None
+    total_duration_ms: int | None = None
+    fallback_used: bool = False
     request_id: str | None = None
     retrieval_diagnosis: dict[str, Any] = Field(default_factory=dict)
 

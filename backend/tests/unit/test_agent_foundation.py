@@ -34,10 +34,17 @@ def test_invalid_state_transition_is_rejected() -> None:
 async def test_deterministic_plan_generation() -> None:
     plan = await DeterministicPlanner().create_plan("Who owns Project Atlas?")
     assert plan.intent is AgentIntent.DOCUMENT_QUESTION
-    assert [step.tool for step in plan.steps] == ["internal_search", "evidence_verifier"]
-    assert (
-        plan.safe_summary() == "Internal document search selected; Evidence verification selected"
-    )
+    assert [step.tool for step in plan.steps] == [
+        "document_metadata",
+        "query_reformulation",
+        "internal_search",
+        "evidence_verifier",
+        "retrieval_diagnosis",
+        "answer_synthesizer",
+        "safety_reviewer",
+    ]
+    assert "Internal document search selected" in plan.safe_summary()
+    assert "Safety review selected" in plan.safe_summary()
 
 
 def test_unknown_tool_rejection() -> None:
@@ -67,7 +74,7 @@ def test_budget_enforcement_rejects_too_many_steps() -> None:
         validate_plan(
             plan,
             registry=build_default_registry(),
-            budget=AgentBudget(2, 8, 2, 90, 1.0),
+            budget=AgentBudget(6, 2, 2, 90, 1.0),
             workspace_id=uuid4(),
         )
 

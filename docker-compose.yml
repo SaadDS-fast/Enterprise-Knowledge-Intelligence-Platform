@@ -16,6 +16,8 @@ x-backend-env: &backend-env
   JOB_EXECUTION_MODE: celery
   LOCAL_LLM_BACKEND: extractive
   OTEL_ENABLED: "false"
+  AGENTIC_RAG_ENABLED: ${AGENTIC_RAG_ENABLED:-false}
+  AGENT_MAX_TOOL_CALLS: ${AGENT_MAX_TOOL_CALLS:-12}
   TRUSTED_HOSTS: localhost,127.0.0.1,testserver,backend
 
 services:

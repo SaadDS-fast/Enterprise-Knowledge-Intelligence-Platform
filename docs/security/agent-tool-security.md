@@ -1,6 +1,6 @@
 # Agent Tool Security
 
-Updated on 2026-07-21.
+Updated on 2026-07-22.
 
 ## Default Posture
 
@@ -18,8 +18,13 @@ The tool registry is allowlist based. A planner can only select tools registered
 
 This phase permits only internal, tenant-scoped tools:
 
+- `document_metadata`
+- `query_reformulation`
 - `internal_search`
 - `evidence_verifier`
+- `retrieval_diagnosis`
+- `answer_synthesizer`
+- `safety_reviewer`
 
 Network-required tools are rejected. Disabled placeholders cannot claim success.
 
@@ -40,6 +45,8 @@ These checks apply before tool execution.
 ## Tenant And Workspace Scope
 
 The API uses the existing authenticated tenant dependency. The orchestrator receives a `TenantContext` and passes only the authorized `workspace_id` into tools. Tool arguments cannot override the workspace.
+
+Retrieval and fallback paths preserve the same workspace and optional document filters. Cross-tenant and cross-workspace queries against uploaded document content return no evidence instead of leaking document text.
 
 Stored runs are scoped by:
 
@@ -69,6 +76,10 @@ Disallowed examples:
 ## Audit Events
 
 Agent run creation, completion, and cancellation create audit events with sanitized summaries. Audit details do not contain prompts beyond the stored user query already present on `agent_runs`.
+
+## Prompt Injection
+
+The safety reviewer scans the user query, retrieved evidence, and drafted answer for prompt-injection signals. Uploaded documents that ask the model to ignore prior or system instructions force safe abstention.
 
 ## Future Tool Review
 
