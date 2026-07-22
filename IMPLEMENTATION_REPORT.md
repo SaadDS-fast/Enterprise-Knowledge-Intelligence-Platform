@@ -7,11 +7,23 @@ Updated on 2026-07-22.
 - Current branch: `feature/controlled-agentic-rag`
 - Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: internal RAG tool integration ready for final validation and commit.
+- Commit status: safe web and approved API tool integration ready for commit.
 
 ## Controlled Agentic RAG
 
 Completed in this phase:
+
+- Added optional, disabled-by-default external-source tools: `web_search`, `wikipedia_lookup`, and `arxiv_search`.
+- Added provider interfaces and adapters for disabled, deterministic test, self-hosted SearXNG, Wikipedia, and arXiv providers.
+- Added strict outbound request validation for provider host allowlists, HTTPS public APIs, DNS checks, redirects, blocked private/metadata/Docker hosts, content type, timeout, and response-size limits.
+- Added `allow_external_sources=false` request gating and response provenance fields for external and internal evidence.
+- Added external provenance citations with provider, title, canonical URL, retrieval date, and excerpt while preserving internal chunk/document citations.
+- Added external prompt-injection handling so unsafe external excerpts force abstention and clear citations.
+- Added Prometheus metrics for external tool calls, failures, durations, sources used, SSRF blocks, and external timeouts without sensitive labels.
+- Added optional SearXNG Docker profile and deployment documentation.
+- Added deterministic tests for disabled providers, external opt-in, provider parsing, unknown providers/tools, SSRF blocks, redirects, size/content-type/timeout failures, prompt injection, provenance, internal-preference, and `/search` regression.
+
+Completed in the previous internal-agent phase:
 
 - Preserved existing `POST /api/v1/search` behavior and route contract.
 - Kept agentic mode disabled by default behind `AGENTIC_RAG_ENABLED`.
@@ -75,9 +87,9 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 60 passed, 2 skipped.
-- Backend coverage: 74%.
-- Controlled agent targeted tests: 23 passed.
+- Backend tests: 83 passed, 2 skipped.
+- Backend coverage: 76%.
+- Controlled agent and external provider targeted tests: 46 passed.
 - Frontend unit/component tests: 19 passed.
 - Frontend Playwright E2E: 1 passed.
 - Frontend build/typecheck/lint: passed.
@@ -85,11 +97,14 @@ Runtime probes passed:
 - Migration smoke: disposable SQLite Alembic `upgrade head` passed through `c8f4a2d91b77`.
 - Docker smoke: `docker compose config` passed; running observability stack remained healthy.
 - Agent Docker runtime: job `4982e894-bc00-4c54-b069-f79f44f7f71f` and run `20bc2a99-e839-468d-87b6-4d970909f327` passed against PostgreSQL/Redis/MinIO/Celery.
+- External-disabled runtime: job `792e40b9-3357-47e7-b0db-5a4d816f5110`, internal run `4b52e7e2-2dd2-46cc-bd89-e0a5c5f16310`, public-disabled run `1db97c59-c459-4765-93ba-a8b03c4cf0ab`.
+- Deterministic external runtime: public external run `e4271e7e-b199-458e-a217-f4064478cdf6`, internal-preference run `01a2870f-5ab1-4086-828c-d710c6a84f3c`.
 
 ## Follow-Up
 
 - Ollama profile validation was not run.
+- Live SearXNG profile launch was not run; `docker compose --profile web-search config` and parser tests passed.
 - Load/resilience testing was not run.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
-- Web search, external APIs, autonomous research reports, report exports, and major frontend agent UX are intentionally not included in this phase.
+- Arbitrary browsing, autonomous research reports, report exports, unrestricted external APIs, and major frontend agent UX are intentionally not included in this phase.

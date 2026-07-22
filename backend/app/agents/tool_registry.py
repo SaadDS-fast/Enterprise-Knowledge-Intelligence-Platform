@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
@@ -9,11 +10,23 @@ from pydantic import BaseModel
 
 from app.agents.enums import AgentErrorCode
 from app.agents.errors import AgentPolicyError
-from app.agents.schemas import AgentToolResult
+from app.agents.providers import build_web_search_provider
+from app.agents.providers.arxiv import ArxivProvider
+from app.agents.providers.base import ExternalProviderError, ProviderResponse
+from app.agents.providers.wikipedia import WikipediaProvider
+from app.agents.schemas import AgentToolResult, ExternalSource
+from app.core.config import settings
 from app.llm.base import GenerationRequest
 from app.llm.gateway import get_llm_gateway
 from app.models.domain import RetrievedEvidence
 from app.models.schemas import EvidenceItem
+from app.observability.metrics import (
+    AGENT_EXTERNAL_SOURCES_USED,
+    AGENT_EXTERNAL_TIMEOUTS,
+    AGENT_EXTERNAL_TOOL_CALLS,
+    AGENT_EXTERNAL_TOOL_DURATION,
+    AGENT_EXTERNAL_TOOL_FAILURES,
+)
 from app.rag.abstention import abstention_message
 from app.rag.citations import append_citations
 from app.rag.evidence import evidence_is_sufficient, key_terms
@@ -37,8 +50,11 @@ class ToolDefinition:
     input_schema: type[BaseModel]
     output_schema: type[BaseModel]
     required_permission: str
+    feature_flag: str | None
     timeout_seconds: float
+    max_result_count: int
     max_result_size: int
+    max_response_size: int
     network_required: bool
     enabled: bool
     handler: ToolHandler
@@ -107,6 +123,7 @@ class RetrievalDiagnosisInput(BaseModel):
 class AnswerSynthesizerInput(BaseModel):
     query: str
     evidence: list[EvidenceItem]
+    external_sources: list[ExternalSource] = []
     sufficient_evidence: bool
     diagnosis: dict[str, Any] = {}
 
@@ -115,6 +132,12 @@ class SafetyReviewerInput(BaseModel):
     query: str
     answer: str | None = None
     evidence: list[EvidenceItem] = []
+    external_sources: list[ExternalSource] = []
+
+
+class ExternalSearchInput(BaseModel):
+    query: str
+    max_results: int | None = None
 
 
 class PlaceholderInput(BaseModel):
@@ -232,17 +255,28 @@ async def _answer_synthesizer_handler(
 ) -> AgentToolResult:
     data = AnswerSynthesizerInput.model_validate(payload)
     diagnosis_status = data.diagnosis.get("status")
-    should_abstain = (not data.sufficient_evidence) or diagnosis_status in {
+    has_external = bool(data.external_sources)
+    terminal_internal_diagnosis = diagnosis_status in {
         DiagnosisStatus.AMBIGUOUS_QUERY.value,
         DiagnosisStatus.CONFLICTING_EVIDENCE.value,
         DiagnosisStatus.KNOWLEDGE_ABSENT.value,
         DiagnosisStatus.PARTIAL_EVIDENCE.value,
         DiagnosisStatus.RETRIEVAL_FAILURE_UNRESOLVED.value,
     }
+    should_abstain = ((not data.sufficient_evidence) or terminal_internal_diagnosis) and not (
+        has_external and diagnosis_status != DiagnosisStatus.CONFLICTING_EVIDENCE.value
+    )
     retrieved = [_to_retrieved(item) for item in data.evidence]
     if should_abstain:
         answer = abstention_message(data.query)
         abstained = True
+    elif has_external and not retrieved:
+        first = data.external_sources[0]
+        answer = (
+            "External source evidence is available from "
+            f"{first.provider}: {first.title}. {first.excerpt[:500]} [E1]"
+        )
+        abstained = False
     else:
         result = await get_llm_gateway().answer(
             GenerationRequest(question=data.query, evidence=retrieved)
@@ -254,9 +288,10 @@ async def _answer_synthesizer_handler(
         status="success",
         summary="Answer synthesized with citations" if not abstained else "Agent abstained safely",
         evidence=data.evidence,
+        external_sources=data.external_sources,
         answer=answer,
         sufficient_evidence=data.sufficient_evidence,
-        citations=_citations(data.evidence),
+        citations=_citations(data.evidence) + _external_citations(data.external_sources),
         abstained=abstained,
         metadata={"retrieval_diagnosis": data.diagnosis},
     )
@@ -266,21 +301,150 @@ def _safety_reviewer_handler(payload: BaseModel, context: dict[str, Any]) -> Age
     data = SafetyReviewerInput.model_validate(payload)
     query_scan = scan_prompt(data.query)
     evidence_scan = scan_prompt(" ".join(item.content for item in data.evidence[:5]))
+    external_scan = scan_prompt(" ".join(item.excerpt for item in data.external_sources[:5]))
     answer_scan = scan_prompt(data.answer or "")
-    safe = query_scan.safe and evidence_scan.safe and answer_scan.safe
+    safe = query_scan.safe and evidence_scan.safe and external_scan.safe and answer_scan.safe
     return AgentToolResult(
         tool="safety_reviewer",
         status="success" if safe else "failed",
         summary="Safe response reviewed" if safe else "Unsafe prompt injection signal detected",
         answer=data.answer if safe else abstention_message(data.query),
         evidence=data.evidence,
+        external_sources=data.external_sources,
         abstained=not safe,
-        citations=_citations(data.evidence) if safe else [],
+        citations=(_citations(data.evidence) + _external_citations(data.external_sources))
+        if safe
+        else [],
         metadata={
             "safe": safe,
             "query_matches": query_scan.matches,
             "evidence_matches": evidence_scan.matches,
+            "external_matches": external_scan.matches,
             "answer_matches": answer_scan.matches,
+        },
+    )
+
+
+async def _web_search_handler(payload: BaseModel, context: dict[str, Any]) -> AgentToolResult:
+    if not context.get("allow_external_sources") or not settings.agent_web_search_enabled:
+        return _external_disabled_result("web_search", "web_search")
+    data = ExternalSearchInput.model_validate(payload)
+    provider = build_web_search_provider()
+    return await _execute_external_provider(
+        tool="web_search",
+        provider=provider,
+        query=data.query,
+        max_results=data.max_results or settings.web_search_max_results,
+    )
+
+
+async def _wikipedia_lookup_handler(payload: BaseModel, context: dict[str, Any]) -> AgentToolResult:
+    if not context.get("allow_external_sources") or not settings.agent_external_apis_enabled:
+        return _external_disabled_result("wikipedia_lookup", "wikipedia")
+    data = ExternalSearchInput.model_validate(payload)
+    provider = WikipediaProvider(
+        timeout_seconds=settings.web_search_timeout_seconds,
+        max_response_bytes=settings.web_search_max_response_bytes,
+    )
+    return await _execute_external_provider(
+        tool="wikipedia_lookup",
+        provider=provider,
+        query=data.query,
+        max_results=data.max_results or settings.web_search_max_results,
+    )
+
+
+async def _arxiv_search_handler(payload: BaseModel, context: dict[str, Any]) -> AgentToolResult:
+    if not context.get("allow_external_sources") or not settings.agent_external_apis_enabled:
+        return _external_disabled_result("arxiv_search", "arxiv")
+    data = ExternalSearchInput.model_validate(payload)
+    provider = ArxivProvider(
+        timeout_seconds=settings.web_search_timeout_seconds,
+        max_response_bytes=settings.web_search_max_response_bytes,
+    )
+    return await _execute_external_provider(
+        tool="arxiv_search",
+        provider=provider,
+        query=data.query,
+        max_results=data.max_results or settings.web_search_max_results,
+    )
+
+
+async def _execute_external_provider(
+    *, tool: str, provider: Any, query: str, max_results: int
+) -> AgentToolResult:
+    started = time.perf_counter()
+    outcome = "success"
+    provider_name = getattr(provider, "name", "unknown")
+    try:
+        response: ProviderResponse = await provider.search(query, max_results=max_results)
+        provider_name = response.provider
+        outcome = response.status
+        AGENT_EXTERNAL_TOOL_CALLS.labels(
+            provider=response.provider, tool=tool, outcome=outcome
+        ).inc()
+        if response.results:
+            AGENT_EXTERNAL_SOURCES_USED.labels(provider=response.provider, tool=tool).inc(
+                len(response.results)
+            )
+        return AgentToolResult(
+            tool=tool,
+            status=response.status,
+            summary=(
+                "External provider is disabled"
+                if response.disabled
+                else "External source search completed"
+            ),
+            external_sources=response.results,
+            metadata={
+                "provider": response.provider,
+                "disabled": response.disabled,
+                "external_access_performed": bool(response.results),
+                "untrusted_source_boundary": True,
+                "error": response.error,
+            },
+        )
+    except TimeoutError:
+        outcome = "timeout"
+        AGENT_EXTERNAL_TIMEOUTS.labels(provider=provider_name, tool=tool).inc()
+        AGENT_EXTERNAL_TOOL_FAILURES.labels(
+            provider=provider_name, tool=tool, outcome=outcome
+        ).inc()
+        return AgentToolResult(
+            tool=tool,
+            status="timeout",
+            summary="External provider timed out",
+            metadata={"provider": provider_name, "error": "timeout"},
+        )
+    except ExternalProviderError as exc:
+        provider_name = exc.provider
+        outcome = exc.reason
+        AGENT_EXTERNAL_TOOL_FAILURES.labels(
+            provider=provider_name, tool=tool, outcome=outcome
+        ).inc()
+        return AgentToolResult(
+            tool=tool,
+            status="failed",
+            summary="External provider failed safely",
+            metadata={"provider": provider_name, "error": exc.reason},
+        )
+    finally:
+        AGENT_EXTERNAL_TOOL_DURATION.labels(
+            provider=provider_name, tool=tool, outcome=outcome
+        ).observe(time.perf_counter() - started)
+
+
+def _external_disabled_result(tool: str, provider: str) -> AgentToolResult:
+    AGENT_EXTERNAL_TOOL_CALLS.labels(provider=provider, tool=tool, outcome="disabled").inc()
+    return AgentToolResult(
+        tool=tool,
+        status="disabled",
+        summary="External tool disabled; no network access attempted",
+        metadata={
+            "provider": provider,
+            "disabled": True,
+            "external_access_performed": False,
+            "untrusted_source_boundary": True,
         },
     )
 
@@ -325,6 +489,22 @@ def _citations(evidence: list[EvidenceItem]) -> list[dict[str, Any]]:
     ]
 
 
+def _external_citations(sources: list[ExternalSource]) -> list[dict[str, Any]]:
+    return [
+        {
+            "index": index,
+            "source": "external",
+            "external_source_label": f"E{index}",
+            "provider": item.provider,
+            "title": item.title,
+            "canonical_url": item.canonical_url,
+            "retrieval_date": item.retrieval_timestamp.date().isoformat(),
+            "excerpt": item.excerpt,
+        }
+        for index, item in enumerate(sources, 1)
+    ]
+
+
 def build_default_registry() -> ToolRegistry:
     registry = ToolRegistry()
     registry.register(
@@ -334,8 +514,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=DocumentMetadataInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=5.0,
+            max_result_count=1,
             max_result_size=10_000,
+            max_response_size=10_000,
             network_required=False,
             enabled=True,
             handler=_document_metadata_handler,
@@ -348,8 +531,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=QueryReformulationInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=5.0,
+            max_result_count=1,
             max_result_size=10_000,
+            max_response_size=10_000,
             network_required=False,
             enabled=True,
             handler=_query_reformulation_handler,
@@ -362,8 +548,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=InternalSearchInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=20.0,
+            max_result_count=50,
             max_result_size=50_000,
+            max_response_size=50_000,
             network_required=False,
             enabled=True,
             handler=_internal_search_handler,
@@ -376,8 +565,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=EvidenceVerifierInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=5.0,
+            max_result_count=50,
             max_result_size=10_000,
+            max_response_size=10_000,
             network_required=False,
             enabled=True,
             handler=_evidence_verifier_handler,
@@ -390,8 +582,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=RetrievalDiagnosisInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=5.0,
+            max_result_count=1,
             max_result_size=10_000,
+            max_response_size=10_000,
             network_required=False,
             enabled=True,
             handler=_retrieval_diagnosis_handler,
@@ -404,8 +599,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=AnswerSynthesizerInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=20.0,
+            max_result_count=50,
             max_result_size=20_000,
+            max_response_size=20_000,
             network_required=False,
             enabled=True,
             handler=_answer_synthesizer_handler,
@@ -418,11 +616,65 @@ def build_default_registry() -> ToolRegistry:
             input_schema=SafetyReviewerInput,
             output_schema=AgentToolResult,
             required_permission="workspace:read",
+            feature_flag=None,
             timeout_seconds=5.0,
+            max_result_count=50,
             max_result_size=10_000,
+            max_response_size=10_000,
             network_required=False,
             enabled=True,
             handler=_safety_reviewer_handler,
+        )
+    )
+    registry.register(
+        ToolDefinition(
+            name="web_search",
+            description="Search an approved web-search provider when explicitly enabled.",
+            input_schema=ExternalSearchInput,
+            output_schema=AgentToolResult,
+            required_permission="external:search",
+            feature_flag="agent_web_search_enabled",
+            timeout_seconds=settings.web_search_timeout_seconds,
+            max_result_count=settings.web_search_max_results,
+            max_result_size=50_000,
+            max_response_size=settings.web_search_max_response_bytes,
+            network_required=True,
+            enabled=True,
+            handler=_web_search_handler,
+        )
+    )
+    registry.register(
+        ToolDefinition(
+            name="wikipedia_lookup",
+            description="Look up approved Wikipedia public API excerpts.",
+            input_schema=ExternalSearchInput,
+            output_schema=AgentToolResult,
+            required_permission="external:api",
+            feature_flag="agent_external_apis_enabled",
+            timeout_seconds=settings.web_search_timeout_seconds,
+            max_result_count=settings.web_search_max_results,
+            max_result_size=50_000,
+            max_response_size=settings.web_search_max_response_bytes,
+            network_required=True,
+            enabled=True,
+            handler=_wikipedia_lookup_handler,
+        )
+    )
+    registry.register(
+        ToolDefinition(
+            name="arxiv_search",
+            description="Search approved arXiv public API metadata and abstracts.",
+            input_schema=ExternalSearchInput,
+            output_schema=AgentToolResult,
+            required_permission="external:api",
+            feature_flag="agent_external_apis_enabled",
+            timeout_seconds=settings.web_search_timeout_seconds,
+            max_result_count=settings.web_search_max_results,
+            max_result_size=50_000,
+            max_response_size=settings.web_search_max_response_bytes,
+            network_required=True,
+            enabled=True,
+            handler=_arxiv_search_handler,
         )
     )
     registry.register(
@@ -432,8 +684,11 @@ def build_default_registry() -> ToolRegistry:
             input_schema=PlaceholderInput,
             output_schema=AgentToolResult,
             required_permission="external:network",
+            feature_flag="agent_web_search_enabled",
             timeout_seconds=10.0,
+            max_result_count=0,
             max_result_size=0,
+            max_response_size=0,
             network_required=True,
             enabled=False,
             handler=_disabled_placeholder_handler,

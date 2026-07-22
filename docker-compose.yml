@@ -18,6 +18,13 @@ x-backend-env: &backend-env
   OTEL_ENABLED: "false"
   AGENTIC_RAG_ENABLED: ${AGENTIC_RAG_ENABLED:-false}
   AGENT_MAX_TOOL_CALLS: ${AGENT_MAX_TOOL_CALLS:-12}
+  AGENT_WEB_SEARCH_ENABLED: ${AGENT_WEB_SEARCH_ENABLED:-false}
+  WEB_SEARCH_PROVIDER: ${WEB_SEARCH_PROVIDER:-disabled}
+  WEB_SEARCH_MAX_RESULTS: ${WEB_SEARCH_MAX_RESULTS:-5}
+  WEB_SEARCH_TIMEOUT_SECONDS: ${WEB_SEARCH_TIMEOUT_SECONDS:-10}
+  WEB_SEARCH_MAX_RESPONSE_BYTES: ${WEB_SEARCH_MAX_RESPONSE_BYTES:-1000000}
+  AGENT_EXTERNAL_APIS_ENABLED: ${AGENT_EXTERNAL_APIS_ENABLED:-false}
+  SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
   TRUSTED_HOSTS: localhost,127.0.0.1,testserver,backend
 
 services:
@@ -231,6 +238,25 @@ services:
     ports: ["11434:11434"]
     volumes: ["ollama_data:/root/.ollama"]
     networks: ["ekip-internal"]
+
+  searxng:
+    image: searxng/searxng:latest
+    restart: unless-stopped
+    profiles: ["web-search"]
+    environment:
+      SEARXNG_BASE_URL: http://searxng:8080/
+      SEARXNG_LIMITER: "true"
+      SEARXNG_UWSGI_WORKERS: "1"
+      SEARXNG_UWSGI_THREADS: "2"
+    expose: ["8080"]
+    networks: ["ekip-internal"]
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
 
   prometheus:
     image: prom/prometheus:latest

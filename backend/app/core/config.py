@@ -48,6 +48,12 @@ class AgentPlannerProvider(StrEnum):
     DETERMINISTIC = "deterministic"
 
 
+class WebSearchProvider(StrEnum):
+    DISABLED = "disabled"
+    DETERMINISTIC = "deterministic"
+    SEARXNG = "searxng"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(PROJECT_ROOT / ".env", PROJECT_ROOT / "backend" / ".env"),
@@ -169,6 +175,13 @@ class Settings(BaseSettings):
     agent_timeout_seconds: float = Field(default=90.0, gt=0, le=600)
     agent_max_retrieval_retries: int = Field(default=2, ge=0, le=10)
     agent_planner_provider: AgentPlannerProvider = AgentPlannerProvider.DETERMINISTIC
+    agent_web_search_enabled: bool = False
+    web_search_provider: WebSearchProvider = WebSearchProvider.DISABLED
+    web_search_max_results: int = Field(default=5, ge=1, le=20)
+    web_search_timeout_seconds: float = Field(default=10.0, gt=0, le=60)
+    web_search_max_response_bytes: int = Field(default=1_000_000, ge=1024, le=5_000_000)
+    agent_external_apis_enabled: bool = False
+    searxng_url: str = "http://searxng:8080"
 
     @field_validator(
         "app_env",
@@ -178,6 +191,7 @@ class Settings(BaseSettings):
         "job_execution_mode",
         "local_llm_backend",
         "agent_planner_provider",
+        "web_search_provider",
         mode="before",
     )
     @classmethod

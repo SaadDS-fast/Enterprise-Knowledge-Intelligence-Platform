@@ -26,6 +26,7 @@ from app.agents.schemas import (
 )
 from app.agents.state import AgentRuntimeState
 from app.agents.tool_registry import ToolRegistry, build_default_registry
+from app.core.config import settings
 from app.db.models import AgentRun, AgentStep, AgentToolCall, AuditEvent
 from app.observability.metrics import (
     AGENT_DURATION,
@@ -121,6 +122,7 @@ class AgentOrchestrator:
                 registry=self.registry,
                 budget=self.budget,
                 workspace_id=tenant.workspace_id,
+                allow_external_sources=payload.allow_external_sources,
             )
             await self._record_state(
                 session,
@@ -262,6 +264,41 @@ class AgentOrchestrator:
                 payload,
             )
             runtime.retrieval_diagnosis = diagnosis.metadata.get("retrieval_diagnosis", {})
+            runtime.internal_evidence = final_evidence
+            runtime.external_access_allowed = payload.allow_external_sources and (
+                settings.agent_web_search_enabled or settings.agent_external_apis_enabled
+            )
+            external_sources = []
+            external_status_allows_answer = runtime.retrieval_diagnosis.get("status") not in {
+                DiagnosisStatus.AMBIGUOUS_QUERY.value,
+                DiagnosisStatus.CONFLICTING_EVIDENCE.value,
+            }
+            if (
+                payload.allow_external_sources
+                and not final_sufficient
+                and external_status_allows_answer
+            ):
+                external_result = await self._execute_tool(
+                    session,
+                    run,
+                    runtime,
+                    tenant,
+                    self._select_external_tool(payload.query),
+                    {
+                        "query": payload.query,
+                        "max_results": settings.web_search_max_results,
+                    },
+                    payload,
+                )
+                external_sources = external_result.external_sources
+                runtime.external_evidence = external_sources
+                runtime.external_sources_used = bool(external_sources)
+                runtime.external_access_performed = bool(
+                    external_result.metadata.get("external_access_performed")
+                )
+                provider = external_result.metadata.get("provider")
+                if provider and provider not in runtime.providers_used:
+                    runtime.providers_used.append(str(provider))
             synthesized = await self._execute_tool(
                 session,
                 run,
@@ -271,7 +308,8 @@ class AgentOrchestrator:
                 {
                     "query": payload.query,
                     "evidence": final_evidence,
-                    "sufficient_evidence": final_sufficient,
+                    "external_sources": external_sources,
+                    "sufficient_evidence": final_sufficient or bool(external_sources),
                     "diagnosis": runtime.retrieval_diagnosis,
                 },
                 payload,
@@ -289,6 +327,7 @@ class AgentOrchestrator:
                     "query": payload.query,
                     "answer": synthesized.answer,
                     "evidence": final_evidence,
+                    "external_sources": external_sources,
                 },
                 payload,
             )
@@ -302,8 +341,13 @@ class AgentOrchestrator:
             runtime.answer = reviewed.answer
             runtime.abstained = reviewed.abstained or synthesized.abstained
             runtime.evidence = final_evidence
-            runtime.citations = reviewed.citations or synthesized.citations
-            if runtime.retrieval_diagnosis.get("status") in TERMINAL_DIAGNOSES:
+            runtime.internal_evidence = final_evidence
+            runtime.external_evidence = external_sources
+            runtime.citations = [] if reviewed.abstained else reviewed.citations
+            if (
+                runtime.retrieval_diagnosis.get("status") in TERMINAL_DIAGNOSES
+                and not external_sources
+            ):
                 runtime.abstained = True
             runtime.total_duration_ms = int((time.perf_counter() - started) * 1000)
             runtime.status = AgentRunStatus.COMPLETED
@@ -412,6 +456,7 @@ class AgentOrchestrator:
                 "workspace_id": tenant.workspace_id,
                 "request_id": runtime.request_id,
                 "document_ids": request.document_ids,
+                "allow_external_sources": request.allow_external_sources,
             },
         )
         runtime.tools_used.append(tool_name)
@@ -455,6 +500,7 @@ class AgentOrchestrator:
             runtime.answer = fallback.answer
             runtime.abstained = fallback.abstained
             runtime.evidence = fallback.evidence
+            runtime.internal_evidence = fallback.evidence
             runtime.retrieval_diagnosis = fallback.retrieval_diagnosis
             runtime.citations = [
                 {
@@ -588,12 +634,18 @@ class AgentOrchestrator:
             "abstained": runtime.abstained,
             "citations": runtime.citations,
             "evidence_count": len(runtime.evidence),
+            "internal_evidence_count": len(runtime.internal_evidence),
+            "external_evidence_count": len(runtime.external_evidence),
             "tools_used": runtime.tools_used,
             "safe_step_summaries": runtime.safe_step_summaries,
             "tool_calls": runtime.tool_calls,
             "fallback_used": runtime.fallback_used,
             "total_duration_ms": runtime.total_duration_ms,
             "retrieval_diagnosis": runtime.retrieval_diagnosis,
+            "external_sources_used": runtime.external_sources_used,
+            "providers_used": runtime.providers_used,
+            "external_access_allowed": runtime.external_access_allowed,
+            "external_access_performed": runtime.external_access_performed,
         }
 
     def _response(self, run_id: UUID, runtime: AgentRuntimeState) -> AgentQueryResponse:
@@ -605,6 +657,12 @@ class AgentOrchestrator:
             abstained=runtime.abstained,
             citations=runtime.citations,
             evidence=runtime.evidence,
+            internal_evidence=runtime.internal_evidence,
+            external_evidence=runtime.external_evidence,
+            external_sources_used=runtime.external_sources_used,
+            providers_used=runtime.providers_used,
+            external_access_allowed=runtime.external_access_allowed,
+            external_access_performed=runtime.external_access_performed,
             tools_used=runtime.tools_used,
             safe_step_summaries=runtime.safe_step_summaries,
             safe_plan_summary=runtime.plan_summary,
@@ -613,6 +671,16 @@ class AgentOrchestrator:
             request_id=runtime.request_id,
             retrieval_diagnosis=runtime.retrieval_diagnosis,
         )
+
+    def _select_external_tool(self, query: str) -> str:
+        normalized = query.lower()
+        if settings.agent_external_apis_enabled and "wikipedia" in normalized:
+            return "wikipedia_lookup"
+        if settings.agent_external_apis_enabled and (
+            "arxiv" in normalized or "paper" in normalized or "research" in normalized
+        ):
+            return "arxiv_search"
+        return "web_search"
 
 
 async def read_agent_run(

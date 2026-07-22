@@ -4,7 +4,7 @@ Updated on 2026-07-22.
 
 ## Scope
 
-This phase turns the disabled-by-default controlled agent foundation into a working internal-document RAG agent. It does not add web search, external APIs, autonomous research reports, report exports, or major frontend changes.
+The controlled agent remains disabled by default and fully supports an internal-document-only mode. This phase also adds optional approved external-source tools for web search, Wikipedia, and arXiv. It does not add arbitrary browsing, research reports, report exports, major frontend changes, or autonomous multi-agent behavior.
 
 Existing search remains unchanged:
 
@@ -56,6 +56,8 @@ The agent follows a deterministic internal-document loop:
 - final response
 
 The run stops on sufficient evidence, absent evidence, ambiguity, conflicting evidence, maximum tool or retry budget, timeout, cancellation, or safe fallback.
+
+External access is a guarded branch after internal retrieval and diagnosis. It runs only when `allow_external_sources=true` on the request and the relevant feature flag is enabled. Internal evidence remains preferred; organization-specific questions that have sufficient internal evidence do not call external tools.
 
 ## Planner
 
@@ -119,7 +121,10 @@ Tools are typed definitions with:
 - required permission
 - timeout
 - maximum result size
+- maximum result count
+- maximum response size
 - network-required flag
+- feature flag
 - enabled flag
 - execution handler
 
@@ -132,6 +137,9 @@ Registered tools:
 - `retrieval_diagnosis`: enabled; distinguishes recovered retrieval, unresolved retrieval, knowledge absence, partial evidence, conflicting evidence, and ambiguity.
 - `answer_synthesizer`: enabled; uses existing LLM gateway, citation appending, and abstention helpers.
 - `safety_reviewer`: enabled; blocks prompt-injection signals from the query, evidence, or drafted answer.
+- `web_search`: enabled registry entry; returns disabled output unless `allow_external_sources=true`, `AGENT_WEB_SEARCH_ENABLED=true`, and a configured approved provider is available.
+- `wikipedia_lookup`: enabled registry entry; returns disabled output unless `allow_external_sources=true` and `AGENT_EXTERNAL_APIS_ENABLED=true`.
+- `arxiv_search`: enabled registry entry; returns disabled output unless `allow_external_sources=true` and `AGENT_EXTERNAL_APIS_ENABLED=true`.
 - `external_web_search`: disabled placeholder; it cannot execute successfully in this phase.
 
 Every enabled tool returns structured output with `tool`, `status`, safe summary fields, and tool-specific metadata. Tool outputs never include hidden reasoning.
@@ -160,12 +168,19 @@ Configured budgets:
 - `AGENT_MAX_TOOL_CALLS=12`
 - `AGENT_TIMEOUT_SECONDS=90`
 - `AGENT_MAX_RETRIEVAL_RETRIES=2`
+- `AGENT_WEB_SEARCH_ENABLED=false`
+- `WEB_SEARCH_PROVIDER=disabled`
+- `WEB_SEARCH_MAX_RESULTS=5`
+- `WEB_SEARCH_TIMEOUT_SECONDS=10`
+- `WEB_SEARCH_MAX_RESPONSE_BYTES=1000000`
+- `AGENT_EXTERNAL_APIS_ENABLED=false`
+- `SEARXNG_URL=http://searxng:8080`
 
 The policy layer rejects:
 
 - unknown tools
 - disabled tools
-- network-required tools in this phase
+- network-required tools when the request did not allow external sources or the feature flag is disabled
 - forbidden arguments such as shell commands, URLs, endpoints, or SQL
 - unauthorized workspace scope changes
 - plans that exceed budget
@@ -182,6 +197,12 @@ Failures are persisted as safe summaries and surfaced through controlled API err
 - `abstained`
 - `citations`
 - `evidence`
+- `internal_evidence`
+- `external_evidence`
+- `external_sources_used`
+- `providers_used`
+- `external_access_allowed`
+- `external_access_performed`
 - `retrieval_diagnosis`
 - `tools_used`
 - `safe_step_summaries`
@@ -202,3 +223,9 @@ Prometheus exports agent counters and histograms without query, document, user, 
 - `ekip_agent_fallbacks_total`
 - `ekip_agent_duration_seconds`
 - `ekip_agent_tool_duration_seconds{tool=...}`
+- `ekip_agent_external_tool_calls_total{provider=...,tool=...,outcome=...}`
+- `ekip_agent_external_tool_failures_total{provider=...,tool=...,outcome=...}`
+- `ekip_agent_external_tool_duration_seconds{provider=...,tool=...,outcome=...}`
+- `ekip_agent_external_sources_used_total{provider=...,tool=...}`
+- `ekip_agent_ssrf_blocks_total{provider=...,outcome=...}`
+- `ekip_agent_external_timeouts_total{provider=...,tool=...}`

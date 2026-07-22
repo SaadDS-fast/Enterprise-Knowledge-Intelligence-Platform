@@ -13,6 +13,8 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 - Browser E2E for auth, upload, ingestion, search, evidence display, abstention, tenant isolation, logout, and cleanup.
 - Bandit, pip-audit, npm audit, backend tests, frontend tests, typecheck, lint, and production build.
 - Controlled internal-document agent with disabled-by-default API, deterministic planner, typed internal tools, retrieval retry, evidence diagnosis, citation-aware synthesis, safety review, budgets, safe persistence, audit events, and fallback to adaptive RAG.
+- Optional approved external-source tools for disabled, deterministic, SearXNG, Wikipedia, and arXiv providers, gated by request opt-in and disabled-by-default feature flags.
+- SSRF/outbound validation for approved provider calls and prompt-injection scanning for external excerpts.
 
 ## Remaining Limitations
 
@@ -22,7 +24,8 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 - Several scaffolded modules remain low coverage, including agent, cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 - Agentic RAG is not enabled by default and has no frontend workflow in this phase.
-- External network tools, web search, external APIs, direct SQL tools, shell tools, report exports, and autonomous report generation are intentionally not implemented.
+- External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. Live SearXNG and live public internet validation were not run.
+- Arbitrary browsing, user-supplied URLs, direct SQL tools, shell tools, unrestricted external APIs, report exports, and autonomous report generation are intentionally not implemented.
 
 ## Notes
 

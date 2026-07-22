@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from uuid import UUID
 
 from app.agents.enums import AgentRunStatus, AgentStateName
+from app.agents.schemas import ExternalSource
 from app.models.schemas import EvidenceItem
 
 ALLOWED_TRANSITIONS: dict[AgentStateName, frozenset[AgentStateName]] = {
@@ -64,10 +65,16 @@ class AgentRuntimeState:
     current_state: AgentStateName = AgentStateName.RECEIVE_REQUEST
     plan_summary: str | None = None
     evidence: list[EvidenceItem] = field(default_factory=list)
+    internal_evidence: list[EvidenceItem] = field(default_factory=list)
+    external_evidence: list[ExternalSource] = field(default_factory=list)
     answer: str | None = None
     abstained: bool = False
     citations: list[dict] = field(default_factory=list)
     retrieval_diagnosis: dict = field(default_factory=dict)
+    providers_used: list[str] = field(default_factory=list)
+    external_sources_used: bool = False
+    external_access_allowed: bool = False
+    external_access_performed: bool = False
     tools_used: list[str] = field(default_factory=list)
     safe_step_summaries: list[str] = field(default_factory=list)
     fallback_used: bool = False

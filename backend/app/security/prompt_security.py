@@ -7,6 +7,7 @@ PATTERNS = [
     re.compile(r"ignore\s+(all|any|the)\s+(previous|prior|system)\s+instructions", re.I),
     re.compile(r"ignore\s+(all|any|the)\s+(previous|prior)\s+system\s+instructions", re.I),
     re.compile(r"reveal\s+(the\s+)?(system|developer)\s+prompt", re.I),
+    re.compile(r"reveal\s+(system\s+)?secrets", re.I),
     re.compile(r"exfiltrat(e|ion)|send\s+.*\s+to\s+https?://", re.I),
     re.compile(r"bypass\s+(security|authorization|permissions)", re.I),
 ]

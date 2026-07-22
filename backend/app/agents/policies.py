@@ -7,6 +7,7 @@ from app.agents.enums import AgentErrorCode
 from app.agents.errors import AgentPolicyError
 from app.agents.schemas import AgentPlan
 from app.agents.tool_registry import ToolRegistry
+from app.core.config import settings
 
 FORBIDDEN_ARGUMENT_KEYS = {"shell", "command", "sql", "url", "urls", "endpoint"}
 
@@ -17,6 +18,7 @@ def validate_plan(
     registry: ToolRegistry,
     budget: AgentBudget,
     workspace_id: UUID,
+    allow_external_sources: bool = False,
 ) -> None:
     budget.ensure_tool_call(len(plan.steps))
     for step in plan.steps:
@@ -34,9 +36,16 @@ def validate_plan(
         if not tool.enabled:
             raise AgentPolicyError(AgentErrorCode.TOOL_DISABLED, f"Tool is disabled: {step.tool}")
         if tool.network_required:
+            flag_enabled = (
+                bool(getattr(settings, tool.feature_flag))
+                if tool.feature_flag is not None
+                else False
+            )
+            if allow_external_sources and flag_enabled:
+                continue
             raise AgentPolicyError(
                 AgentErrorCode.INVALID_PLAN,
-                f"Network tool is not allowed in this phase: {step.tool}",
+                f"Network tool is not allowed for this request: {step.tool}",
             )
 
 

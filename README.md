@@ -93,6 +93,9 @@ The controlled agent foundation is intentionally disabled by default:
 
 ```env
 AGENTIC_RAG_ENABLED=false
+AGENT_WEB_SEARCH_ENABLED=false
+WEB_SEARCH_PROVIDER=disabled
+AGENT_EXTERNAL_APIS_ENABLED=false
 ```
 
 `POST /api/v1/search` remains the stable non-agentic RAG endpoint. Agentic behavior is isolated
@@ -100,7 +103,11 @@ under `POST /api/v1/agent/query` and `GET /api/v1/agent/runs/{run_id}`. The agen
 typed internal tools for metadata inspection, query reformulation, internal retrieval, evidence
 verification, retrieval diagnosis, answer synthesis, and safety review. It reuses the existing
 hybrid retriever, reranker, retrieval retry, evidence sufficiency, citations, diagnosis, and
-abstention paths without adding web search, external APIs, or report exports.
+abstention paths. Optional external-source tools are also available behind explicit request and
+feature-flag gates for approved providers only: deterministic tests, self-hosted SearXNG,
+Wikipedia, and arXiv. Disabled mode makes no network call and remains zero-cost.
 
 See `docs/architecture/controlled-agentic-rag.md` and
-`docs/security/agent-tool-security.md`.
+`docs/architecture/external-tool-providers.md`,
+`docs/security/agent-tool-security.md`, and
+`docs/security/external-content-threat-model.md`.

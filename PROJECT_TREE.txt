@@ -10,6 +10,15 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   ├── orchestrator.py
 │   │   │   ├── planner.py
 │   │   │   ├── policies.py
+│   │   │   ├── providers/
+│   │   │   │   ├── arxiv.py
+│   │   │   │   ├── base.py
+│   │   │   │   ├── deterministic.py
+│   │   │   │   ├── disabled.py
+│   │   │   │   ├── factory.py
+│   │   │   │   ├── http.py
+│   │   │   │   ├── searxng.py
+│   │   │   │   └── wikipedia.py
 │   │   │   ├── schemas.py
 │   │   │   ├── state.py
 │   │   │   └── tool_registry.py
@@ -28,12 +37,18 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   ├── rag/
 │   │   ├── services/
 │   │   └── security/
+│   │       ├── outbound.py
+│   │       └── prompt_security.py
 │   └── tests/
 │       ├── integration/test_agent_api.py
-│       └── unit/test_agent_foundation.py
+│       ├── unit/test_agent_foundation.py
+│       └── unit/test_external_providers.py
 ├── docs/
 │   ├── architecture/controlled-agentic-rag.md
-│   └── security/agent-tool-security.md
+│   ├── architecture/external-tool-providers.md
+│   ├── deployment/searxng-local-profile.md
+│   ├── security/agent-tool-security.md
+│   └── security/external-content-threat-model.md
 ├── frontend/
 ├── monitoring/
 ├── docker-compose.yml

@@ -16,7 +16,7 @@ The platform must not silently route `/search` traffic into the agent. `/agent/q
 
 The tool registry is allowlist based. A planner can only select tools registered in `ToolRegistry`.
 
-This phase permits only internal, tenant-scoped tools:
+The default mode permits only internal, tenant-scoped tools:
 
 - `document_metadata`
 - `query_reformulation`
@@ -26,7 +26,13 @@ This phase permits only internal, tenant-scoped tools:
 - `answer_synthesizer`
 - `safety_reviewer`
 
-Network-required tools are rejected. Disabled placeholders cannot claim success.
+Optional external tools are registered but gated:
+
+- `web_search`
+- `wikipedia_lookup`
+- `arxiv_search`
+
+Network-required tools are rejected unless the request has `allow_external_sources=true` and the relevant feature flag is enabled. When disabled, external tools return typed disabled results and make no network call. Disabled placeholders cannot claim success.
 
 ## Rejected Capabilities
 
@@ -80,6 +86,8 @@ Agent run creation, completion, and cancellation create audit events with saniti
 ## Prompt Injection
 
 The safety reviewer scans the user query, retrieved evidence, and drafted answer for prompt-injection signals. Uploaded documents that ask the model to ignore prior or system instructions force safe abstention.
+
+External excerpts are scanned the same way. They are treated as untrusted source text and cannot authorize tools, change tenant/workspace scope, request credentials, trigger shell commands, or override evidence rules.
 
 ## Future Tool Review
 

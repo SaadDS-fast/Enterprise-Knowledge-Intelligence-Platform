@@ -48,6 +48,34 @@ AGENT_REPLANS = Counter("ekip_agent_replans_total", "Agent replans")
 AGENT_FALLBACKS = Counter("ekip_agent_fallbacks_total", "Agent fallbacks")
 AGENT_DURATION = Histogram("ekip_agent_duration_seconds", "Agent run duration")
 AGENT_TOOL_DURATION = Histogram("ekip_agent_tool_duration_seconds", "Agent tool duration", ["tool"])
+AGENT_EXTERNAL_TOOL_CALLS = Counter(
+    "ekip_agent_external_tool_calls_total",
+    "Agent external tool calls",
+    ["provider", "tool", "outcome"],
+)
+AGENT_EXTERNAL_TOOL_FAILURES = Counter(
+    "ekip_agent_external_tool_failures_total",
+    "Agent external tool failures",
+    ["provider", "tool", "outcome"],
+)
+AGENT_EXTERNAL_TOOL_DURATION = Histogram(
+    "ekip_agent_external_tool_duration_seconds",
+    "Agent external tool duration",
+    ["provider", "tool", "outcome"],
+)
+AGENT_EXTERNAL_SOURCES_USED = Counter(
+    "ekip_agent_external_sources_used_total",
+    "Agent external sources used",
+    ["provider", "tool"],
+)
+AGENT_SSRF_BLOCKS = Counter(
+    "ekip_agent_ssrf_blocks_total", "Agent outbound SSRF blocks", ["provider", "outcome"]
+)
+AGENT_EXTERNAL_TIMEOUTS = Counter(
+    "ekip_agent_external_timeouts_total",
+    "Agent external tool timeouts",
+    ["provider", "tool"],
+)
 
 
 def metrics_response() -> Response:

@@ -14,6 +14,21 @@ class AgentQueryRequest(BaseModel):
     query: str = Field(min_length=2, max_length=4000)
     top_k: int | None = Field(default=None, ge=1, le=50)
     document_ids: list[UUID] | None = None
+    allow_external_sources: bool = False
+
+
+class ExternalSource(BaseModel):
+    source_id: str = Field(min_length=1, max_length=160)
+    provider: str = Field(min_length=1, max_length=80)
+    title: str = Field(min_length=1, max_length=500)
+    canonical_url: str = Field(min_length=1, max_length=2000)
+    excerpt: str = Field(default="", max_length=2000)
+    source_type: str = Field(default="web", max_length=80)
+    retrieval_timestamp: datetime
+    trust_category: str = Field(default="untrusted_external", max_length=80)
+    rank: int = Field(ge=1, le=100)
+    publication_date: str | None = Field(default=None, max_length=80)
+    authors: list[str] = Field(default_factory=list, max_length=20)
 
 
 class PlannerStep(BaseModel):
@@ -44,6 +59,7 @@ class AgentToolResult(BaseModel):
     status: str = Field(default="success", max_length=40)
     summary: str = Field(max_length=500)
     evidence: list[EvidenceItem] = Field(default_factory=list)
+    external_sources: list[ExternalSource] = Field(default_factory=list)
     answer: str | None = Field(default=None, max_length=8000)
     sufficient_evidence: bool | None = None
     query: str | None = Field(default=None, max_length=4000)
@@ -110,6 +126,12 @@ class AgentQueryResponse(BaseModel):
     abstained: bool = False
     citations: list[dict[str, Any]] = Field(default_factory=list)
     evidence: list[EvidenceItem] = Field(default_factory=list)
+    internal_evidence: list[EvidenceItem] = Field(default_factory=list)
+    external_evidence: list[ExternalSource] = Field(default_factory=list)
+    external_sources_used: bool = False
+    providers_used: list[str] = Field(default_factory=list)
+    external_access_allowed: bool = False
+    external_access_performed: bool = False
     tools_used: list[str] = Field(default_factory=list)
     safe_step_summaries: list[str] = Field(default_factory=list)
     safe_plan_summary: str | None = None
