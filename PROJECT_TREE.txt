@@ -407,7 +407,11 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   ├── operator-controls.md
 │   │   └── release-checklist.md
 │   ├── portfolio/
-│   │   └── controlled-agentic-rag-case-study.md
+│   │   ├── CASE_STUDY.md
+│   │   ├── controlled-agentic-rag-case-study.md
+│   │   ├── DEMO_SCRIPT.md
+│   │   ├── INTERVIEW_GUIDE.md
+│   │   └── SCREENSHOT_GUIDE.md
 │   ├── runbooks/
 │   │   ├── cross-tenant-incident.md
 │   │   ├── ingestion-failure.md
@@ -501,8 +505,6 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   └── safe-url.ts
 │   ├── public/
 │   │   └── .gitkeep
-│   ├── test-results/
-│   │   └── .last-run.json
 │   ├── tests/
 │   │   └── e2e/
 │   │       ├── agentic-accessibility.spec.ts
