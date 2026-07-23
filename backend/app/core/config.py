@@ -163,6 +163,7 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     rate_limit_requests: int = Field(default=60, ge=1, le=10000)
     rate_limit_window_seconds: int = Field(default=60, ge=1, le=3600)
+    max_request_body_bytes: int = Field(default=30 * 1024 * 1024, ge=1024, le=300 * 1024 * 1024)
     log_level: str = "INFO"
     log_json: bool = True
     otel_enabled: bool = False
@@ -207,6 +208,9 @@ class Settings(BaseSettings):
     agent_research_max_sources: int = Field(default=20, ge=1, le=100)
     agent_research_timeout_seconds: float = Field(default=300.0, gt=0, le=1800)
     agent_research_max_report_words: int = Field(default=5000, ge=100, le=50_000)
+    agent_research_max_concurrent_per_user: int = Field(default=3, ge=1, le=100)
+    agent_research_max_concurrent_per_workspace: int = Field(default=10, ge=1, le=500)
+    agent_research_max_queued_jobs: int = Field(default=100, ge=1, le=10_000)
     agent_research_external_sources_default: bool = False
     agent_research_allowed_formats: list[str] = Field(
         default_factory=lambda: ["markdown", "pdf", "docx"]

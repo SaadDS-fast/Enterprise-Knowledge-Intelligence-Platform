@@ -1,6 +1,6 @@
 # Known Limitations
 
-Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
+Updated on 2026-07-23 from branch `feature/controlled-agentic-rag`.
 
 ## Implemented And Runtime-Tested
 
@@ -23,14 +23,15 @@ Updated on 2026-07-22 from branch `feature/controlled-agentic-rag`.
 
 ## Remaining Limitations
 
-- Ollama profile validation was not run.
-- Load/resilience testing was not run.
-- Grafana and OpenTelemetry containers start, but dashboard content, alerting, and trace assertions were not deeply validated.
+- Ollama model generation was not run; local models were listed only.
+- Load testing was limited to local 5/10/20-user probes and should not be extrapolated to enterprise traffic.
+- Deep destructive outage testing was limited to previously validated Redis/MinIO cases plus a final report-worker restart probe.
+- Grafana dashboard provisioning and Prometheus alert config render, but alert firing and trace assertions were not deeply validated.
 - Several scaffolded modules remain low coverage, including cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 - Agentic RAG and agentic research are still disabled by default and require explicit backend and
   frontend feature flags.
-- External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. Live SearXNG and live public internet validation were not run.
+- External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. SearXNG container health passed internally, but live public internet engine quality is environment-dependent.
 - Optional Ollama claim verification/synthesis interfaces are documented as a future path; this phase uses deterministic verification and synthesis by default.
 - Arbitrary browsing, user-supplied URLs, direct SQL tools, shell tools, unrestricted external APIs, admin UI, AWS deployment, and autonomous unrestricted agents are intentionally not implemented.
 

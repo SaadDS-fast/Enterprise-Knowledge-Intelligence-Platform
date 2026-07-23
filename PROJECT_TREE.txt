@@ -80,6 +80,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   │   │   ├── error_handler.py
 │   │   │   │   ├── logging.py
 │   │   │   │   ├── request_id.py
+│   │   │   │   ├── request_size.py
 │   │   │   │   └── security_headers.py
 │   │   │   ├── v1/
 │   │   │   │   ├── __init__.py
@@ -315,6 +316,7 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   ├── __init__.py
 │   │   └── conftest.py
 │   ├── .coverage
+│   ├── .dockerignore
 │   ├── alembic.ini
 │   ├── Dockerfile
 │   ├── ekip.db
@@ -365,11 +367,13 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   └── README.md
 │   ├── architecture/
 │   │   ├── agentic-frontend-workspace.md
+│   │   ├── agentic-research-workflow.md
 │   │   ├── controlled-agentic-rag.md
 │   │   ├── cost-and-local-development.md
 │   │   ├── data-flow.md
 │   │   ├── external-tool-providers.md
 │   │   ├── multi-source-evidence.md
+│   │   ├── production-runtime.md
 │   │   ├── retrieval-diagnosis.md
 │   │   ├── runtime-data-flow.md
 │   │   └── system-context.md
@@ -377,12 +381,19 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   ├── docker-runtime-guide.md
 │   │   ├── frontend-agent-runtime.md
 │   │   ├── full-runtime-validation-matrix.md
+│   │   ├── local-production-profile.md
+│   │   ├── observability.md
+│   │   ├── ollama-local-profile.md
 │   │   ├── README.md
+│   │   ├── resilience-runbook.md
 │   │   └── searxng-local-profile.md
 │   ├── evaluation/
 │   │   ├── agentic-frontend-evaluation.md
+│   │   ├── final-agentic-evaluation.md
+│   │   ├── load-test-report.md
 │   │   ├── multi-source-evidence-evaluation.md
 │   │   ├── README.md
+│   │   ├── resilience-report.md
 │   │   ├── retrieval-diagnosis-cases.json
 │   │   └── retrieval-diagnosis-evaluation.md
 │   ├── implementation/
@@ -390,6 +401,13 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   ├── phase-2-frontend-quality.md
 │   │   ├── phase-3-postgres-pgvector.md
 │   │   └── phase-4-worker-system.md
+│   ├── operations/
+│   │   ├── backup-and-recovery.md
+│   │   ├── incident-response.md
+│   │   ├── operator-controls.md
+│   │   └── release-checklist.md
+│   ├── portfolio/
+│   │   └── controlled-agentic-rag-case-study.md
 │   ├── runbooks/
 │   │   ├── cross-tenant-incident.md
 │   │   ├── ingestion-failure.md
@@ -398,7 +416,9 @@ Enterprise-Knowledge-Intelligence-Platform/
 │       ├── agent-tool-security.md
 │       ├── agentic-frontend-security.md
 │       ├── external-content-threat-model.md
-│       └── README.md
+│       ├── final-threat-model.md
+│       ├── README.md
+│       └── research-report-security.md
 ├── frontend/
 │   ├── app/
 │   │   ├── (auth)/
@@ -483,11 +503,13 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   └── .gitkeep
 │   ├── tests/
 │   │   └── e2e/
+│   │       ├── agentic-accessibility.spec.ts
 │   │       ├── agentic-workspace.spec.ts
 │   │       └── runtime.spec.ts
 │   ├── types/
 │   │   ├── .gitkeep
 │   │   └── index.ts
+│   ├── .dockerignore
 │   ├── Dockerfile
 │   ├── eslint.config.mjs
 │   ├── next-env.d.ts
@@ -535,18 +557,22 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   ├── grafana/
 │   │   └── provisioning/
 │   │       ├── dashboards/
-│   │       │   └── .gitkeep
+│   │       │   ├── .gitkeep
+│   │       │   ├── agentic-runtime.json
+│   │       │   └── dashboards.yml
 │   │       └── datasources/
 │   │           └── prometheus.yml
 │   ├── opentelemetry/
 │   │   └── otel-collector-config.yaml
 │   └── prometheus/
+│       ├── alerts.yml
 │       └── prometheus.yml
 ├── scripts/
 │   ├── bootstrap.ps1
 │   ├── bootstrap.sh
 │   ├── build_k8s_images.sh
 │   ├── generate_tree.py
+│   ├── local_agentic_load.py
 │   ├── run_security_checks.ps1
 │   └── run_security_checks.sh
 ├── security/

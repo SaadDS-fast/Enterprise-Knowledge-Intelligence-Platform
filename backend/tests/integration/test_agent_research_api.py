@@ -107,7 +107,9 @@ def test_research_report_lifecycle_exports_and_signed_downloads(
     assert artifacts.status_code == 200
     refs = artifacts.json()
     assert {item["format"] for item in refs} == {"markdown", "pdf", "docx"}
-    assert all(str(UUID(auth_headers["X-Workspace-ID"])) in item["object_key"] for item in refs)
+    assert all("object_key" not in item for item in refs)
+    assert all("signed_url_signature" not in item for item in refs)
+    assert all(item["checksum_sha256"] for item in refs)
     for item in refs:
         download = client.get(item["download_url"], headers=auth_headers)
         assert download.status_code == 200
@@ -223,6 +225,34 @@ def test_research_rejects_cross_workspace_document_scope(client, auth_headers, m
         },
     )
     assert response.status_code == 403
+
+
+def test_research_concurrency_limit_returns_typed_error(client, auth_headers, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "agent_research_enabled", True)
+    monkeypatch.setattr(settings, "agent_research_max_concurrent_per_user", 1)
+    _create_pending_research_job(client, auth_headers)
+
+    response = client.post(
+        "/api/v1/agent/research",
+        headers=auth_headers,
+        json={"question": "Start one more research job beyond the user limit."},
+    )
+
+    assert response.status_code == 429
+    assert response.json()["error"]["code"] == "CONCURRENCY_LIMIT_REACHED"
+
+
+def test_request_body_size_limit_returns_typed_error(client, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "max_request_body_bytes", 10)
+
+    response = client.post(
+        "/api/v1/search",
+        content=b"x" * 32,
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "REQUEST_TOO_LARGE"
 
 
 def test_existing_search_endpoint_unchanged(client, auth_headers) -> None:

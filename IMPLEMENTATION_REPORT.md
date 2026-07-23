@@ -1,13 +1,14 @@
 # Implementation Report
 
-Updated on 2026-07-22.
+Updated on 2026-07-23.
 
 ## Branch And Commit
 
 - Current branch: `feature/controlled-agentic-rag`
 - Started from agent foundation commit: `14be684`
 - Release tag: `v0.1.0-enterprise-mvp`
-- Commit status: agentic frontend workspace ready for validation.
+- Commit status: final hardening ready for release commit.
+- Pre-hardening safety tag: `v0.2.0-rc1-prehardening`.
 
 ## Agentic Frontend Workspace
 
@@ -91,7 +92,18 @@ Completed in the previous internal-agent phase:
 - Added Prometheus metrics for agent runs, tool calls, replans, fallbacks, run duration, and per-tool duration without sensitive labels.
 - Added tests for simple document answers, reformulation and retry, recovered retrieval, knowledge absence, partial evidence, conflicting evidence, ambiguity, max-step/tool termination, tool failure fallback, citation verification, cross-tenant denial, cross-workspace denial, prompt injection in documents, and `/search` regression.
 - Added Docker Compose wiring to enable agentic mode explicitly for runtime validation while preserving the default disabled posture.
-- Added a targeted frontend `sharp@0.35.3` override to resolve the transitive Next image dependency advisory while keeping Next on 16.2.10.
+- Upgraded frontend Next.js to `16.2.11` so `npm audit --omit=dev` reports 0 vulnerabilities.
+
+## Final Hardening
+
+- Added request body size enforcement with typed `REQUEST_TOO_LARGE` responses.
+- Added research concurrency and queue capacity limits with typed safe errors.
+- Sanitized research artifact API serialization so object keys and signed URL signatures are not returned.
+- Added `.dockerignore` files for backend and frontend to keep `.env`, databases, uploads, `node_modules`, `.next`, traces, and test output out of Docker build contexts.
+- Added safe OpenTelemetry span helpers for agent query, research creation, report generation, export, artifact listing, and downloads.
+- Added final evaluation metrics for knowledge absence, retrieval-failure diagnosis, source selection, and tenant isolation success.
+- Added Prometheus alert rules and Grafana dashboard provisioning for the controlled agentic runtime.
+- Added responsive/accessibility Playwright coverage and a stdlib local load probe script.
 
 Completed in the previous foundation phase:
 
@@ -142,11 +154,11 @@ Runtime probes passed:
 
 ## Validation Results
 
-- Backend tests: 113 passed, 2 skipped.
-- Backend coverage: 77%.
+- Backend tests: 116 passed, 2 skipped.
+- Backend coverage: 76%.
 - Controlled agent, external provider, and multi-source evidence targeted tests: 65 passed.
 - Frontend unit/component tests: 24 passed.
-- Frontend Playwright E2E: 1 default spec passed; 2 specs passed with gated agentic Docker mode.
+- Frontend Playwright E2E: 1 default spec passed; 5 specs passed with gated deterministic agentic Docker mode.
 - Frontend build/typecheck/lint: passed.
 - Bandit, pip-audit, and npm audit: passed.
 - Migration smoke: disposable SQLite Alembic `upgrade head` passed through `c8f4a2d91b77`.
@@ -155,13 +167,16 @@ Runtime probes passed:
 - External-disabled runtime: job `792e40b9-3357-47e7-b0db-5a4d816f5110`, internal run `4b52e7e2-2dd2-46cc-bd89-e0a5c5f16310`, public-disabled run `1db97c59-c459-4765-93ba-a8b03c4cf0ab`.
 - Deterministic external runtime: public external run `e4271e7e-b199-458e-a217-f4064478cdf6`, internal-preference run `01a2870f-5ab1-4086-828c-d710c6a84f3c`.
 - Research report runtime: document `d4a0ee81-3247-4cb1-92ca-8b4813589b03`, ingestion job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6`, research job `b4653536-ffd1-4132-b513-4bd19680e5dd`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c`, 1 source, 1 verified citation, markdown/PDF/DOCX downloads passed.
-- Agentic frontend runtime: Docker rebuilt backend/frontend with agentic flags enabled and Playwright passed 2 specs against PostgreSQL/Redis/MinIO/Celery.
+- Agentic frontend runtime: Docker rebuilt backend/frontend with agentic flags enabled and Playwright passed 5 specs against PostgreSQL/Redis/MinIO/Celery.
+- Load probes: 5/10/20-user local runs all completed with 100% success; max observed p99 was 599.1 ms.
+- Optional SearXNG: container started internally and `/healthz` returned `OK`; live engine logs showed expected default-template warnings.
+- Optional Ollama: local models `tinyllama:latest` and `llama3:latest` are installed; generation was not run.
 
 ## Follow-Up
 
-- Ollama profile validation was not run.
-- Live SearXNG profile launch was not run; `docker compose --profile web-search config` and parser tests passed.
-- Load/resilience testing was not run.
+- Ollama generation was not run.
+- Live SearXNG search quality was not validated beyond internal container health.
+- Deep destructive resilience testing was not expanded beyond prior Redis/MinIO validation and final report-worker restart.
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
 - Arbitrary browsing, unrestricted external APIs, admin UI, and AWS deployment are intentionally not included in this phase.

@@ -1,0 +1,93 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single", "sort": "none"}},
+      "targets": [
+        {"expr": "sum(rate(ekip_agent_runs_started_total[5m]))", "legendFormat": "started", "refId": "A"},
+        {"expr": "sum(rate(ekip_agent_runs_completed_total[5m]))", "legendFormat": "completed", "refId": "B"},
+        {"expr": "sum(rate(ekip_agent_runs_failed_total[5m]))", "legendFormat": "failed", "refId": "C"}
+      ],
+      "title": "Agent Runs",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum(rate(ekip_agent_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95", "refId": "A"},
+        {"expr": "histogram_quantile(0.50, sum(rate(ekip_agent_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50", "refId": "B"}
+      ],
+      "title": "Agent Duration",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "targets": [
+        {"expr": "sum(rate(ekip_agent_tool_calls_total[5m])) by (tool_name, status)", "legendFormat": "{{tool_name}} {{status}}", "refId": "A"},
+        {"expr": "sum(rate(ekip_agent_replans_total[5m]))", "legendFormat": "replans", "refId": "B"},
+        {"expr": "sum(rate(ekip_agent_fallbacks_total[5m]))", "legendFormat": "fallbacks", "refId": "C"}
+      ],
+      "title": "Agent Tooling",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+      "id": 4,
+      "targets": [
+        {"expr": "sum(rate(ekip_agent_research_jobs_started_total[5m]))", "legendFormat": "started", "refId": "A"},
+        {"expr": "sum(rate(ekip_agent_research_jobs_completed_total[5m]))", "legendFormat": "completed", "refId": "B"},
+        {"expr": "sum(rate(ekip_agent_research_jobs_failed_total[5m]))", "legendFormat": "failed", "refId": "C"},
+        {"expr": "sum(rate(ekip_agent_research_jobs_cancelled_total[5m]))", "legendFormat": "cancelled", "refId": "D"}
+      ],
+      "title": "Research Jobs",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+      "id": 5,
+      "targets": [
+        {"expr": "sum(rate(ekip_agent_research_exports_total[5m])) by (format, outcome)", "legendFormat": "{{format}} {{outcome}}", "refId": "A"},
+        {"expr": "sum(rate(ekip_agent_research_export_failures_total[5m])) by (format, outcome)", "legendFormat": "{{format}} failure", "refId": "B"}
+      ],
+      "title": "Research Exports",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+      "id": 6,
+      "targets": [
+        {"expr": "up", "legendFormat": "{{job}}", "refId": "A"}
+      ],
+      "title": "Infrastructure Health",
+      "type": "stat"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["ekip", "agentic-rag"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "EKIP Agentic Runtime",
+  "uid": "ekip-agentic-runtime",
+  "version": 1,
+  "weekStart": ""
+}

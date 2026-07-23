@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: EKIP
+    orgId: 1
+    folder: EKIP
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

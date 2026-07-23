@@ -1,0 +1,45 @@
+groups:
+  - name: ekip-agentic-runtime
+    rules:
+      - alert: EkipBackendUnavailable
+        expr: up{job="ekip-backend"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: EKIP backend metrics target unavailable
+      - alert: EkipWorkerUnavailable
+        expr: up{job=~"ekip-worker-.*"} == 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: EKIP worker metrics target unavailable
+      - alert: EkipResearchFailuresElevated
+        expr: increase(ekip_agent_research_jobs_failed_total[10m]) > 3
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Research job failures are elevated
+      - alert: EkipCitationRejectionsElevated
+        expr: sum(increase(ekip_agent_citation_rejections_total[10m])) > 5
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Agent citation rejections are elevated
+      - alert: EkipExternalProviderFailuresElevated
+        expr: sum(increase(ekip_agent_external_tool_failures_total[10m])) > 5
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: External provider failures are elevated
+      - alert: EkipResearchExportFailures
+        expr: sum(increase(ekip_agent_research_export_failures_total[10m])) > 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: Research report exports are failing
+      - alert: EkipRetryBacklog
+        expr: sum(increase(ekip_agent_research_retries_total[15m])) > 5
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Research retry backlog may be growing

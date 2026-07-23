@@ -28,6 +28,8 @@ from app.agents.research import (
 from app.agents.schemas import AgentQueryRequest
 from app.core.config import JobExecutionMode, settings
 from app.db.models import Document, ResearchArtifact, ResearchJob, Workspace
+from app.exceptions.base import AppError
+from app.exceptions.codes import ErrorCode
 from app.integrations.storage import get_storage
 from app.integrations.storage.keys import safe_object_name
 from app.jobs.queue import celery_app
@@ -44,6 +46,7 @@ from app.observability.metrics import (
     AGENT_RESEARCH_STAGE_DURATION,
     AGENT_RESEARCH_TOTAL_DURATION,
 )
+from app.observability.tracing import safe_span
 from app.services.search_service import search_and_answer
 from app.tenancy.context import TenantContext
 from app.utils.time import utc_now
@@ -120,6 +123,7 @@ async def create_agent_research_job(
     )
     if existing:
         return existing, True
+    await _enforce_research_capacity(session, tenant)
     job = ResearchJob(
         tenant_id=tenant.organization_id,
         workspace_id=tenant.workspace_id,
@@ -150,6 +154,54 @@ async def create_agent_research_job(
     await session.commit()
     await session.refresh(job)
     return job, False
+
+
+async def _enforce_research_capacity(session: AsyncSession, tenant: TenantContext) -> None:
+    active_statuses = {"pending", "running", "dispatch_failed", "retry_pending", "cancel_requested"}
+    workspace_jobs = (
+        await session.scalars(
+            select(ResearchJob.id).where(
+                ResearchJob.tenant_id == tenant.organization_id,
+                ResearchJob.workspace_id == tenant.workspace_id,
+                ResearchJob.status.in_(active_statuses),
+            )
+        )
+    ).all()
+    if len(workspace_jobs) >= settings.agent_research_max_concurrent_per_workspace:
+        raise AppError(
+            ErrorCode.CONCURRENCY_LIMIT_REACHED,
+            "Workspace has reached the active research job limit",
+            429,
+        )
+    user_jobs = (
+        await session.scalars(
+            select(ResearchJob.id).where(
+                ResearchJob.tenant_id == tenant.organization_id,
+                ResearchJob.workspace_id == tenant.workspace_id,
+                ResearchJob.user_id == tenant.user_id,
+                ResearchJob.status.in_(active_statuses),
+            )
+        )
+    ).all()
+    if len(user_jobs) >= settings.agent_research_max_concurrent_per_user:
+        raise AppError(
+            ErrorCode.CONCURRENCY_LIMIT_REACHED,
+            "User has reached the active research job limit",
+            429,
+        )
+    queued_jobs = (
+        await session.scalars(
+            select(ResearchJob.id).where(
+                ResearchJob.status.in_({"pending", "dispatch_failed", "retry_pending"}),
+            )
+        )
+    ).all()
+    if len(queued_jobs) >= settings.agent_research_max_queued_jobs:
+        raise AppError(
+            ErrorCode.TEMPORARY_FAILURE,
+            "Research queue is temporarily at capacity",
+            503,
+        )
 
 
 def dispatch_research(
@@ -206,6 +258,13 @@ async def dispatch_research_safely(
 async def generate_research_report(job_id: UUID, request_id: str | None = None) -> dict:
     started = time.perf_counter()
     AGENT_RESEARCH_JOBS_STARTED.inc()
+    with safe_span("research.generate", request_present=bool(request_id)):
+        return await _generate_research_report_inner(job_id, request_id, started)
+
+
+async def _generate_research_report_inner(
+    job_id: UUID, request_id: str | None, started: float
+) -> dict:
     async with _session_scope() as session:
         job = await session.get(ResearchJob, job_id)
         if not job:
@@ -384,43 +443,44 @@ async def _export_artifacts(
     storage = get_storage()
     artifacts: list[ResearchArtifact] = []
     requested = job.requested_formats or [ResearchFormat.MARKDOWN.value]
-    for fmt in requested:
-        artifact_id = uuid4()
-        filename = safe_object_name(f"research-report.{_extension(fmt)}")
-        data, mime_type = _render_format(fmt, markdown)
-        if not data:
-            raise RuntimeError(f"{fmt}_export_empty")
-        if len(data.split()) > settings.agent_research_max_report_words * 20:
-            raise RuntimeError(f"{fmt}_export_too_large")
-        object_key = research_object_key(
-            tenant_id=job.tenant_id,
-            workspace_id=job.workspace_id,
-            job_id=job.id,
-            artifact_id=artifact_id,
-            ext=_extension(fmt),
-        )
-        try:
-            await storage.put(object_key, data, mime_type)
-        except Exception as exc:
-            AGENT_RESEARCH_EXPORT_FAILURES.labels(format=fmt, outcome="storage_failed").inc()
-            raise RuntimeError(f"{fmt}_export_failed") from exc
-        artifact = ResearchArtifact(
-            id=artifact_id,
-            research_job_id=job.id,
-            tenant_id=job.tenant_id,
-            workspace_id=job.workspace_id,
-            format=fmt,
-            object_key=object_key,
-            filename=filename,
-            mime_type=mime_type,
-            checksum_sha256=sha256(data).hexdigest(),
-            size_bytes=len(data),
-            pipeline_version=PIPELINE_VERSION,
-            status="available",
-        )
-        session.add(artifact)
-        artifacts.append(artifact)
-        AGENT_RESEARCH_EXPORTS.labels(format=fmt, outcome="success").inc()
+    with safe_span("research.export", format_count=len(requested)):
+        for fmt in requested:
+            artifact_id = uuid4()
+            filename = safe_object_name(f"research-report.{_extension(fmt)}")
+            data, mime_type = _render_format(fmt, markdown)
+            if not data:
+                raise RuntimeError(f"{fmt}_export_empty")
+            if len(data.split()) > settings.agent_research_max_report_words * 20:
+                raise RuntimeError(f"{fmt}_export_too_large")
+            object_key = research_object_key(
+                tenant_id=job.tenant_id,
+                workspace_id=job.workspace_id,
+                job_id=job.id,
+                artifact_id=artifact_id,
+                ext=_extension(fmt),
+            )
+            try:
+                await storage.put(object_key, data, mime_type)
+            except Exception as exc:
+                AGENT_RESEARCH_EXPORT_FAILURES.labels(format=fmt, outcome="storage_failed").inc()
+                raise RuntimeError(f"{fmt}_export_failed") from exc
+            artifact = ResearchArtifact(
+                id=artifact_id,
+                research_job_id=job.id,
+                tenant_id=job.tenant_id,
+                workspace_id=job.workspace_id,
+                format=fmt,
+                object_key=object_key,
+                filename=filename,
+                mime_type=mime_type,
+                checksum_sha256=sha256(data).hexdigest(),
+                size_bytes=len(data),
+                pipeline_version=PIPELINE_VERSION,
+                status="available",
+            )
+            session.add(artifact)
+            artifacts.append(artifact)
+            AGENT_RESEARCH_EXPORTS.labels(format=fmt, outcome="success").inc()
     await session.flush()
     return artifacts
 

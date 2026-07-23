@@ -8,7 +8,7 @@ from hmac import new as hmac_new
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.agents.schemas import AgentQueryResponse
 from app.core.config import settings
@@ -97,7 +97,6 @@ class ResearchArtifactRead(BaseModel):
     mime_type: str
     checksum_sha256: str
     size_bytes: int
-    object_key: str
     created_at: datetime
 
 
@@ -127,6 +126,20 @@ class ResearchJobRead(BaseModel):
     completed_at: datetime | None = None
     cancelled_at: datetime | None = None
     updated_at: datetime
+
+    @field_serializer("artifact_refs")
+    def serialize_artifact_refs(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        allowed = {
+            "artifact_id",
+            "format",
+            "filename",
+            "mime_type",
+            "checksum_sha256",
+            "size_bytes",
+            "signed_url_expires",
+            "download_url",
+        }
+        return [{key: item[key] for key in allowed if key in item} for item in value]
 
 
 class ResearchCreateResponse(BaseModel):

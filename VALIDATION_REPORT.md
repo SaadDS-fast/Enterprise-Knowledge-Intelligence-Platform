@@ -1,12 +1,12 @@
 # Validation Report
 
-Validated on 2026-07-22 on branch `feature/controlled-agentic-rag`.
+Validated on 2026-07-23 on branch `feature/controlled-agentic-rag`.
 
 ## Environment
 
-- Base agent foundation commit: `14be684`
-- Release tag: `v0.1.0-enterprise-mvp`
-- Working tree: agentic frontend workspace changes ready for commit
+- Pre-hardening safety tag: `v0.2.0-rc1-prehardening` at `952f34e65a30c3f60b3db242d60416f1a94119e7`
+- Protected release tag: `v0.1.0-enterprise-mvp` unchanged at `469e561d763ac03e6c416f9ac816c8b0873f30da`
+- Working tree: final controlled-agentic-RAG hardening changes ready for release commit
 - Python: 3.12.13
 - Node: v20.20.2
 - npm: 10.8.2
@@ -17,7 +17,7 @@ Validated on 2026-07-22 on branch `feature/controlled-agentic-rag`.
 
 **PASS**
 
-The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, and browser E2E. Ollama profile and load testing remain out of scope for this pass and are documented as follow-up items, not blockers for the requested runtime reliability fixes.
+The Dockerized runtime stack passed validation for backend, frontend, PostgreSQL/pgvector, Redis/Celery, MinIO, Prometheus worker scraping, browser E2E, observability config, optional SearXNG health, and local load probes. Ollama has local models installed and was checked without pulling paid or remote dependencies.
 
 Controlled agentic frontend update: this phase adds disabled-by-default Next.js workspaces for controlled agent queries, safe run timelines, asynchronous cited research reports, artifact downloads, and frontend feature-flag plumbing while preserving the existing `/search` endpoint and legacy `/research` route. Backend authorization and feature flags remain authoritative.
 
@@ -38,6 +38,10 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 - Research report tests: **PASS**. Targeted backend research tests passed: 12 tests covering feature flag denial, lifecycle, exports, signed download tampering, idempotency, knowledge absence, conflicts, cancellation, tenant isolation, workspace document-scope denial, and `/search` regression.
 - Research report Docker runtime: **PASS**. With `AGENTIC_RAG_ENABLED=true` and `AGENT_RESEARCH_ENABLED=true` for the probe only, Docker API upload job `1985fb7d-2fd7-488b-994a-fa9bf5b0a9b6` completed through PostgreSQL/Redis/MinIO/Celery, research job `b4653536-ffd1-4132-b513-4bd19680e5dd` completed through `report-worker`, agent run `3593b650-7676-4616-b4fe-9a5d6ad33e5c` returned 1 source and 1 verified citation, and markdown/PDF/DOCX downloads passed. Backend and workers were restored to default disabled agent/research flags afterward.
 - Agentic frontend Docker runtime: **PASS**. With `AGENTIC_RAG_ENABLED=true`, `AGENT_RESEARCH_ENABLED=true`, `NEXT_PUBLIC_AGENTIC_RAG_ENABLED=true`, and `NEXT_PUBLIC_AGENTIC_RESEARCH_ENABLED=true`, Docker rebuilt backend/frontend images and Playwright passed 2 Chromium specs against the real PostgreSQL/Redis/MinIO/Celery stack. The gated spec covered registration, upload, Celery ingestion, `/agent` query, `/agent/research` job creation, `/search` route visibility, and document cleanup.
+- Final hardening Docker runtime: **PASS**. Default-disabled rebuilt stack passed health checks, Alembic drift check, logs review, and default Playwright runtime spec. Enabled deterministic rebuilt stack passed 5 Chromium specs covering runtime search, deep agent workspace, research reports, responsive layouts, and accessibility checks.
+- Local load probes: **PASS** under the laptop profile. 5 users/15 requests: 100% success, p50 34.2 ms, p95 123.0 ms, p99 135.7 ms, 21.4 rps. 10 users/30 requests: 100% success, p50 82.4 ms, p95 383.3 ms, p99 387.0 ms, 7.44 rps. 20 users/60 requests: 100% success, p50 169.5 ms, p95 493.6 ms, p99 599.1 ms, 4.79 rps.
+- Observability hardening: **PASS**. Prometheus alert rules and Grafana dashboard provisioning render through `docker compose --profile observability config`; Prometheus readiness returned ready and backend `/metrics` exposed all requested agent metric families.
+- Optional local profiles: **PASS/PARTIAL**. SearXNG image pulled, started on the internal network only, and `/healthz` returned `OK`; startup logs show expected default-template engine/limiter warnings for live internet engines. Ollama CLI is installed and local models `tinyllama:latest` and `llama3:latest` are available; no model pull was performed.
 
 ## Commands Run
 
@@ -75,17 +79,17 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 
 - Backend compile: **PASS**
 - Backend Ruff lint/format: **PASS**
-- Backend tests: **113 passed, 2 skipped**
-- Backend coverage: **77%**
+- Backend tests: **116 passed, 2 skipped**
+- Backend coverage: **76%**
 - Bandit: **PASS**, no issues
 - pip-audit: **PASS**, no known vulnerabilities for audited PyPI packages
 - Frontend lint: **PASS**, 0 errors and 1 existing Fast Refresh warning in `app/layout.tsx`
 - Frontend typecheck: **PASS**
 - Frontend unit/component tests: **PASS**, 9 files and 24 tests
-- Frontend Playwright E2E: **PASS**, 1 default Chromium spec; 2 Chromium specs in gated agentic Docker mode
+- Frontend Playwright E2E: **PASS**, 1 default Chromium spec; 5 Chromium specs in gated deterministic agentic Docker mode
 - Frontend build: **PASS**
 - npm audit: **PASS**, 0 vulnerabilities
-- Frontend dependency security: **PASS**, `sharp@0.35.3` override resolves the transitive libvips advisory without downgrading Next
+- Frontend dependency security: **PASS**, `next@16.2.11` resolves the audited Next.js advisory and `npm audit --omit=dev` reports 0 vulnerabilities
 - Controlled agent, external provider, and multi-source evidence targeted tests: **PASS**, 65 passed
 - Evidence normalization: **PASS**, internal, SearXNG, Wikipedia, arXiv, and approved API paths tested
 - Deduplication: **PASS**, external URL duplicates merge and cross-tenant internal evidence never merges
@@ -110,7 +114,7 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 
 ## Remaining Follow-Up
 
-- Ollama profile validation was not run.
-- Load/resilience testing was not run.
-- Several scaffolded enterprise modules remain low coverage, reflected in the 78% backend coverage.
+- Full Ollama runtime generation was not run; local models were listed only.
+- Deep destructive outage testing was limited to previously validated Redis/MinIO paths plus a final report-worker restart probe.
+- Several scaffolded enterprise modules remain low coverage, reflected in the 76% backend coverage.
 - Agentic mode, research mode, and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are future work.

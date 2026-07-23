@@ -1,14 +1,14 @@
 # Test Results
 
-Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on agent foundation commit `14be684`.
+Validated on 2026-07-23 from branch `feature/controlled-agentic-rag`.
 
 | Area | Test | Result | Evidence |
 | --- | --- | --- | --- |
 | Backend | Compilation | Pass | `.venv/bin/python -m compileall app tests` |
 | Backend | Ruff lint | Pass | `.venv/bin/ruff check app tests` |
 | Backend | Ruff format | Pass | `.venv/bin/ruff format --check app tests` |
-| Backend | Unit/integration/security tests | Pass | `113 passed, 2 skipped` |
-| Backend | Coverage | Pass | `77%` total coverage |
+| Backend | Unit/integration/security tests | Pass | `116 passed, 2 skipped` |
+| Backend | Coverage | Pass | `76%` total coverage |
 | Database | Alembic drift | Pass | Docker PostgreSQL `alembic check`: no new upgrade operations |
 | Runtime | Docker stack | Pass | Backend, frontend, PostgreSQL, Redis, MinIO, workers, Prometheus, Grafana, and OTel running |
 | Runtime | Agent internal RAG | Pass | Docker API probe job `4982e894-bc00-4c54-b069-f79f44f7f71f`, run `20bc2a99-e839-468d-87b6-4d970909f327`, 1 citation, 1 evidence item |
@@ -26,7 +26,7 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Frontend | Lint | Pass | 0 errors, 1 existing Fast Refresh warning |
 | Frontend | Typecheck | Pass | `npm run typecheck` |
 | Frontend | Unit/component tests | Pass | 9 files, 24 tests passed |
-| Frontend | Browser E2E | Pass | 1 Playwright Chromium spec passed with default flags; gated agentic Docker run passed 2 Chromium specs |
+| Frontend | Browser E2E | Pass | 1 Playwright Chromium spec passed with default flags; gated deterministic agentic Docker run passed 5 Chromium specs |
 | Frontend | Build | Pass | `npm run build` |
 | Frontend | Agentic workspace | Pass | `/agent`, `/agent/runs/{run_id}`, `/agent/research`, `/agent/research/{job_id}` build and render behind disabled-by-default feature flags |
 | Runtime | Agentic frontend Docker E2E | Pass | With backend/frontend agentic flags enabled, Playwright validated registration, upload, agent query, async research creation, `/search` route visibility, and cleanup through PostgreSQL/Redis/MinIO/Celery |
@@ -69,6 +69,11 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 | Docker | Smoke | Pass | `docker compose config`; rebuilt backend and frontend images; observability stack healthy |
 | Docker | Web-search profile | Pass | `docker compose --profile web-search config` |
 | Observability | Agent metrics | Pass | All requested agent metric families exposed without sensitive labels |
+| Observability | Alerts and dashboard | Pass | `docker compose --profile observability config`, Prometheus ready, backend `/metrics` exposed agent metrics |
+| Runtime | Load probe | Pass | 5/10/20-user local probes all 100% success; max observed p99 599.1 ms |
+| Runtime | Worker restart resilience | Pass | `report-worker` restarted and returned healthy |
+| Optional | SearXNG profile | Pass/Partial | Internal container healthy and `/healthz` returned `OK`; startup logs show default live-engine warnings |
+| Optional | Ollama profile | Partial | CLI available with `tinyllama:latest` and `llama3:latest`; generation was not run |
 
 ## Notes
 
@@ -76,3 +81,4 @@ Validated on 2026-07-22 from branch `feature/controlled-agentic-rag`, based on a
 - `npm audit --omit=dev` identified vulnerable transitive `sharp <0.35.0`; a targeted `sharp@0.35.3` override was applied instead of the audit-suggested breaking Next downgrade, and the audit now reports 0 vulnerabilities.
 - Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
 - Agentic frontend Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery with feature flags enabled for the probe.
+- Next.js was upgraded to `16.2.11`; `npm audit --omit=dev` now reports 0 vulnerabilities.

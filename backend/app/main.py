@@ -9,6 +9,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.middleware.logging import RequestLoggingMiddleware
 from app.api.middleware.request_id import RequestIDMiddleware
+from app.api.middleware.request_size import RequestSizeLimitMiddleware
 from app.api.middleware.security_headers import SecurityHeadersMiddleware
 from app.api.v1.router import api_router
 from app.core.config import settings
@@ -57,6 +58,7 @@ app.add_middleware(
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(RequestSizeLimitMiddleware)
 app.add_middleware(RequestIDMiddleware)
 register_exception_handlers(app)
 app.include_router(api_router, prefix=settings.api_v1_prefix)

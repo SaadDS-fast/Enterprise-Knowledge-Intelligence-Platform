@@ -29,6 +29,7 @@ from app.db.session import get_db
 from app.exceptions.base import AppError, ConflictError, ForbiddenError, NotFoundError
 from app.exceptions.codes import ErrorCode
 from app.integrations.storage import get_storage
+from app.observability.tracing import safe_span
 from app.services.research_service import (
     artifact_ref,
     cancel_research_job,
@@ -53,12 +54,15 @@ async def agent_query(
             content=AgentFeatureDisabledResponse().model_dump(),
         )
     try:
-        return await AgentOrchestrator().run(
-            session,
-            tenant=tenant,
-            payload=payload,
-            request_id=getattr(request.state, "request_id", None),
-        )
+        with safe_span(
+            "agent.query", endpoint="/agent/query", external=payload.allow_external_sources
+        ):
+            return await AgentOrchestrator().run(
+                session,
+                tenant=tenant,
+                payload=payload,
+                request_id=getattr(request.state, "request_id", None),
+            )
     except AgentCancelledError as exc:
         raise AppError(ErrorCode.VALIDATION_FAILED, exc.message, 499) from exc
     except AgentBudgetError as exc:
@@ -91,13 +95,19 @@ async def create_research_report(
     if payload.allow_external_sources and not settings.agent_research_external_sources_default:
         raise ForbiddenError("External sources are not enabled for research reports")
     try:
-        job, replayed = await create_agent_research_job(
-            session,
-            tenant=tenant,
-            payload=payload,
-            request_id=getattr(request.state, "request_id", None),
-            background_tasks=background_tasks,
-        )
+        with safe_span(
+            "research.create",
+            endpoint="/agent/research",
+            external=payload.allow_external_sources,
+            format_count=len(payload.requested_formats),
+        ):
+            job, replayed = await create_agent_research_job(
+                session,
+                tenant=tenant,
+                payload=payload,
+                request_id=getattr(request.state, "request_id", None),
+                background_tasks=background_tasks,
+            )
     except ValueError as exc:
         raise ForbiddenError("Document scope is not authorized") from exc
     return ResearchCreateResponse(
@@ -158,9 +168,10 @@ async def list_research_report_artifacts(
     session: Annotated[AsyncSession, Depends(get_db)],
 ) -> list[dict]:
     await _read_scoped_research_job(session, tenant, job_id)
-    artifacts = await list_research_artifacts(
-        session, workspace_id=tenant.workspace_id, job_id=job_id
-    )
+    with safe_span("research.artifacts.list", endpoint="/agent/research/artifacts"):
+        artifacts = await list_research_artifacts(
+            session, workspace_id=tenant.workspace_id, job_id=job_id
+        )
     refs = []
     for artifact in artifacts:
         ref = artifact_ref(artifact)
@@ -170,6 +181,8 @@ async def list_research_report_artifacts(
             f"&expires={ref['signed_url_expires']}"
             f"&signature={ref['signed_url_signature']}"
         )
+        ref.pop("object_key", None)
+        ref.pop("signed_url_signature", None)
         refs.append(ref)
     return refs
 
@@ -202,7 +215,10 @@ async def download_research_report_artifact(
             raise ForbiddenError("Invalid research artifact signature")
         if not verify_download_token(job_id, artifact.id, artifact.format, expires, signature):
             raise ForbiddenError("Invalid research artifact signature")
-    data = await get_storage().get(artifact.object_key)
+    with safe_span(
+        "research.artifact.download", endpoint="/agent/research/download", format=format
+    ):
+        data = await get_storage().get(artifact.object_key)
     return Response(
         content=data,
         media_type=artifact.mime_type,
