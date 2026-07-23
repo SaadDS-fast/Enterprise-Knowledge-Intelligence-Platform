@@ -1,6 +1,8 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
+STRICT_CSP = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -12,6 +14,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "Permissions-Policy", "camera=(), microphone=(), geolocation=()"
         )
         response.headers.setdefault(
-            "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+            "Content-Security-Policy",
+            STRICT_CSP,
         )
         return response
