@@ -17,6 +17,7 @@ async def fetch_limited(
     require_https: bool = True,
     allow_private_hosts: bool = False,
     transport: httpx.AsyncBaseTransport | None = None,
+    headers: dict[str, str] | None = None,
 ) -> httpx.Response:
     current = validate_outbound_url(
         url,
@@ -31,7 +32,7 @@ async def fetch_limited(
         follow_redirects=False,
         trust_env=False,
         transport=transport,
-        headers={"User-Agent": "ekip-agent-external-tools/1.0"},
+        headers={"User-Agent": "ekip-agent-external-tools/1.0", **(headers or {})},
     ) as client:
         for _ in range(4):
             try:

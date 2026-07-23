@@ -23,6 +23,8 @@ async def _run_ingestion_task(job_id: UUID, request_id: str | None) -> dict:
     retry_kwargs={"max_retries": 3},
     soft_time_limit=300,
     time_limit=360,
+    acks_late=True,
+    reject_on_worker_lost=True,
 )
 def ingest(job_id: str, request_id: str | None = None) -> dict:
     return asyncio.run(_run_ingestion_task(UUID(job_id), request_id))
@@ -44,6 +46,8 @@ async def _run_research_report_task(job_id: UUID, request_id: str | None) -> dic
     retry_kwargs={"max_retries": 3},
     soft_time_limit=300,
     time_limit=360,
+    acks_late=True,
+    reject_on_worker_lost=True,
 )
 def research_report(job_id: str, request_id: str | None = None) -> dict:
     return asyncio.run(_run_research_report_task(UUID(job_id), request_id))

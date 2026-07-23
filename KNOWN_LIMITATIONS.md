@@ -1,6 +1,6 @@
 # Known Limitations
 
-Updated on 2026-07-23 from branch `feature/controlled-agentic-rag`.
+Updated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 
 ## Implemented And Runtime-Tested
 
@@ -20,18 +20,25 @@ Updated on 2026-07-23 from branch `feature/controlled-agentic-rag`.
 - Disabled-by-default frontend workspaces for controlled agent queries, safe run timelines,
   asynchronous research submission, report polling/cancellation, artifact downloads, and gated
   Docker browser validation.
+- v0.2.1 operational validation for Redis dispatch outage recovery, MinIO export outage recovery,
+  backend/report-worker/ingestion-worker restarts, PostgreSQL interruption recovery, cancellation,
+  idempotency replay, tenant-isolation denial matrix, Prometheus/Grafana/OpenTelemetry APIs, and
+  live SearXNG explicit opt-in search through `/agent/query`.
 
 ## Remaining Limitations
 
 - Ollama model generation was not run; local models were listed only.
 - Load testing was limited to local 5/10/20-user probes and should not be extrapolated to enterprise traffic.
-- Deep destructive outage testing was limited to previously validated Redis/MinIO cases plus a final report-worker restart probe.
-- Grafana dashboard provisioning and Prometheus alert config render, but alert firing and trace assertions were not deeply validated.
+- Deep destructive outage testing was limited to local Compose service interruption/restart probes;
+  host crashes, disk exhaustion, network partitions, and multi-node failover were not tested.
+- Grafana dashboard provisioning, Prometheus targets, and OpenTelemetry collector trace export were
+  API/log validated; alert firing and long-term trace retention were not tested.
 - Several scaffolded modules remain low coverage, including cache, document lifecycle/retention, SSRF, egress policy, audit persistence, and redaction paths.
 - Validation data from throwaway runtime probes remains in the Docker database except for documents explicitly cleaned by the Playwright test.
 - Agentic RAG and agentic research are still disabled by default and require explicit backend and
   frontend feature flags.
-- External-source tools are not enabled by default and were runtime-validated with the deterministic no-internet provider. SearXNG container health passed internally, but live public internet engine quality is environment-dependent.
+- External-source tools are not enabled by default. Deterministic and live SearXNG opt-in paths were
+  runtime-validated locally, but live public internet engine quality remains environment-dependent.
 - Optional Ollama claim verification/synthesis interfaces are documented as a future path; this phase uses deterministic verification and synthesis by default.
 - Arbitrary browsing, user-supplied URLs, direct SQL tools, shell tools, unrestricted external APIs, admin UI, AWS deployment, and autonomous unrestricted agents are intentionally not implemented.
 

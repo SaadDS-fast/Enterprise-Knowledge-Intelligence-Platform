@@ -1,9 +1,12 @@
 from uuid import UUID
 
+from sqlalchemy import select
+
 from app.agents.research import ResearchState
 from app.core.config import settings
-from app.db.models import ResearchJob, Workspace
+from app.db.models import ResearchArtifact, ResearchJob, Workspace
 from app.db.session import AsyncSessionLocal
+from app.services import research_service
 
 
 def _upload_ready_document(client, headers, filename: str, content: str) -> str:
@@ -240,6 +243,76 @@ def test_research_concurrency_limit_returns_typed_error(client, auth_headers, mo
 
     assert response.status_code == 429
     assert response.json()["error"]["code"] == "CONCURRENCY_LIMIT_REACHED"
+
+
+async def test_research_export_failure_cleans_partial_objects_and_retries(
+    client, auth_headers, monkeypatch
+) -> None:
+    class FlakyStorage:
+        def __init__(self) -> None:
+            self.objects: dict[str, bytes] = {}
+            self.deleted: list[str] = []
+            self.fail_pdf_once = True
+
+        async def put(self, key: str, data: bytes, content_type: str) -> None:
+            if key.endswith("/report.pdf") and self.fail_pdf_once:
+                self.fail_pdf_once = False
+                raise RuntimeError("storage unavailable")
+            self.objects[key] = data
+
+        async def get(self, key: str) -> bytes:
+            return self.objects[key]
+
+        async def delete(self, key: str) -> None:
+            self.deleted.append(key)
+            self.objects.pop(key, None)
+
+        async def exists(self, key: str) -> bool:
+            return key in self.objects
+
+    storage = FlakyStorage()
+    monkeypatch.setattr(research_service, "get_storage", lambda: storage)
+    user = client.get("/api/v1/auth/me", headers=auth_headers).json()
+    workspace_id = UUID(auth_headers["X-Workspace-ID"])
+    async with AsyncSessionLocal() as session:
+        workspace = await session.get(Workspace, workspace_id)
+        assert workspace is not None
+        job = ResearchJob(
+            tenant_id=workspace.organization_id,
+            workspace_id=workspace_id,
+            user_id=UUID(user["id"]),
+            question="Export retry cleanup research job.",
+            status="running",
+            current_state=ResearchState.EXPORTING.value,
+            stage="exporting",
+            requested_formats=["markdown", "pdf"],
+            result_json={},
+        )
+        session.add(job)
+        await session.commit()
+        await session.refresh(job)
+
+        markdown = "# Retry Report\n\nA supported local result."
+        try:
+            await research_service._export_artifacts(session, job, markdown)
+        except RuntimeError as exc:
+            assert "pdf_export_failed" in str(exc)
+        else:
+            raise AssertionError("Expected first PDF export to fail")
+        assert len(storage.deleted) == 1
+        assert storage.objects == {}
+
+        artifacts = await research_service._export_artifacts(session, job, markdown)
+        await session.commit()
+        assert [artifact.format for artifact in artifacts] == ["markdown", "pdf"]
+        rows = (
+            await session.scalars(
+                select(ResearchArtifact).where(ResearchArtifact.research_job_id == job.id)
+            )
+        ).all()
+        assert sorted(row.format for row in rows) == ["markdown", "pdf"]
+        assert len({row.format for row in rows}) == 2
+        assert all(str(job.id) in row.object_key for row in rows)
 
 
 def test_request_body_size_limit_returns_typed_error(client, monkeypatch) -> None:

@@ -501,6 +501,8 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │   └── safe-url.ts
 │   ├── public/
 │   │   └── .gitkeep
+│   ├── test-results/
+│   │   └── .last-run.json
 │   ├── tests/
 │   │   └── e2e/
 │   │       ├── agentic-accessibility.spec.ts
@@ -564,15 +566,18 @@ Enterprise-Knowledge-Intelligence-Platform/
 │   │           └── prometheus.yml
 │   ├── opentelemetry/
 │   │   └── otel-collector-config.yaml
-│   └── prometheus/
-│       ├── alerts.yml
-│       └── prometheus.yml
+│   ├── prometheus/
+│   │   ├── alerts.yml
+│   │   └── prometheus.yml
+│   └── searxng/
+│       └── settings.yml
 ├── scripts/
 │   ├── bootstrap.ps1
 │   ├── bootstrap.sh
 │   ├── build_k8s_images.sh
 │   ├── generate_tree.py
 │   ├── local_agentic_load.py
+│   ├── operational_validation.py
 │   ├── run_security_checks.ps1
 │   └── run_security_checks.sh
 ├── security/

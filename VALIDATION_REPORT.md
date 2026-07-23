@@ -1,6 +1,45 @@
 # Validation Report
 
-Validated on 2026-07-23 on branch `feature/controlled-agentic-rag`.
+Validated on 2026-07-23 on branch `release/v0.2.1-operational-hardening`.
+
+## v0.2.1 Operational Hardening Addendum
+
+**Status: PASS.** Current baseline commit before this release-hardening commit was
+`df183cab489c00e4c0a94f6c2b0f1cb60471bf57`; protected tag
+`v0.2.0-controlled-agentic-rag` remains there and no `v0.2.1-controlled-agentic-rag`
+tag was created during validation.
+
+Current hardening results:
+
+- Backend: `.venv/bin/pytest -vv` passed `117 passed, 2 skipped`; coverage stayed `76%`;
+  Ruff check and format check passed; Bandit reported no issues; pip-audit reported no known
+  vulnerabilities in audited PyPI packages.
+- Frontend: lint passed with one existing Fast Refresh warning, typecheck passed, Vitest passed
+  `9 files / 24 tests`, `npm run build` passed on Next.js `16.2.11`, and
+  `npm audit --omit=dev` reported 0 vulnerabilities.
+- Browser runtime: default Playwright passed `1 passed, 4 skipped`; enabled agentic Playwright
+  passed `5 passed` against Dockerized PostgreSQL/Redis/MinIO/Celery.
+- Docker/migrations: `docker compose config`, observability profile config, web-search profile
+  config, `alembic upgrade head`, and `alembic check` passed.
+- Operational outage script: Redis dispatch outage recovered from `dispatch_failed` to completed;
+  MinIO export outage recovered with exactly one markdown/PDF/DOCX artifact each and valid DOCX;
+  report-worker, ingestion-worker, and backend restarts completed in the real stack; PostgreSQL
+  interruption returned a sanitized 500 and health recovered; cancellation ended in
+  `CANCELLED`; idempotent research replay returned the same job with valid PDF.
+- Tenant isolation matrix: cross-document reference `403`, cross-document error `FORBIDDEN`,
+  read research `404`, artifact metadata `404`, artifact download `404`, read agent run `404`.
+- External providers: deterministic opt-in returned one citation; live SearXNG opt-in returned
+  status 200, `external_access_performed=true`, provider `searxng`, 5 external evidence items,
+  and 4 citations.
+- Observability: Prometheus ready, backend/ingestion/evaluation/report targets up, agent metric
+  families present without forbidden sensitive labels; Grafana API returned the
+  `EKIP Agentic Runtime` dashboard; OpenTelemetry collector debug exporter logged one trace batch
+  after enabling `OTEL_ENABLED=true`.
+- Load probes: 5 users / 15 requests: 100% success, p99 211.8 ms; 10 users / 30 requests:
+  100% success, p99 374.8 ms; 20 users / 60 requests: 100% success, p99 851.9 ms.
+- Default flags restored after validation: `AGENTIC_RAG_ENABLED=false`,
+  `AGENT_RESEARCH_ENABLED=false`, `AGENT_WEB_SEARCH_ENABLED=false`,
+  `WEB_SEARCH_PROVIDER=disabled`.
 
 ## Environment
 

@@ -96,6 +96,20 @@ Completed in the previous internal-agent phase:
 
 ## Final Hardening
 
+- Completed v0.2.1 operational reliability hardening for release validation:
+  - Added safe re-entry handling for redelivered research report tasks so interrupted non-terminal
+    jobs resume from pending retry state without duplicating completed artifacts.
+  - Made research export retries clean up existing artifact rows and object keys before rewriting,
+    and roll back partial object writes on export failure.
+  - Added late acknowledgements and worker-lost rejection for ingestion and report Celery tasks.
+  - Added optional stage-delay settings used only by outage validation probes.
+  - Hardened the optional SearXNG profile with JSON response configuration and backend forwarding
+    headers for local explicit opt-in validation.
+  - Made OpenTelemetry Docker configuration runtime-overridable and bound the collector OTLP
+    receiver on container interfaces.
+  - Added `scripts/operational_validation.py` for real PostgreSQL/Redis/MinIO/Celery outage,
+    restart, idempotency, cancellation, tenant-isolation, metrics, and deterministic external
+    provider probes.
 - Added request body size enforcement with typed `REQUEST_TOO_LARGE` responses.
 - Added research concurrency and queue capacity limits with typed safe errors.
 - Sanitized research artifact API serialization so object keys and signed URL signatures are not returned.

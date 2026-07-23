@@ -1,6 +1,24 @@
 # Test Results
 
-Validated on 2026-07-23 from branch `feature/controlled-agentic-rag`.
+Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
+
+## v0.2.1 Operational Hardening Results
+
+| Area | Test | Result | Evidence |
+| --- | --- | --- | --- |
+| Backend | Full pytest | Pass | `117 passed, 2 skipped` |
+| Backend | Coverage | Pass | `76%` total coverage |
+| Backend | Ruff | Pass | `ruff check app tests`; `ruff format --check app tests` |
+| Frontend | Lint/typecheck/test/build | Pass | 1 existing lint warning; typecheck passed; `9` Vitest files and `24` tests passed; Next build passed |
+| Frontend | Default Playwright | Pass | `1 passed, 4 skipped` with default disabled flags |
+| Frontend | Enabled Playwright | Pass | `5 passed` with agentic/research flags enabled through Docker |
+| Security | Audits | Pass | Bandit no issues; pip-audit no known vulnerabilities; npm audit 0 vulnerabilities |
+| Docker | Compose and Alembic | Pass | default/observability/web-search config passed; `alembic upgrade head`; `alembic check`: no new operations |
+| Runtime | Outage/restart validation | Pass | Redis dispatch outage, MinIO export outage, backend restart, report-worker restart, ingestion-worker restart, PostgreSQL interruption, cancellation, and idempotency all recovered safely |
+| Runtime | Tenant isolation | Pass | Cross-scope document/research/artifact/agent-run access returned 403/404 without leakage |
+| Runtime | Live SearXNG | Pass | `/agent/query` explicit opt-in returned 5 external evidence items, 4 citations, provider `searxng` |
+| Observability | Prometheus/Grafana/OTel | Pass | Prometheus targets up; Grafana API returned `EKIP Agentic Runtime`; OTel collector logged 1 trace batch |
+| Load | 5/10/20-user probes | Pass | 100% success; p99 211.8 ms / 374.8 ms / 851.9 ms |
 
 | Area | Test | Result | Evidence |
 | --- | --- | --- | --- |

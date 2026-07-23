@@ -35,6 +35,10 @@ class SearxngProvider(ExternalProvider):
             max_response_bytes=self.max_response_bytes,
             require_https=False,
             allow_private_hosts=True,
+            headers={
+                "X-Forwarded-For": "127.0.0.1",
+                "X-Real-IP": "127.0.0.1",
+            },
         )
         try:
             payload = response.json()

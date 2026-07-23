@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from asyncio import sleep
 from pathlib import Path
 from uuid import UUID
 
 from sqlalchemy import delete
 
+from app.core.config import settings
 from app.db.models import Chunk, Document, DocumentVersion, IngestionJob
 from app.db.session import AsyncSessionLocal
 from app.ingestion.loaders import load_document
@@ -42,6 +44,7 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             )
             document.status = "processing"
             await session.commit()
+            await _stage_delay()
             data = await get_storage().get(version.storage_key)
             extension = Path(version.filename).suffix.lower()
             text = normalize_text(load_document(extension, data))
@@ -49,11 +52,13 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 raise ValueError("No readable text could be extracted")
             job.stage = IngestionStage.CHUNKING
             await session.commit()
+            await _stage_delay()
             raw_chunks = deduplicate_chunks(chunk_text(text))
             if not raw_chunks:
                 raise ValueError("No chunks were generated")
             job.stage = IngestionStage.EMBEDDING
             await session.commit()
+            await _stage_delay()
             await session.execute(delete(Chunk).where(Chunk.document_version_id == version.id))
             pii_count = len(find_pii(text))
             session.add_all(
@@ -82,6 +87,7 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             if approved_key != version.storage_key:
                 job.stage = IngestionStage.INDEXING
                 await session.commit()
+                await _stage_delay()
                 await storage.put(approved_key, data, version.mime_type)
                 await storage.delete(version.storage_key)
                 version.storage_key = approved_key
@@ -119,3 +125,8 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             await session.commit()
             INGESTION_FAILED.inc()
             raise
+
+
+async def _stage_delay() -> None:
+    if settings.ingestion_stage_delay_seconds:
+        await sleep(settings.ingestion_stage_delay_seconds)

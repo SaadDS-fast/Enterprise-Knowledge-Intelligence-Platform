@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import time
+from asyncio import sleep
+from contextlib import suppress
 from datetime import UTC, datetime
 from hashlib import sha256
 from uuid import UUID, uuid4
@@ -271,6 +273,20 @@ async def _generate_research_report_inner(
             return {"status": "missing"}
         if job.current_state == ResearchState.COMPLETED.value:
             return {"status": "completed", "idempotent": True}
+        if job.current_state == ResearchState.FAILED.value:
+            return {"status": "failed", "job_id": str(job.id)}
+        if job.current_state == ResearchState.CANCELLED.value:
+            return {"status": "cancelled", "job_id": str(job.id)}
+        if job.current_state == ResearchState.CANCEL_REQUESTED.value:
+            raise ResearchCancelled()
+        if job.current_state not in {
+            ResearchState.PENDING.value,
+        }:
+            job.current_state = ResearchState.PENDING.value
+            job.status = "retry_pending"
+            job.stage = "retrying"
+            job.progress_percent = min(job.progress_percent, 99)
+            await session.commit()
         try:
             await _check_cancelled(session, job)
             await _transition(session, job, ResearchState.AUTHORIZING, 5, "authorizing")
@@ -380,11 +396,20 @@ async def _generate_research_report_inner(
             AGENT_RESEARCH_JOBS_CANCELLED.inc()
             return {"status": "cancelled", "job_id": str(job.id)}
         except Exception as exc:
-            job.status = "failed"
-            job.current_state = ResearchState.FAILED.value
-            job.stage = "failed"
-            job.error_code = _error_code(exc)
+            code = _error_code(exc)
+            retry_count = int((job.result_json or {}).get("retry_count", 0))
+            if code == "RESEARCH_EXPORT_FAILED" and retry_count < 3:
+                job.status = "retry_pending"
+                job.current_state = ResearchState.PENDING.value
+                job.stage = "retry_pending"
+                job.progress_percent = min(job.progress_percent, 99)
+            else:
+                job.status = "failed"
+                job.current_state = ResearchState.FAILED.value
+                job.stage = "failed"
+            job.error_code = code
             job.error_message = _sanitize_error(exc)
+            job.result_json = {**(job.result_json or {}), "retry_count": retry_count + 1}
             await session.commit()
             AGENT_RESEARCH_JOBS_FAILED.inc()
             raise
@@ -442,47 +467,76 @@ async def _export_artifacts(
 ) -> list[ResearchArtifact]:
     storage = get_storage()
     artifacts: list[ResearchArtifact] = []
+    written_keys: list[str] = []
     requested = job.requested_formats or [ResearchFormat.MARKDOWN.value]
     with safe_span("research.export", format_count=len(requested)):
-        for fmt in requested:
-            artifact_id = uuid4()
-            filename = safe_object_name(f"research-report.{_extension(fmt)}")
-            data, mime_type = _render_format(fmt, markdown)
-            if not data:
-                raise RuntimeError(f"{fmt}_export_empty")
-            if len(data.split()) > settings.agent_research_max_report_words * 20:
-                raise RuntimeError(f"{fmt}_export_too_large")
-            object_key = research_object_key(
-                tenant_id=job.tenant_id,
-                workspace_id=job.workspace_id,
-                job_id=job.id,
-                artifact_id=artifact_id,
-                ext=_extension(fmt),
-            )
-            try:
-                await storage.put(object_key, data, mime_type)
-            except Exception as exc:
-                AGENT_RESEARCH_EXPORT_FAILURES.labels(format=fmt, outcome="storage_failed").inc()
-                raise RuntimeError(f"{fmt}_export_failed") from exc
-            artifact = ResearchArtifact(
-                id=artifact_id,
-                research_job_id=job.id,
-                tenant_id=job.tenant_id,
-                workspace_id=job.workspace_id,
-                format=fmt,
-                object_key=object_key,
-                filename=filename,
-                mime_type=mime_type,
-                checksum_sha256=sha256(data).hexdigest(),
-                size_bytes=len(data),
-                pipeline_version=PIPELINE_VERSION,
-                status="available",
-            )
-            session.add(artifact)
-            artifacts.append(artifact)
-            AGENT_RESEARCH_EXPORTS.labels(format=fmt, outcome="success").inc()
+        await _cleanup_existing_artifacts(session, job, storage)
+        try:
+            for fmt in requested:
+                await _check_cancelled(session, job)
+                artifact_id = uuid4()
+                filename = safe_object_name(f"research-report.{_extension(fmt)}")
+                data, mime_type = _render_format(fmt, markdown)
+                if not data:
+                    raise RuntimeError(f"{fmt}_export_empty")
+                if len(data.split()) > settings.agent_research_max_report_words * 20:
+                    raise RuntimeError(f"{fmt}_export_too_large")
+                object_key = research_object_key(
+                    tenant_id=job.tenant_id,
+                    workspace_id=job.workspace_id,
+                    job_id=job.id,
+                    artifact_id=artifact_id,
+                    ext=_extension(fmt),
+                )
+                try:
+                    await storage.put(object_key, data, mime_type)
+                    written_keys.append(object_key)
+                except Exception as exc:
+                    AGENT_RESEARCH_EXPORT_FAILURES.labels(
+                        format=fmt, outcome="storage_failed"
+                    ).inc()
+                    raise RuntimeError(f"{fmt}_export_failed") from exc
+                artifact = ResearchArtifact(
+                    id=artifact_id,
+                    research_job_id=job.id,
+                    tenant_id=job.tenant_id,
+                    workspace_id=job.workspace_id,
+                    format=fmt,
+                    object_key=object_key,
+                    filename=filename,
+                    mime_type=mime_type,
+                    checksum_sha256=sha256(data).hexdigest(),
+                    size_bytes=len(data),
+                    pipeline_version=PIPELINE_VERSION,
+                    status="available",
+                )
+                artifacts.append(artifact)
+                AGENT_RESEARCH_EXPORTS.labels(format=fmt, outcome="success").inc()
+        except Exception:
+            for key in written_keys:
+                with suppress(Exception):
+                    await storage.delete(key)
+            raise
+    session.add_all(artifacts)
     await session.flush()
     return artifacts
+
+
+async def _cleanup_existing_artifacts(
+    session: AsyncSession, job: ResearchJob, storage: object
+) -> None:
+    existing = (
+        await session.scalars(
+            select(ResearchArtifact).where(ResearchArtifact.research_job_id == job.id)
+        )
+    ).all()
+    for artifact in existing:
+        with suppress(Exception):
+            await storage.delete(artifact.object_key)
+        await session.delete(artifact)
+    if existing:
+        job.artifact_refs = []
+        await session.flush()
 
 
 def _render_format(fmt: str, markdown: str) -> tuple[bytes, str]:
@@ -536,6 +590,8 @@ async def _transition(
     AGENT_RESEARCH_STAGE_DURATION.labels(stage=stage, outcome="success").observe(
         time.perf_counter() - started
     )
+    if settings.agent_research_stage_delay_seconds:
+        await sleep(settings.agent_research_stage_delay_seconds)
 
 
 async def _check_cancelled(session: AsyncSession, job: ResearchJob) -> None:

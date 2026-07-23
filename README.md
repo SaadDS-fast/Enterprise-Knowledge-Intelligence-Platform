@@ -35,6 +35,14 @@ The backend container runs Alembic migrations before starting the API, and `mini
 creates the local object-storage bucket.
 
 Runtime validation requires Docker to be installed and the Docker daemon to be running.
+The 2026-07-23 operational hardening validation on branch
+`release/v0.2.1-operational-hardening` passed against the real PostgreSQL/Redis/MinIO/Celery
+stack, including Redis dispatch recovery, MinIO export outage recovery, backend/report-worker/
+ingestion-worker restarts, PostgreSQL interruption recovery, cancellation/idempotency,
+Prometheus/Grafana/OpenTelemetry checks, live SearXNG opt-in search, default and enabled
+Playwright browser suites, and 5/10/20-user local load probes. Default feature flags were
+restored afterward.
+
 The 2026-07-20 validation on branch `fix/runtime-reliability-and-e2e` passed with
 Docker 29.6.2 and Docker Compose v5.3.1, including the observability profile,
 worker metrics scraping, Redis outage recovery, MinIO outage rollback, and
