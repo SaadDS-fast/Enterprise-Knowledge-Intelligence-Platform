@@ -65,6 +65,13 @@ export type SearchResult = {
   abstained: boolean;
   request_id?: string | null;
   retrieval_diagnosis?: RetrievalDiagnosis;
+  outcome?: string;
+  answer_value?: string | null;
+  support_status?: string;
+  confidence_category?: string;
+  citations?: AgentCitation[];
+  conflicts?: AgentConflict[];
+  abstention_reason?: string | null;
 };
 
 export type AgentOutcome =

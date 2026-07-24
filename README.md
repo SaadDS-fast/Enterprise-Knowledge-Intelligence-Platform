@@ -343,7 +343,11 @@ Latest recorded validation, from `VALIDATION_REPORT.md` and `TEST_RESULTS.md`:
 - This is a portfolio/local validation project, not a claimed production deployment.
 - Agentic RAG, research reports, and external tools are disabled by default.
 - Live SearXNG quality depends on the local environment and public internet availability.
-- Ollama generation is optional; the default validated path uses deterministic local behavior.
+- Ollama generation is optional and was not used for the deterministic-core hardening path; the
+  default validated path uses deterministic local extraction, support assessment, conflict
+  detection, and citation checks.
+- Documents uploaded before the structure-aware chunking update should be re-uploaded or
+  reprocessed to receive improved heading/value chunks and section metadata.
 - Load tests are laptop/local Docker probes and should not be extrapolated to enterprise capacity.
 - Some scaffolded enterprise modules remain low coverage; see [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 - Screenshots are placeholders until captured with the screenshot guide.
@@ -357,6 +361,23 @@ Latest recorded validation, from `VALIDATION_REPORT.md` and `TEST_RESULTS.md`:
 - Add enterprise identity provider integration.
 - Add backup/restore drills and disaster-recovery automation.
 - Improve coverage for scaffolded cache, audit, redaction, and document lifecycle modules.
+- Add a documented reprocessing command for existing document versions after chunking upgrades.
+
+## Deterministic Offline Mode
+
+The core search and controlled-agent flows remain usable without Ollama, OpenAI, Bedrock,
+LangChain, LangGraph, CrewAI, or any other generative model. Standard Search now performs
+deterministic query normalization, hybrid retrieval, reranking, attribute-aware evidence
+sufficiency, direct answer extraction, citation validation, and abstention. Controlled Agent uses
+the same internal evidence rules through allowlisted tools, then displays the final answer outcome
+separately from workflow completion.
+
+Evidence support is no longer decided only by a global similarity threshold. Direct heading/value
+facts such as `Topic: Functions` can support questions such as `What is the demo topic?`, while
+unrelated facts like tutor qualifications or teaching methods are not treated as contradictions.
+Confirmed conflicts require contradictory values for the same normalized subject and attribute.
+Evaluation compares the grounded answer with the expected answer using normalized value match,
+token F1, evidence support, citation validity, abstention status, and retrieval diagnosis.
 
 ## Project Structure
 

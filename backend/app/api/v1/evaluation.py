@@ -24,6 +24,7 @@ async def create(
             user_id=tenant.user_id,
             name=payload.name,
             cases=payload.cases,
+            pipeline=payload.pipeline,
         )
     )
 

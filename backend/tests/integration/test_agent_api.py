@@ -238,6 +238,33 @@ def test_agent_simple_document_question(client, auth_headers, monkeypatch) -> No
     assert body["evidence_ranking"]["method"] == "reciprocal_rank_fusion"
 
 
+def test_agent_demo_topic_heading_value_answer(client, monkeypatch) -> None:
+    headers = register_user(
+        client,
+        "agent-demo-topic@example.com",
+        "Agent Demo Topic Org",
+        "General",
+    )
+    upload_ready_document(
+        client,
+        headers,
+        "agent-1st-year-maths-demo.txt",
+        "Topic: Functions\n\n"
+        "A function is a relation in which every input has exactly one output.\n\n"
+        "Tutor qualification: MS Data Science\n\n"
+        "Teaching method: Concept-first teaching",
+    )
+
+    body = agent_query(client, headers, monkeypatch, "What is the demo topic?")
+
+    assert body["status"] == "completed"
+    assert body["abstained"] is False
+    assert body["outcome"] == "ANSWER_SUPPORTED"
+    assert body["answer"] and "Functions" in body["answer"]
+    assert body["citations"]
+    assert body["conflicts"] == []
+
+
 def test_agent_query_reformulation_and_retry(client, auth_headers, monkeypatch) -> None:
     upload_ready_document(
         client,

@@ -15,6 +15,17 @@ partial support, unsupported questions, retrieval failure, knowledge absence, am
 numeric/date/entity conflicts, internal/external agreement and conflict, stale/duplicate/misleading
 sources, prompt injection, tenant isolation, citation mismatch, and report citation integrity.
 
+Deterministic-core hardening adds a targeted internal-document regression set for:
+
+- direct heading/value extraction, including `Topic: Functions`
+- non-conflict handling for unrelated profile or teaching-method facts
+- genuine same-attribute topic conflicts
+- normalized expected/actual answer value matching
+- citation validity and evidence-support reporting in evaluation results
+
+Evaluation distinguishes workflow completion from answer support. A completed run may still be an
+abstention, conflict, knowledge absence, or failure.
+
 Executed target checks are in `backend/tests/unit/test_multi_source_evaluation.py`.
 This is a deterministic local evaluation, not a claim of enterprise-scale benchmark performance.
 

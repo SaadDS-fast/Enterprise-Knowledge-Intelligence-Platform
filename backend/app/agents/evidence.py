@@ -24,7 +24,12 @@ from app.observability.metrics import (
     AGENT_EVIDENCE_DEDUPLICATED,
     AGENT_EVIDENCE_ITEMS,
 )
-from app.rag.evidence import key_terms
+from app.rag.evidence import (
+    SupportStatus,
+    assess_evidence_support,
+    key_terms,
+    synthesize_direct_answer,
+)
 from app.rag.evidence_diagnosis import DiagnosisStatus
 
 
@@ -386,8 +391,13 @@ def verify_claims(
     conflict_ids = {evidence_id for conflict in conflicts for evidence_id in conflict.evidence_ids}
     claims: list[Claim] = []
     for index, item in enumerate(evidence[: settings.evidence_max_items], 1):
-        claim_text = _extract_claim_text(item.excerpt)
+        assessment = assess_evidence_support([item.retrieval_score or 0.0], query, [item.excerpt])
+        claim_text = synthesize_direct_answer(query, assessment) or _extract_claim_text(
+            item.excerpt
+        )
         support_score = _support_score(query, claim_text, item)
+        if assessment.status is SupportStatus.SUPPORTED:
+            support_score = max(support_score, assessment.support_score)
         if item.evidence_id in conflict_ids:
             status = VerificationStatus.CONFLICTED
         elif support_score >= settings.evidence_min_support_score:
@@ -417,6 +427,28 @@ def verify_claims(
 
 def detect_conflicts(evidence: list[UnifiedEvidence], *, query: str = "") -> list[Conflict]:
     conflicts: list[Conflict] = []
+    assessment = assess_evidence_support(
+        [item.retrieval_score or 0.0 for item in evidence],
+        query,
+        [item.excerpt for item in evidence],
+    )
+    if assessment.status is SupportStatus.CONFLICT:
+        evidence_ids = [
+            evidence[fact.source_index].evidence_id
+            for fact in assessment.facts
+            if fact.source_index < len(evidence)
+        ]
+        conflict = Conflict(
+            status=ConflictStatus.CONFIRMED_CONFLICT,
+            conflict_type=assessment.attribute.value,
+            evidence_ids=list(dict.fromkeys(evidence_ids)),
+            summary=(
+                f"Conflicting values for {assessment.attribute.value}: "
+                f"{', '.join(assessment.conflict_values)}."
+            ),
+        )
+        AGENT_CONFLICTS_DETECTED.labels(outcome=conflict.status.value).inc()
+        return [conflict]
     for item in evidence:
         if query and not _query_comparable(query, item):
             continue
@@ -501,20 +533,20 @@ def deterministic_synthesize(
             evidence,
             supported,
         )
+        has_supported_claim = any(
+            claim.verification_status == VerificationStatus.SUPPORTED for claim in supported
+        )
         partial = any(
             claim.verification_status == VerificationStatus.PARTIALLY_SUPPORTED
             for claim in supported
-        ) or bool(unsupported)
+        ) or (bool(unsupported) and not has_supported_claim)
         return SynthesisResult(
             answer=" ".join(answer_parts),
             claims=supported,
             citations=validation.citations,
             unsupported_claims_removed=unsupported,
             conflicts=conflicts,
-            abstained=partial
-            and not any(
-                claim.verification_status == VerificationStatus.SUPPORTED for claim in supported
-            ),
+            abstained=partial and not has_supported_claim,
             confidence_category=ConfidenceCategory.MEDIUM if partial else ConfidenceCategory.HIGH,
             outcome=(
                 AnswerOutcome.ANSWER_PARTIALLY_SUPPORTED

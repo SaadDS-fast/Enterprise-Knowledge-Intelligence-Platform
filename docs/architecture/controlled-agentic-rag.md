@@ -273,6 +273,22 @@ The response does not expose hidden reasoning. If the agent fails before produci
 
 Unified evidence normalization, source-aware rank fusion, context-budget trimming, claim verification, conflict detection, citation validation, and deterministic synthesis are described in `docs/architecture/multi-source-evidence.md`.
 
+## Deterministic Internal-Document Core
+
+The internal-document core does not require Ollama or any external model. It uses deterministic
+query normalization, hybrid retrieval, reranking, attribute-aware support assessment,
+heading/value extraction, citation validation, and abstention. Direct facts such as
+`Topic: Functions` can answer topic questions even when generic similarity is moderate, provided
+the cited evidence belongs to the authorized tenant/workspace.
+
+Conflict handling compares values for the same normalized requested attribute. Unrelated facts
+such as tutor qualification or teaching method are not contradictions for a demo-topic question.
+Confirmed conflicts return the conflicting values and citations and ask the user to clarify which
+source or version should govern the answer.
+
+Newly ingested documents receive structure-aware chunks and section metadata. Existing document
+versions should be re-uploaded or reprocessed to benefit from the improved chunk boundaries.
+
 ## Metrics
 
 Prometheus exports agent counters and histograms without query, document, user, tenant, or filename labels:

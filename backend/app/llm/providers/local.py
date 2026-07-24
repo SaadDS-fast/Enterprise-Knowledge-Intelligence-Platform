@@ -9,6 +9,7 @@ from app.core.config import LocalLLMBackend, settings
 from app.llm.base import GenerationRequest, GenerationResult, LLMProvider
 from app.llm.prompts.answer import build_answer_prompt
 from app.rag.embeddings import tokenize
+from app.rag.evidence import assess_evidence_support, synthesize_direct_answer
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,16 @@ class LocalProvider(LLMProvider):
         return GenerationResult(text, "local-ollama", settings.local_llm_model)
 
     def _extractive(self, request: GenerationRequest) -> GenerationResult:
+        assessment = assess_evidence_support(
+            [item.score for item in request.evidence],
+            request.question,
+            [item.content for item in request.evidence],
+        )
+        direct_answer = synthesize_direct_answer(request.question, assessment)
+        if direct_answer:
+            return GenerationResult(
+                direct_answer, "local-extractive", "deterministic-extractive-v2"
+            )
         query_tokens = set(tokenize(request.question))
         candidates: list[tuple[float, str, int]] = []
         for citation, item in enumerate(request.evidence, 1):

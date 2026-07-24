@@ -114,6 +114,13 @@ class SearchResponse(BaseModel):
     abstained: bool
     request_id: str | None = None
     retrieval_diagnosis: dict = Field(default_factory=dict)
+    outcome: str = "INSUFFICIENT_EVIDENCE"
+    answer_value: str | None = None
+    support_status: str = "ABSENT"
+    confidence_category: str = "none"
+    citations: list[dict] = Field(default_factory=list)
+    conflicts: list[dict] = Field(default_factory=list)
+    abstention_reason: str | None = None
 
 
 class ResearchRequest(BaseModel):
@@ -140,6 +147,7 @@ class EvaluationCase(BaseModel):
 
 class EvaluationRequest(BaseModel):
     name: str = Field(min_length=2, max_length=160)
+    pipeline: str = Field(default="standard_search", pattern="^(standard_search|controlled_agent)$")
     cases: list[EvaluationCase] = Field(min_length=1, max_length=100)
 
 
