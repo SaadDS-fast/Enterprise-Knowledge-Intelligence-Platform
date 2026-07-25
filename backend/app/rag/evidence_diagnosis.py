@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from app.models.domain import RetrievedEvidence
-from app.rag.evidence import key_terms
+from app.rag.evidence import SupportStatus, assess_evidence_support, key_terms
 
 
 class DiagnosisStatus(StrEnum):
@@ -26,6 +26,8 @@ class DiagnosisReason(StrEnum):
     SOME_QUERY_TERMS_SUPPORTED = "SOME_QUERY_TERMS_SUPPORTED"
     CONFLICTING_NUMERIC_OR_NEGATION_SIGNALS = "CONFLICTING_NUMERIC_OR_NEGATION_SIGNALS"
     QUERY_TOO_BROAD = "QUERY_TOO_BROAD"
+    DIRECT_ATTRIBUTE_SUPPORTED = "DIRECT_ATTRIBUTE_SUPPORTED"
+    NORMALIZED_ATTRIBUTE_CONFLICT = "NORMALIZED_ATTRIBUTE_CONFLICT"
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,6 +62,9 @@ SYNONYMS = {
     "owner": "owned responsible accountable team",
     "responsible": "owner owned accountable team",
     "q1": "first quarter january february march",
+    "topic": "subject covered about",
+    "demo": "demonstration title topic",
+    "covered": "topic subject about",
 }
 
 NEGATION_TERMS = {"not", "never", "no", "denied", "cancelled", "canceled"}
@@ -81,6 +86,11 @@ def reformulate_query(query: str) -> str:
 def support_score(query: str, evidence: list[RetrievedEvidence]) -> float:
     if not evidence:
         return 0.0
+    assessment = assess_evidence_support(
+        [item.score for item in evidence], query, [item.content for item in evidence]
+    )
+    if assessment.status is SupportStatus.SUPPORTED:
+        return assessment.support_score
     terms = key_terms(query)
     if not terms:
         return max((item.score for item in evidence), default=0.0)
@@ -92,6 +102,11 @@ def support_score(query: str, evidence: list[RetrievedEvidence]) -> float:
 
 
 def has_conflicting_signals(query: str, evidence: list[RetrievedEvidence]) -> bool:
+    assessment = assess_evidence_support(
+        [item.score for item in evidence], query, [item.content for item in evidence[:5]]
+    )
+    if assessment.status is SupportStatus.CONFLICT:
+        return True
     contents = [item.content.lower() for item in evidence[:5]]
     if len(contents) < 2:
         return False
@@ -105,7 +120,11 @@ def has_conflicting_signals(query: str, evidence: list[RetrievedEvidence]) -> bo
     }
     asks_date = bool(terms & {"launched", "launch", "began", "started", "date", "when"})
     asks_budget = bool(terms & {"budget", "cost", "funding", "allocation"})
-    return has_negation or (asks_date and len(years) > 1) or (asks_budget and len(numbers) > 1)
+    return (
+        (has_negation and bool(terms & key_terms(joined)))
+        or (asks_date and len(years) > 1)
+        or (asks_budget and len(numbers) > 1)
+    )
 
 
 def is_ambiguous_query(query: str) -> bool:
@@ -125,6 +144,11 @@ def diagnose_evidence(
 ) -> EvidenceDiagnosis:
     initial_score = support_score(query, initial_evidence)
     final_score = support_score(query, final_evidence)
+    assessment = assess_evidence_support(
+        [item.score for item in final_evidence],
+        query,
+        [item.content for item in final_evidence],
+    )
 
     if is_ambiguous_query(query):
         return EvidenceDiagnosis(
@@ -137,7 +161,9 @@ def diagnose_evidence(
             evidence_count=len(final_evidence),
             reason_code=DiagnosisReason.QUERY_TOO_BROAD,
         )
-    if final_evidence and has_conflicting_signals(query, final_evidence):
+    if assessment.status is SupportStatus.CONFLICT or (
+        final_evidence and has_conflicting_signals(query, final_evidence)
+    ):
         return EvidenceDiagnosis(
             status=DiagnosisStatus.CONFLICTING_EVIDENCE,
             initial_evidence_sufficient=initial_evidence_sufficient,
@@ -146,7 +172,26 @@ def diagnose_evidence(
             initial_support_score=initial_score,
             final_support_score=final_score,
             evidence_count=len(final_evidence),
-            reason_code=DiagnosisReason.CONFLICTING_NUMERIC_OR_NEGATION_SIGNALS,
+            reason_code=(
+                DiagnosisReason.NORMALIZED_ATTRIBUTE_CONFLICT
+                if assessment.status is SupportStatus.CONFLICT
+                else DiagnosisReason.CONFLICTING_NUMERIC_OR_NEGATION_SIGNALS
+            ),
+        )
+    if assessment.status is SupportStatus.SUPPORTED:
+        return EvidenceDiagnosis(
+            status=(
+                DiagnosisStatus.RETRIEVAL_FAILURE_RECOVERED
+                if retry_performed and not initial_evidence_sufficient
+                else DiagnosisStatus.SUFFICIENT_EVIDENCE
+            ),
+            initial_evidence_sufficient=initial_evidence_sufficient,
+            retry_performed=retry_performed,
+            retry_strategy=retry_strategy,
+            initial_support_score=initial_score,
+            final_support_score=max(final_score, assessment.support_score),
+            evidence_count=len(final_evidence),
+            reason_code=DiagnosisReason.DIRECT_ATTRIBUTE_SUPPORTED,
         )
     if initial_evidence_sufficient:
         return EvidenceDiagnosis(

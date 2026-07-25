@@ -69,7 +69,13 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                         ordinal=index,
                         content=content,
                         token_count=len(content.split()),
-                        metadata_json={"filename": version.filename, "ordinal": index},
+                        metadata_json={
+                            "filename": version.filename,
+                            "ordinal": index,
+                            "document_version_id": str(version.id),
+                            "section": _section_from_chunk(content),
+                            "chunking_strategy": "structure-aware-v2",
+                        },
                         embedding=embed_text(content),
                     )
                     for index, content in enumerate(raw_chunks)
@@ -130,3 +136,14 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
 async def _stage_delay() -> None:
     if settings.ingestion_stage_delay_seconds:
         await sleep(settings.ingestion_stage_delay_seconds)
+
+
+def _section_from_chunk(content: str) -> str | None:
+    first = next((line.strip(" #") for line in content.splitlines() if line.strip()), "")
+    if not first:
+        return None
+    if ":" in first:
+        return first.split(":", 1)[0].strip()[:120] or None
+    if len(first.split()) <= 10:
+        return first[:120]
+    return None

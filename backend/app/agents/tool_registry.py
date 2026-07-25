@@ -36,7 +36,7 @@ from app.observability.metrics import (
 )
 from app.rag.abstention import abstention_message
 from app.rag.citations import append_citations
-from app.rag.evidence import evidence_is_sufficient, key_terms
+from app.rag.evidence import assess_evidence_support, evidence_is_sufficient, key_terms
 from app.rag.evidence_diagnosis import (
     DiagnosisStatus,
     diagnose_evidence,
@@ -222,6 +222,9 @@ def _evidence_verifier_handler(payload: BaseModel, context: dict[str, Any]) -> A
     sufficient = evidence_is_sufficient(
         [item.score for item in data.evidence], data.query, [item.content for item in data.evidence]
     )
+    assessment = assess_evidence_support(
+        [item.score for item in data.evidence], data.query, [item.content for item in data.evidence]
+    )
     if " and " in data.query.lower() and coverage <= 0.6:
         sufficient = False
     summary = (
@@ -235,7 +238,11 @@ def _evidence_verifier_handler(payload: BaseModel, context: dict[str, Any]) -> A
         summary=summary,
         evidence=data.evidence,
         sufficient_evidence=sufficient,
-        metadata={"evidence_count": len(data.evidence), "term_coverage": round(coverage, 4)},
+        metadata={
+            "evidence_count": len(data.evidence),
+            "term_coverage": round(coverage, 4),
+            "support_assessment": assessment.as_dict(),
+        },
     )
 
 

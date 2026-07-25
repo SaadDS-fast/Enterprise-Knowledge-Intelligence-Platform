@@ -136,6 +136,10 @@ Completed in the previous foundation phase:
 
 ## Completed Runtime Reliability Work
 
+- Added deterministic-core hardening for internal-document answers: structure-aware heading/value
+  chunking, section metadata for new chunks, query normalization for topic-style questions,
+  attribute-aware sufficiency assessment, direct heading/value synthesis, normalized conflict
+  detection, clearer search/agent result presentation, and controlled evaluation form state.
 - Made completed ingestion retries idempotent: completed jobs return existing results without rewriting chunks, vectors, status, or request ids.
 - Preserved existing non-null request ids through ingestion status updates.
 - Disposed async database connections around Celery task event loops to avoid asyncpg cross-loop reuse.

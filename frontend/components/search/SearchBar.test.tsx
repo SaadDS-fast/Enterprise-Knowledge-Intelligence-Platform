@@ -33,6 +33,17 @@ describe("SearchBar", () => {
       sufficient_evidence: true,
       abstained: false,
       request_id: "req-1",
+      outcome: "ANSWER_SUPPORTED",
+      support_status: "SUPPORTED",
+      confidence_category: "high",
+      citations: [
+        {
+          chunk_id: "chunk-1",
+          document_title: "Atlas Brief",
+          excerpt: "Project Atlas launches in March 2025.",
+        },
+      ],
+      conflicts: [],
     });
 
     render(<SearchBar />);
@@ -44,8 +55,8 @@ describe("SearchBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Search knowledge" }));
 
     expect(screen.getByRole("button", { name: "Searching..." })).toBeDisabled();
-    await waitFor(() => expect(screen.getByText("Evidence verified")).toBeInTheDocument());
-    expect(screen.getAllByText("Project Atlas launches in March 2025.")).toHaveLength(2);
+    await waitFor(() => expect(screen.getAllByText("Answer supported")[0]).toBeInTheDocument());
+    expect(screen.getAllByText("Project Atlas launches in March 2025.")).toHaveLength(3);
   });
 
   it("renders API errors", async () => {
@@ -90,6 +101,11 @@ describe("SearchBar", () => {
         evidence_count: 0,
         reason_code: "TEST",
       },
+      outcome: status === "CONFLICTING_EVIDENCE" ? "CONFLICTING_EVIDENCE" : "INSUFFICIENT_EVIDENCE",
+      support_status: "ABSENT",
+      confidence_category: "none",
+      citations: [],
+      conflicts: [],
     });
 
     render(<SearchBar />);

@@ -116,6 +116,9 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 
 ## Source Validation
 
+- Deterministic-core targeted validation: **PASS** for structure-aware chunking, direct
+  `Topic: Functions` extraction, unrelated heading/value non-conflict, genuine demo-topic
+  conflict, normalized evaluation match, and controlled-agent supported answer regressions.
 - Backend compile: **PASS**
 - Backend Ruff lint/format: **PASS**
 - Backend tests: **116 passed, 2 skipped**

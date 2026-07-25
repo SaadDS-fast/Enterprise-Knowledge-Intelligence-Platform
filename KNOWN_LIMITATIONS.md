@@ -28,6 +28,9 @@ Updated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 ## Remaining Limitations
 
 - Ollama model generation was not run; local models were listed only.
+- Existing documents ingested before the deterministic structure-aware chunking update do not
+  automatically receive the new heading/value boundaries or section metadata. Re-upload or
+  reprocess those documents before comparing old and new retrieval behavior.
 - Load testing was limited to local 5/10/20-user probes and should not be extrapolated to enterprise traffic.
 - Deep destructive outage testing was limited to local Compose service interruption/restart probes;
   host crashes, disk exhaustion, network partitions, and multi-node failover were not tested.

@@ -10,6 +10,7 @@ from app.db.models import Chunk, Document, DocumentVersion
 from app.models.domain import RetrievedEvidence
 from app.rag.bm25 import bm25_scores
 from app.rag.embeddings import cosine_similarity, embed_text
+from app.rag.evidence import ATTRIBUTE_LABELS, requested_attribute
 from app.rag.fusion import weighted_fusion
 from app.rag.reranker import rerank_score
 
@@ -40,7 +41,14 @@ async def retrieve(
     fused = weighted_fusion(lexical, semantic)
     ranked: list[RetrievedEvidence] = []
     for row, score in zip(rows, fused, strict=True):
-        final = rerank_score(query, row.Chunk.content, score)
+        metadata = row.Chunk.metadata_json or {}
+        final = _metadata_boosted_score(
+            query,
+            row.Document.title,
+            str(metadata.get("section") or ""),
+            row.Chunk.content,
+            rerank_score(query, row.Chunk.content, score),
+        )
         ranked.append(
             RetrievedEvidence(
                 chunk_id=row.Chunk.id,
@@ -48,8 +56,35 @@ async def retrieve(
                 document_title=row.Document.title,
                 content=row.Chunk.content,
                 score=final,
-                metadata=row.Chunk.metadata_json,
+                metadata={
+                    **metadata,
+                    "retrieval_stage": "hybrid_bm25_vector_rerank",
+                    "matched_title": _contains_phrase(query, row.Document.title),
+                    "matched_heading": _contains_phrase(query, str(metadata.get("section") or "")),
+                },
             )
         )
     ranked.sort(key=lambda item: item.score, reverse=True)
     return ranked[: min(top_k or settings.rerank_top_k, settings.retrieval_top_k)]
+
+
+def _metadata_boosted_score(
+    query: str, title: str, section: str, content: str, base_score: float
+) -> float:
+    attribute = requested_attribute(query)
+    score = base_score
+    if _contains_phrase(query, title):
+        score += 0.05
+    if section and _contains_phrase(query, section):
+        score += 0.08
+    labels = ATTRIBUTE_LABELS.get(attribute, ())
+    lowered_content = content.lower()
+    if labels and any(f"{label}:" in lowered_content for label in labels):
+        score += 0.12
+    return max(0.0, min(1.0, score))
+
+
+def _contains_phrase(query: str, value: str) -> bool:
+    query_terms = {term for term in query.lower().split() if len(term) >= 4}
+    normalized = value.lower()
+    return any(term in normalized for term in query_terms)

@@ -84,14 +84,14 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
   await page.getByTestId("nav-search").click();
   await page.getByTestId("search-query").fill("When was Project Atlas launched and who owns it?");
   await page.getByTestId("search-submit").click();
-  await expect(page.getByTestId("search-verdict")).toHaveText("Evidence verified");
+  await expect(page.getByTestId("search-verdict")).toHaveText("Answer supported");
   await expect(page.getByTestId("search-answer")).toContainText("March 2025");
   await expect(page.getByTestId("evidence-list")).toContainText("Operations Analytics");
   await expect(page.getByTestId("retrieval-diagnosis")).toContainText("Initial retrieval only");
 
   await page.getByTestId("search-query").fill("What is the capital of Virellia?");
   await page.getByTestId("search-submit").click();
-  await expect(page.getByTestId("search-verdict")).toHaveText("Insufficient evidence");
+  await expect(page.getByTestId("search-verdict")).toHaveText(/Insufficient evidence|Knowledge absent/);
   await expect(page.getByTestId("retrieval-diagnosis")).toContainText(
     "Information does not appear to exist",
   );
@@ -110,7 +110,7 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
   await page.getByTestId("nav-search").click();
   await page.getByTestId("search-query").fill("Project Atlas budget");
   await page.getByTestId("search-submit").click();
-  await expect(page.getByTestId("search-verdict")).toHaveText("Insufficient evidence");
+  await expect(page.getByTestId("search-verdict")).toHaveText(/Insufficient evidence|Knowledge absent/);
   await expect(page.getByTestId("empty-evidence")).toBeVisible();
 
   await page.getByTestId("logout-button").click();

@@ -9,6 +9,11 @@ Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 | Backend | Full pytest | Pass | `117 passed, 2 skipped` |
 | Backend | Coverage | Pass | `76%` total coverage |
 | Backend | Ruff | Pass | `ruff check app tests`; `ruff format --check app tests` |
+| RAG | Deterministic demo-topic regression | Pass | `Topic: Functions` answers `What is the demo topic?` in Standard Search and Controlled Agent without LLM/Ollama |
+| RAG | Non-conflict heading/value regression | Pass | Tutor qualification and teaching method do not conflict with demo topic |
+| RAG | Genuine topic conflict regression | Pass | `Functions` versus `Trigonometry` returns confirmed conflict with abstention |
+| Evaluation | Normalized value match | Pass | Expected `Functions` matches actual `The demo topic is Functions.` when evidence and citation are valid |
+| Frontend | Evaluation reset regression | Pass | Controlled form state avoids null `.reset()` and retains fields on failure |
 | Frontend | Lint/typecheck/test/build | Pass | 1 existing lint warning; typecheck passed; `9` Vitest files and `24` tests passed; Next build passed |
 | Frontend | Default Playwright | Pass | `1 passed, 4 skipped` with default disabled flags |
 | Frontend | Enabled Playwright | Pass | `5 passed` with agentic/research flags enabled through Docker |

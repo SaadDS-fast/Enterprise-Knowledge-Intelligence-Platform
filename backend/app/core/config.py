@@ -337,6 +337,10 @@ class Settings(BaseSettings):
         return None if self.is_production else "/docs"
 
     @property
+    def openapi_url(self) -> str | None:
+        return None if self.is_production else "/openapi.json"
+
+    @property
     def redoc_url(self) -> str | None:
         return None if self.is_production else "/redoc"
 
