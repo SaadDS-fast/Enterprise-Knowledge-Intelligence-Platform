@@ -142,7 +142,9 @@ async def search_and_answer(
             answer_value=support.answer_value,
             support_status=support.status.value,
             confidence_category="none",
-            citations=[],
+            citations=_citations(final_evidence)
+            if support.status is SupportStatus.CONFLICT
+            else [],
             conflicts=_conflicts_from_support(support),
             abstention_reason=diagnosis.reason_code.value,
         )

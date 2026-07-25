@@ -159,6 +159,9 @@ def test_genuine_demo_topic_conflict_abstains(client):
     assert payload["outcome"] == "CONFLICTING_EVIDENCE"
     assert payload["conflicts"]
     assert set(payload["conflicts"][0]["values"]) >= {"Functions", "Trigonometry"}
+    assert payload["citations"]
+    assert any("Functions" in citation["excerpt"] for citation in payload["citations"])
+    assert any("Trigonometry" in citation["excerpt"] for citation in payload["citations"])
 
 
 def test_evaluation_normalized_value_match(client):

@@ -43,7 +43,24 @@ describe("EvaluationWorkspace", () => {
         name: "Demo topic quality check",
         status: "completed",
         metrics_json: { pass_rate: 1, normalized_answer_match: 1, token_f1: 1 },
-        config_json: { pipeline: "standard_search" },
+        config_json: {
+          pipeline: "standard_search",
+          case_results: [
+            {
+              question: "What is the demo topic?",
+              expected_answer: "Functions",
+              actual_answer: "The demo topic is Functions.",
+              actual_value: "Functions",
+              passed: true,
+              normalized_answer_match: true,
+              token_f1: 1,
+              evidence_support: "SUPPORTED",
+              citation_validity: true,
+              abstained: false,
+              conflict_status: "ANSWER_SUPPORTED",
+            },
+          ],
+        },
         created_at: "2026-07-24T00:00:00Z",
         updated_at: "2026-07-24T00:00:00Z",
       },
@@ -61,5 +78,11 @@ describe("EvaluationWorkspace", () => {
     expect(screen.getByTestId("evaluation-question")).toHaveValue("");
     expect(screen.getByTestId("evaluation-answer")).toHaveValue("");
     expect(screen.getByText("Pipeline: standard_search")).toBeInTheDocument();
+    expect(screen.getByText("PASS")).toBeInTheDocument();
+    expect(screen.getByText("Actual answer: The demo topic is Functions.")).toBeInTheDocument();
+    expect(screen.getByText("Normalized answer match: yes")).toBeInTheDocument();
+    expect(screen.getByText("Token F1: 1.000")).toBeInTheDocument();
+    expect(screen.getByText("Evidence support: SUPPORTED")).toBeInTheDocument();
+    expect(screen.getByText("Citation validity: valid")).toBeInTheDocument();
   });
 });

@@ -4,6 +4,20 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { EvaluationRun } from "@/types";
 
+type EvaluationCaseResult = {
+  question?: string;
+  expected_answer?: string;
+  actual_answer?: string;
+  actual_value?: string | null;
+  passed?: boolean;
+  normalized_answer_match?: boolean;
+  token_f1?: number;
+  evidence_support?: string;
+  citation_validity?: boolean;
+  abstained?: boolean;
+  conflict_status?: string;
+};
+
 export default function EvaluationWorkspace() {
   const [runs, setRuns] = useState<EvaluationRun[]>([]);
   const [name, setName] = useState("");
@@ -120,9 +134,35 @@ export default function EvaluationWorkspace() {
                 </div>
               ))}
             </dl>
+            {caseResults(run).map((item, index) => (
+              <section className="diagnosis" key={`${item.question ?? "case"}-${index}`}>
+                <strong>{item.passed ? "PASS" : "FAIL"}</strong>
+                <span>Question: {item.question ?? "not recorded"}</span>
+                <span>Expected answer: {item.expected_answer ?? "not recorded"}</span>
+                <span>Actual answer: {item.actual_answer ?? "not recorded"}</span>
+                {item.actual_value ? <span>Actual value: {item.actual_value}</span> : null}
+                <span>
+                  Normalized answer match: {item.normalized_answer_match ? "yes" : "no"}
+                </span>
+                <span>Token F1: {formatMetric(item.token_f1)}</span>
+                <span>Evidence support: {item.evidence_support ?? "unknown"}</span>
+                <span>Citation validity: {item.citation_validity ? "valid" : "invalid"}</span>
+                <span>Abstained: {item.abstained ? "yes" : "no"}</span>
+                <span>Outcome: {item.conflict_status ?? "unknown"}</span>
+              </section>
+            ))}
           </article>
         ))}
       </div>
     </div>
   );
+}
+
+function caseResults(run: EvaluationRun): EvaluationCaseResult[] {
+  const value = run.config_json.case_results;
+  return Array.isArray(value) ? (value as EvaluationCaseResult[]) : [];
+}
+
+function formatMetric(value: number | undefined): string {
+  return typeof value === "number" ? value.toFixed(3) : "not recorded";
 }
