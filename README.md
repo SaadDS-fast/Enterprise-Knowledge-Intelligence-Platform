@@ -348,6 +348,9 @@ Latest recorded validation, from `VALIDATION_REPORT.md` and `TEST_RESULTS.md`:
   detection, and citation checks.
 - Documents uploaded before the structure-aware chunking update should be re-uploaded or
   reprocessed to receive improved heading/value chunks and section metadata.
+- Practice-question topic lists require explicit Section, Topic, Chapter, Unit, or Subject
+  headings. Malformed PDF equation extraction can still produce noisy fragments, so deterministic
+  Search abstains when topic labels are not reliable.
 - Load tests are laptop/local Docker probes and should not be extrapolated to enterprise capacity.
 - Some scaffolded enterprise modules remain low coverage; see [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 - Screenshots are placeholders until captured with the screenshot guide.

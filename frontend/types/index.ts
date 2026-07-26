@@ -72,6 +72,24 @@ export type SearchResult = {
   citations?: AgentCitation[];
   conflicts?: AgentConflict[];
   abstention_reason?: string | null;
+  topic_items?: TopicItem[];
+  active_document_scope?: SearchScopeItem[];
+};
+
+export type TopicItem = {
+  label: string;
+  confidence: string;
+  support_status: string;
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  excerpt: string;
+  section?: string | null;
+};
+
+export type SearchScopeItem = {
+  document_id: string;
+  title: string;
 };
 
 export type AgentOutcome =
@@ -108,6 +126,7 @@ export type AgentCitation = {
   section?: string;
   chunk_id?: string;
   excerpt?: string;
+  topic?: string;
   provider?: string;
   title?: string;
   canonical_url?: string;

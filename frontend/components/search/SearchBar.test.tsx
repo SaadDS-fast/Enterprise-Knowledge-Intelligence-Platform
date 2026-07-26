@@ -18,33 +18,37 @@ describe("SearchBar", () => {
   });
 
   it("renders loading state and grounded evidence", async () => {
-    mockedApi.mockResolvedValueOnce({
-      answer: "Project Atlas launches in March 2025.",
-      evidence: [
-        {
-          chunk_id: "chunk-1",
-          document_id: "doc-1",
-          document_title: "Atlas Brief",
-          content: "Project Atlas launches in March 2025.",
-          score: 0.91,
-          metadata: {},
-        },
-      ],
-      sufficient_evidence: true,
-      abstained: false,
-      request_id: "req-1",
-      outcome: "ANSWER_SUPPORTED",
-      support_status: "SUPPORTED",
-      confidence_category: "high",
-      citations: [
-        {
-          chunk_id: "chunk-1",
-          document_title: "Atlas Brief",
-          excerpt: "Project Atlas launches in March 2025.",
-        },
-      ],
-      conflicts: [],
-    });
+    mockedApi
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce({
+        answer: "Project Atlas launches in March 2025.",
+        evidence: [
+          {
+            chunk_id: "chunk-1",
+            document_id: "doc-1",
+            document_title: "Atlas Brief",
+            content: "Project Atlas launches in March 2025.",
+            score: 0.91,
+            metadata: {},
+          },
+        ],
+        sufficient_evidence: true,
+        abstained: false,
+        request_id: "req-1",
+        outcome: "ANSWER_SUPPORTED",
+        support_status: "SUPPORTED",
+        confidence_category: "high",
+        citations: [
+          {
+            chunk_id: "chunk-1",
+            document_title: "Atlas Brief",
+            excerpt: "Project Atlas launches in March 2025.",
+          },
+        ],
+        conflicts: [],
+        topic_items: [],
+        active_document_scope: [],
+      });
 
     render(<SearchBar />);
 
@@ -60,7 +64,7 @@ describe("SearchBar", () => {
   });
 
   it("renders API errors", async () => {
-    mockedApi.mockRejectedValueOnce(new Error("Search failed with 500"));
+    mockedApi.mockResolvedValueOnce([]).mockRejectedValueOnce(new Error("Search failed with 500"));
 
     render(<SearchBar />);
 
@@ -85,28 +89,32 @@ describe("SearchBar", () => {
     ["CONFLICTING_EVIDENCE", "Conflicting evidence found"],
     ["AMBIGUOUS_QUERY", "Question needs clarification"],
   ])("renders diagnosis state %s", async (status, label) => {
-    mockedApi.mockResolvedValueOnce({
-      answer: "I do not have enough evidence to answer that.",
-      evidence: [],
-      sufficient_evidence: false,
-      abstained: true,
-      request_id: "req-1",
-      retrieval_diagnosis: {
-        status,
-        initial_evidence_sufficient: status === "SUFFICIENT_EVIDENCE",
-        retry_performed: status !== "SUFFICIENT_EVIDENCE",
-        retry_strategy: status === "SUFFICIENT_EVIDENCE" ? [] : ["query_reformulation"],
-        initial_support_score: 0.1,
-        final_support_score: 0.42,
-        evidence_count: 0,
-        reason_code: "TEST",
-      },
-      outcome: status === "CONFLICTING_EVIDENCE" ? "CONFLICTING_EVIDENCE" : "INSUFFICIENT_EVIDENCE",
-      support_status: "ABSENT",
-      confidence_category: "none",
-      citations: [],
-      conflicts: [],
-    });
+    mockedApi
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce({
+        answer: "I do not have enough evidence to answer that.",
+        evidence: [],
+        sufficient_evidence: false,
+        abstained: true,
+        request_id: "req-1",
+        retrieval_diagnosis: {
+          status,
+          initial_evidence_sufficient: status === "SUFFICIENT_EVIDENCE",
+          retry_performed: status !== "SUFFICIENT_EVIDENCE",
+          retry_strategy: status === "SUFFICIENT_EVIDENCE" ? [] : ["query_reformulation"],
+          initial_support_score: 0.1,
+          final_support_score: 0.42,
+          evidence_count: 0,
+          reason_code: "TEST",
+        },
+        outcome: status === "CONFLICTING_EVIDENCE" ? "CONFLICTING_EVIDENCE" : "INSUFFICIENT_EVIDENCE",
+        support_status: "ABSENT",
+        confidence_category: "none",
+        citations: [],
+        conflicts: [],
+        topic_items: [],
+        active_document_scope: [],
+      });
 
     render(<SearchBar />);
 
@@ -117,5 +125,72 @@ describe("SearchBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Search knowledge" }));
 
     await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
+  });
+
+  it("sends selected document scope and renders topic items", async () => {
+    mockedApi
+      .mockResolvedValueOnce([
+        {
+          id: "doc-1",
+          workspace_id: "workspace-1",
+          title: "AS_Practice_questions",
+          status: "ready",
+          description: null,
+          created_by: "user-1",
+          created_at: "2026-07-25T00:00:00Z",
+          updated_at: "2026-07-25T00:00:00Z",
+        },
+      ])
+      .mockResolvedValueOnce({
+        answer: "The practice questions cover:\n1. Functions - supported by AS_Practice_questions.",
+        evidence: [],
+        sufficient_evidence: true,
+        abstained: false,
+        outcome: "ANSWER_SUPPORTED",
+        support_status: "SUPPORTED",
+        confidence_category: "high",
+        citations: [
+          {
+            chunk_id: "chunk-1",
+            document_title: "AS_Practice_questions",
+            excerpt: "Section: Functions\nQuestion 1: Determine whether...",
+            topic: "Functions",
+          },
+        ],
+        conflicts: [],
+        topic_items: [
+          {
+            label: "Functions",
+            confidence: "high",
+            support_status: "SUPPORTED",
+            chunk_id: "chunk-1",
+            document_id: "doc-1",
+            document_title: "AS_Practice_questions",
+            excerpt: "Section: Functions\nQuestion 1: Determine whether...",
+            section: "Functions",
+          },
+        ],
+        active_document_scope: [{ document_id: "doc-1", title: "AS_Practice_questions" }],
+      });
+
+    render(<SearchBar />);
+
+    await waitFor(() => expect(screen.getByText("AS_Practice_questions")).toBeInTheDocument());
+    await userEvent.selectOptions(screen.getByTestId("search-document-scope"), "doc-1");
+    await userEvent.type(
+      screen.getByPlaceholderText("Ask a question grounded in your documents..."),
+      "What topics are covered by the practice questions?",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Search knowledge" }));
+
+    await waitFor(() => expect(screen.getByTestId("search-topic-list")).toHaveTextContent("Functions"));
+    expect(mockedApi).toHaveBeenLastCalledWith("/search", {
+      method: "POST",
+      body: JSON.stringify({
+        query: "What topics are covered by the practice questions?",
+        document_ids: ["doc-1"],
+      }),
+    });
+    expect(screen.getByTestId("search-result-scope")).toHaveTextContent("AS_Practice_questions");
   });
 });

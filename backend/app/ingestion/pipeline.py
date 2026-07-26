@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from asyncio import sleep
 from pathlib import Path
 from uuid import UUID
@@ -74,7 +75,9 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                             "ordinal": index,
                             "document_version_id": str(version.id),
                             "section": _section_from_chunk(content),
+                            "question_number": _question_number_from_chunk(content),
                             "chunking_strategy": "structure-aware-v2",
+                            "chunking_features": ["heading_value", "question_group"],
                         },
                         embedding=embed_text(content),
                     )
@@ -109,6 +112,11 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 "chunks": len(raw_chunks),
                 "characters": len(text),
                 "pii_findings": pii_count,
+                "chunking_strategy": "structure-aware-v2",
+                "reingestion_note": (
+                    "Existing documents ingested before question_group chunking should be "
+                    "re-ingested for best practice-question topic discovery."
+                ),
             }
             await session.commit()
             INGESTION_COMPLETED.inc()
@@ -147,3 +155,8 @@ def _section_from_chunk(content: str) -> str | None:
     if len(first.split()) <= 10:
         return first[:120]
     return None
+
+
+def _question_number_from_chunk(content: str) -> str | None:
+    match = re.search(r"(?im)^\s*(?:question|q)\s*(?P<number>\d+[A-Za-z]?)\s*[:.)-]", content)
+    return match.group("number") if match else None

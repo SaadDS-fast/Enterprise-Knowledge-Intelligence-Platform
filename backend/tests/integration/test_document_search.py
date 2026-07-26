@@ -104,6 +104,246 @@ def test_demo_topic_direct_heading_value_answer(client):
     assert payload["conflicts"] == []
 
 
+def test_selected_document_scope_excludes_unrelated_documents(client):
+    headers = isolated_headers(client, "search-scope@example.com")
+    target = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "practice-topics.txt",
+                b"Section: Functions\nQuestion 1: Determine whether the relation is a function.",
+                "text/plain",
+            )
+        },
+    )
+    unrelated = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={"file": ("demo-topic.txt", b"Demo topic: Trigonometry", "text/plain")},
+    )
+    assert target.status_code == 202, target.text
+    assert unrelated.status_code == 202, unrelated.text
+    target_id = target.json()["document"]["id"]
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "What topics are covered by the practice questions?",
+            "document_ids": [target_id],
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    payload = search.json()
+    assert payload["abstained"] is False
+    assert payload["topic_items"][0]["label"] == "Functions"
+    assert {item["document_id"] for item in payload["evidence"]} == {target_id}
+    assert all(citation["document_id"] == target_id for citation in payload["citations"])
+    assert payload["active_document_scope"] == [
+        {"document_id": target_id, "title": "practice-topics"}
+    ]
+
+
+def test_unauthorized_document_scope_is_rejected(client):
+    owner_headers = isolated_headers(client, "search-owner@example.com")
+    other_headers = isolated_headers(client, "search-other@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=owner_headers,
+        files={"file": ("private.txt", b"Topic: Functions", "text/plain")},
+    )
+    assert upload.status_code == 202, upload.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=other_headers,
+        json={
+            "query": "What topics are covered?",
+            "document_ids": [upload.json()["document"]["id"]],
+        },
+    )
+
+    assert search.status_code == 404
+
+
+def test_topic_list_multiple_headings_are_not_conflicts(client):
+    headers = isolated_headers(client, "search-topic-list@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "as-practice-questions.txt",
+                b"Section: Functions\n"
+                b"Question 1: Determine whether the given relation is a function.\n\n"
+                b"Section: Kinematics\n"
+                b"Question 2: Given displacement as a function of time, calculate velocity.\n\n"
+                b"Section: Elasticity\n"
+                b"Question 3: Calculate the extension of a composite wire.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "Which topics are these practice questions from?",
+            "document_ids": [upload.json()["document"]["id"]],
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    payload = search.json()
+    assert payload["outcome"] == "ANSWER_SUPPORTED"
+    assert payload["support_status"] == "SUPPORTED"
+    assert payload["conflicts"] == []
+    assert [item["label"] for item in payload["topic_items"]] == [
+        "Functions",
+        "Kinematics",
+        "Elasticity",
+    ]
+    assert "The practice questions cover:" in payload["answer"]
+    assert "vat timetis" not in payload["answer"]
+    assert len(payload["citations"]) == 3
+
+
+def test_topic_list_deduplicates_equivalent_labels(client):
+    headers = isolated_headers(client, "search-topic-dedupe@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "duplicate-topics.txt",
+                b"Section: Functions\nQuestion 1: Identify the domain.\n\n"
+                b"Topic: Functions\nQuestion 2: Identify the range.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "List the subjects covered by the questions.",
+            "document_ids": [upload.json()["document"]["id"]],
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    assert [item["label"] for item in search.json()["topic_items"]] == ["Functions"]
+
+
+def test_low_confidence_topic_inference_abstains_without_raw_chunk_answer(client):
+    headers = isolated_headers(client, "search-low-confidence-topics@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "unheaded-practice.txt",
+                b"Question 1: Determine whether the given relation is a function.\n"
+                b"Question 2: Given displacement s(t), calculate velocity.\n",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "What chapters do these questions belong to?",
+            "document_ids": [upload.json()["document"]["id"]],
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    payload = search.json()
+    assert payload["abstained"] is True
+    assert payload["outcome"] == "INSUFFICIENT_EVIDENCE"
+    assert payload["topic_items"] == []
+    assert "cannot be determined confidently" in payload["answer"]
+    assert "Question 1:" not in payload["answer"]
+
+
+def test_malformed_extracted_text_is_not_topic_label(client):
+    headers = isolated_headers(client, "search-malformed-topic@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "malformed-practice.txt",
+                b"Question 1: vat timetis given byv= 0.6t 2 -0.05t 3 calculate velocity.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "What topics are covered by the practice questions?",
+            "document_ids": [upload.json()["document"]["id"]],
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    payload = search.json()
+    assert payload["abstained"] is True
+    assert payload["topic_items"] == []
+    assert "vat timetis" not in payload["answer"]
+
+
+def test_unique_document_name_in_query_scopes_search(client):
+    headers = isolated_headers(client, "search-named-scope@example.com")
+    target = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "AS_Practice_questions.txt",
+                b"Section: Functions\nQuestion 1: Test.",
+                "text/plain",
+            )
+        },
+    )
+    client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={"file": ("1st-year-maths-demo.txt", b"Demo topic: Trigonometry", "text/plain")},
+    )
+    assert target.status_code == 202, target.text
+
+    search = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": (
+                "In AS_Practice_questions, what topics are covered by the practice questions?"
+            )
+        },
+    )
+
+    assert search.status_code == 200, search.text
+    payload = search.json()
+    assert payload["active_document_scope"][0]["title"] == "AS_Practice_questions"
+    assert {item["document_id"] for item in payload["evidence"]} == {
+        target.json()["document"]["id"]
+    }
+
+
 def test_unrelated_heading_values_do_not_conflict(client):
     headers = isolated_headers(client, "search-non-conflict@example.com")
     response = client.post(

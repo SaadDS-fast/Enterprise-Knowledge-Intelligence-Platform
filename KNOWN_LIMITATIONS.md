@@ -31,6 +31,9 @@ Updated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 - Existing documents ingested before the deterministic structure-aware chunking update do not
   automatically receive the new heading/value boundaries or section metadata. Re-upload or
   reprocess those documents before comparing old and new retrieval behavior.
+- Practice-question topic discovery depends on explicit headings such as Section, Topic, Chapter,
+  Unit, or Subject. If a PDF extractor mangles equations or merges question text without reliable
+  headings, deterministic Search abstains instead of fabricating inferred topics.
 - Load testing was limited to local 5/10/20-user probes and should not be extrapolated to enterprise traffic.
 - Deep destructive outage testing was limited to local Compose service interruption/restart probes;
   host crashes, disk exhaustion, network partitions, and multi-node failover were not tested.

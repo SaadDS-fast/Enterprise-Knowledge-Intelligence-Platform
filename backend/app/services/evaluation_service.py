@@ -85,4 +85,11 @@ def _normalize_value(value: str) -> str:
 def _value_matches(expected: str, actual: str) -> bool:
     if not expected or not actual:
         return False
-    return expected == actual or expected in actual.split() or expected in actual
+    expected_tokens = expected.split()
+    actual_tokens = actual.split()
+    return (
+        expected == actual
+        or expected in actual_tokens
+        or expected in actual
+        or set(expected_tokens) == set(actual_tokens)
+    )

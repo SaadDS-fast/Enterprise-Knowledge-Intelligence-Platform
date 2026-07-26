@@ -17,17 +17,19 @@ from app.db.session import AsyncSessionLocal
 from app.tenancy.context import TenantContext
 
 
-def upload_ready_document(client, auth_headers, filename: str, content: str) -> None:
+def upload_ready_document(client, auth_headers, filename: str, content: str) -> str:
     response = client.post(
         "/api/v1/documents",
         headers=auth_headers,
         files={"file": (filename, content.encode(), "text/plain")},
     )
     assert response.status_code == 202
-    job_id = response.json()["job_id"]
+    upload = response.json()
+    job_id = upload["job_id"]
     job = client.get(f"/api/v1/jobs/{job_id}", headers=auth_headers)
     assert job.status_code == 200
     assert job.json()["status"] == "completed"
+    return upload["document"]["id"]
 
 
 def agent_query(
@@ -37,12 +39,17 @@ def agent_query(
     query: str,
     *,
     allow_external_sources: bool = False,
+    document_ids: list[str] | None = None,
 ) -> dict:
     monkeypatch.setattr(settings, "agentic_rag_enabled", True)
     response = client.post(
         "/api/v1/agent/query",
         headers=auth_headers,
-        json={"query": query, "allow_external_sources": allow_external_sources},
+        json={
+            "query": query,
+            "allow_external_sources": allow_external_sources,
+            "document_ids": document_ids,
+        },
     )
     assert response.status_code == 200
     return response.json()
@@ -261,6 +268,42 @@ def test_agent_demo_topic_heading_value_answer(client, monkeypatch) -> None:
     assert body["abstained"] is False
     assert body["outcome"] == "ANSWER_SUPPORTED"
     assert body["answer"] and "Functions" in body["answer"]
+    assert body["citations"]
+    assert body["conflicts"] == []
+
+
+def test_agent_topic_list_heading_answer(client, monkeypatch) -> None:
+    headers = register_user(
+        client,
+        "agent-topic-list@example.com",
+        "Agent Topic List Org",
+        "General",
+    )
+    document_id = upload_ready_document(
+        client,
+        headers,
+        "agent-practice-topics.txt",
+        "Section: Functions\n"
+        "Question 1: Determine whether the given relation is a function.\n\n"
+        "Section: Kinematics\n"
+        "Question 2: Given displacement as a function of time, calculate velocity.\n\n"
+        "Section: Elasticity\n"
+        "Question 3: Calculate the extension of a composite wire.",
+    )
+
+    body = agent_query(
+        client,
+        headers,
+        monkeypatch,
+        "What topics are covered by the practice questions?",
+        document_ids=[document_id],
+    )
+
+    assert body["status"] == "completed"
+    assert body["abstained"] is False
+    assert body["outcome"] == "ANSWER_SUPPORTED"
+    assert "The practice questions cover:" in body["answer"]
+    assert all(topic in body["answer"] for topic in ("Functions", "Kinematics", "Elasticity"))
     assert body["citations"]
     assert body["conflicts"] == []
 

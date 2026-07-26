@@ -121,6 +121,8 @@ class SearchResponse(BaseModel):
     citations: list[dict] = Field(default_factory=list)
     conflicts: list[dict] = Field(default_factory=list)
     abstention_reason: str | None = None
+    topic_items: list[dict] = Field(default_factory=list)
+    active_document_scope: list[dict] = Field(default_factory=list)
 
 
 class ResearchRequest(BaseModel):

@@ -1,8 +1,11 @@
+import re
 import time
 from uuid import UUID
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.models import Document
 from app.exceptions.base import AppError
 from app.exceptions.codes import ErrorCode
 from app.llm.base import GenerationRequest
@@ -32,6 +35,13 @@ from app.rag.evidence_diagnosis import (
 )
 from app.rag.hybrid_retriever import retrieve
 from app.rag.query_rewrite import rewrite_query
+from app.rag.topic_lists import (
+    discover_topic_items,
+    has_practice_questions,
+    is_topic_list_query,
+    synthesize_topic_list,
+    topic_list_abstention_message,
+)
 from app.security.prompt_security import scan_prompt
 
 
@@ -51,10 +61,16 @@ async def search_and_answer(
             "The query contains instructions that conflict with platform security controls",
             400,
         )
+    active_scope = await _resolve_document_scope(session, workspace_id, query, document_ids)
+    effective_document_ids = [item["document_id"] for item in active_scope] or document_ids
     rewritten = rewrite_query(query)
     retrieval_started = time.perf_counter()
     evidence = await retrieve(
-        session, workspace_id=workspace_id, query=rewritten, top_k=top_k, document_ids=document_ids
+        session,
+        workspace_id=workspace_id,
+        query=rewritten,
+        top_k=top_k,
+        document_ids=effective_document_ids,
     )
     RETRIEVAL_LATENCY.observe(time.perf_counter() - retrieval_started)
     sufficient = evidence_is_sufficient(
@@ -76,7 +92,7 @@ async def search_and_answer(
             workspace_id=workspace_id,
             query=retry_query,
             top_k=expanded_top_k,
-            document_ids=document_ids,
+            document_ids=effective_document_ids,
         )
         RETRIEVAL_LATENCY.observe(time.perf_counter() - retrieval_started)
         final_evidence = merge_evidence(evidence, retry_evidence)
@@ -104,6 +120,60 @@ async def search_and_answer(
     elif diagnosis.status is DiagnosisStatus.PARTIAL_EVIDENCE:
         PARTIAL_EVIDENCE.inc()
 
+    if is_topic_list_query(query):
+        topic_items = discover_topic_items(final_evidence)
+        evidence_items = _evidence_items(final_evidence)
+        if topic_items:
+            topic_citations = _topic_citations(topic_items)
+            return SearchResponse(
+                answer=synthesize_topic_list(topic_items),
+                evidence=evidence_items,
+                sufficient_evidence=True,
+                abstained=False,
+                request_id=request_id,
+                retrieval_diagnosis={
+                    **diagnosis.as_dict(),
+                    "status": DiagnosisStatus.SUFFICIENT_EVIDENCE.value,
+                    "reason_code": "TOPIC_LIST_SUPPORTED",
+                },
+                outcome="ANSWER_SUPPORTED",
+                answer_value=", ".join(item.label for item in topic_items),
+                support_status=SupportStatus.SUPPORTED.value,
+                confidence_category="high",
+                citations=topic_citations,
+                conflicts=[],
+                abstention_reason=None,
+                topic_items=[item.as_dict() for item in topic_items],
+                active_document_scope=_scope_payload(active_scope),
+            )
+        ABSTENTIONS.inc()
+        status = (
+            DiagnosisStatus.PARTIAL_EVIDENCE.value
+            if has_practice_questions(final_evidence)
+            else diagnosis.status.value
+        )
+        return SearchResponse(
+            answer=topic_list_abstention_message(),
+            evidence=evidence_items,
+            sufficient_evidence=False,
+            abstained=True,
+            request_id=request_id,
+            retrieval_diagnosis={
+                **diagnosis.as_dict(),
+                "status": status,
+                "reason_code": "LOW_CONFIDENCE_TOPIC_INFERENCE",
+            },
+            outcome="INSUFFICIENT_EVIDENCE",
+            answer_value=None,
+            support_status=SupportStatus.ABSENT.value,
+            confidence_category="none",
+            citations=[],
+            conflicts=[],
+            abstention_reason="LOW_CONFIDENCE_TOPIC_INFERENCE",
+            topic_items=[],
+            active_document_scope=_scope_payload(active_scope),
+        )
+
     should_abstain = not final_sufficient or diagnosis.status in {
         DiagnosisStatus.AMBIGUOUS_QUERY,
         DiagnosisStatus.CONFLICTING_EVIDENCE,
@@ -119,17 +189,7 @@ async def search_and_answer(
         ABSTENTIONS.inc()
         return SearchResponse(
             answer=abstention_message(query),
-            evidence=[
-                EvidenceItem(
-                    chunk_id=e.chunk_id,
-                    document_id=e.document_id,
-                    document_title=e.document_title,
-                    content=e.content,
-                    score=e.score,
-                    metadata=e.metadata,
-                )
-                for e in final_evidence
-            ],
+            evidence=_evidence_items(final_evidence),
             sufficient_evidence=final_sufficient,
             abstained=True,
             request_id=request_id,
@@ -147,6 +207,7 @@ async def search_and_answer(
             else [],
             conflicts=_conflicts_from_support(support),
             abstention_reason=diagnosis.reason_code.value,
+            active_document_scope=_scope_payload(active_scope),
         )
     direct_answer = synthesize_direct_answer(query, support)
     if direct_answer:
@@ -158,17 +219,7 @@ async def search_and_answer(
         answer = result.text
     return SearchResponse(
         answer=answer,
-        evidence=[
-            EvidenceItem(
-                chunk_id=e.chunk_id,
-                document_id=e.document_id,
-                document_title=e.document_title,
-                content=e.content,
-                score=e.score,
-                metadata=e.metadata,
-            )
-            for e in final_evidence
-        ],
+        evidence=_evidence_items(final_evidence),
         sufficient_evidence=True,
         abstained=False,
         request_id=request_id,
@@ -180,7 +231,22 @@ async def search_and_answer(
         citations=_citations(final_evidence),
         conflicts=[],
         abstention_reason=None,
+        active_document_scope=_scope_payload(active_scope),
     )
+
+
+def _evidence_items(evidence: list) -> list[EvidenceItem]:
+    return [
+        EvidenceItem(
+            chunk_id=e.chunk_id,
+            document_id=e.document_id,
+            document_title=e.document_title,
+            content=e.content,
+            score=e.score,
+            metadata=e.metadata,
+        )
+        for e in evidence
+    ]
 
 
 def _citations(evidence: list) -> list[dict]:
@@ -194,6 +260,21 @@ def _citations(evidence: list) -> list[dict]:
             "section": (item.metadata or {}).get("section"),
         }
         for index, item in enumerate(evidence[:5], 1)
+    ]
+
+
+def _topic_citations(topic_items: list) -> list[dict]:
+    return [
+        {
+            "index": index,
+            "chunk_id": str(item.chunk_id),
+            "document_id": str(item.document_id),
+            "document_title": item.document_title,
+            "excerpt": item.excerpt[:500],
+            "section": item.section,
+            "topic": item.label,
+        }
+        for index, item in enumerate(topic_items, 1)
     ]
 
 
@@ -220,3 +301,59 @@ def _outcome_from_diagnosis(status: str) -> str:
         "RETRIEVAL_FAILURE_RECOVERED": "ANSWER_SUPPORTED",
         "SUFFICIENT_EVIDENCE": "ANSWER_SUPPORTED",
     }.get(status, "INSUFFICIENT_EVIDENCE")
+
+
+async def _resolve_document_scope(
+    session: AsyncSession, workspace_id: UUID, query: str, document_ids: list[UUID] | None
+) -> list[dict]:
+    if document_ids:
+        unique_ids = list(dict.fromkeys(document_ids))
+        documents = (
+            await session.scalars(
+                select(Document).where(
+                    Document.workspace_id == workspace_id,
+                    Document.status == "ready",
+                    Document.id.in_(unique_ids),
+                )
+            )
+        ).all()
+        if len(documents) != len(unique_ids):
+            raise AppError(
+                ErrorCode.NOT_FOUND,
+                "One or more selected documents were not found in this workspace",
+                404,
+            )
+        return [{"document_id": document.id, "title": document.title} for document in documents]
+    named = await _infer_named_document_scope(session, workspace_id, query)
+    return [{"document_id": document.id, "title": document.title} for document in named]
+
+
+async def _infer_named_document_scope(
+    session: AsyncSession, workspace_id: UUID, query: str
+) -> list[Document]:
+    normalized_query = _scope_key(query)
+    documents = (
+        await session.scalars(
+            select(Document).where(
+                Document.workspace_id == workspace_id, Document.status == "ready"
+            )
+        )
+    ).all()
+    matches = [document for document in documents if _scope_key(document.title) in normalized_query]
+    if len(matches) == 1:
+        return matches
+    title_terms = set(normalized_query.split())
+    fuzzy = [
+        document
+        for document in documents
+        if len(set(_scope_key(document.title).split()) & title_terms) >= 2
+    ]
+    return fuzzy if len(fuzzy) == 1 else []
+
+
+def _scope_key(value: str) -> str:
+    return re.sub(r"\W+", " ", value).strip().lower()
+
+
+def _scope_payload(scope: list[dict]) -> list[dict]:
+    return [{"document_id": str(item["document_id"]), "title": item["title"]} for item in scope]

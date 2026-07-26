@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field, HttpUrl, ValidationError, field_validator
 
 from app.agents.schemas import ExternalSource
 from app.core.config import settings
+from app.models.domain import RetrievedEvidence
 from app.models.schemas import EvidenceItem
 from app.observability.metrics import (
     AGENT_CITATIONS_REJECTED,
@@ -31,6 +32,13 @@ from app.rag.evidence import (
     synthesize_direct_answer,
 )
 from app.rag.evidence_diagnosis import DiagnosisStatus
+from app.rag.topic_lists import (
+    discover_topic_items,
+    has_practice_questions,
+    is_topic_list_query,
+    synthesize_topic_list,
+    topic_list_abstention_message,
+)
 
 
 class EvidenceSourceType(StrEnum):
@@ -492,6 +500,10 @@ def detect_conflicts(evidence: list[UnifiedEvidence], *, query: str = "") -> lis
 def deterministic_synthesize(
     query: str, evidence: list[UnifiedEvidence], diagnosis: dict[str, Any]
 ) -> SynthesisResult:
+    if is_topic_list_query(query):
+        topic_result = _synthesize_topic_list_answer(query, evidence)
+        if topic_result is not None:
+            return topic_result
     claims, conflicts = verify_claims(query, evidence)
     supported = [
         claim
@@ -564,6 +576,71 @@ def deterministic_synthesize(
         abstained=True,
         confidence_category=ConfidenceCategory.NONE,
         outcome=outcome,
+    )
+
+
+def _synthesize_topic_list_answer(
+    query: str, evidence: list[UnifiedEvidence]
+) -> SynthesisResult | None:
+    internal = [
+        item for item in evidence if item.source_type == EvidenceSourceType.INTERNAL_DOCUMENT
+    ]
+    retrieved = [
+        RetrievedEvidence(
+            chunk_id=item.chunk_id,
+            document_id=item.document_id,
+            document_title=item.title,
+            content=item.excerpt,
+            score=item.retrieval_score or item.combined_score,
+            metadata={"section": item.section} if item.section else {},
+        )
+        for item in internal
+        if item.chunk_id is not None and item.document_id is not None
+    ]
+    topic_items = discover_topic_items(retrieved)
+    if not topic_items and not has_practice_questions(retrieved):
+        return None
+    if not topic_items:
+        return SynthesisResult(
+            answer=topic_list_abstention_message(),
+            claims=[],
+            citations=[],
+            unsupported_claims_removed=[],
+            conflicts=[],
+            abstained=True,
+            confidence_category=ConfidenceCategory.NONE,
+            outcome=AnswerOutcome.INSUFFICIENT_EVIDENCE,
+        )
+    claims: list[Claim] = []
+    evidence_ids: list[str] = []
+    by_chunk = {str(item.chunk_id): item for item in internal}
+    for index, topic in enumerate(topic_items, 1):
+        source = by_chunk.get(str(topic.chunk_id))
+        if source is None:
+            continue
+        evidence_ids.append(source.evidence_id)
+        claims.append(
+            Claim(
+                claim_id=f"T{index}",
+                claim_text=f"{topic.label} is a covered topic.",
+                supporting_evidence_ids=[source.evidence_id],
+                contradicting_evidence_ids=[],
+                support_score=1.0,
+                verification_status=VerificationStatus.SUPPORTED,
+            )
+        )
+    validation = validate_citations(
+        _citations_for_evidence(evidence, evidence_ids), evidence, claims
+    )
+    return SynthesisResult(
+        answer=synthesize_topic_list(topic_items),
+        claims=claims,
+        citations=validation.citations,
+        unsupported_claims_removed=[],
+        conflicts=[],
+        abstained=False,
+        confidence_category=ConfidenceCategory.HIGH,
+        outcome=AnswerOutcome.ANSWER_SUPPORTED,
     )
 
 

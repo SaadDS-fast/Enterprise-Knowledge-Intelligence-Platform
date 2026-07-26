@@ -24,3 +24,19 @@ def test_chunking_preserves_heading_value_pairs():
     assert not any(
         "Topic: Functions" in chunk and "Tutor qualification" in chunk for chunk in chunks
     )
+
+
+def test_chunking_keeps_practice_questions_with_section_heading():
+    chunks = chunk_text(
+        "Section: Functions\n"
+        "Question 1: Determine whether the given relation is a function.\n\n"
+        "Section: Kinematics\n"
+        "Question 2: Given displacement as a function of time, calculate velocity.\n"
+        "Question 3: Calculate acceleration.",
+        chunk_size=240,
+        overlap=20,
+    )
+
+    assert any("Section: Functions" in chunk and "Question 1:" in chunk for chunk in chunks)
+    assert any("Section: Kinematics" in chunk and "Question 2:" in chunk for chunk in chunks)
+    assert any("Section: Kinematics" in chunk and "Question 3:" in chunk for chunk in chunks)
