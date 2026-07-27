@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from asyncio import sleep
 from pathlib import Path
 from uuid import UUID
@@ -10,13 +9,15 @@ from sqlalchemy import delete
 from app.core.config import settings
 from app.db.models import Chunk, Document, DocumentVersion, IngestionJob
 from app.db.session import AsyncSessionLocal
-from app.ingestion.loaders import load_document
-from app.ingestion.processors import build_metadata, deduplicate_chunks, find_pii, normalize_text
+from app.ingestion.chunking_v3 import chunk_document
+from app.ingestion.extractor import extract_document
+from app.ingestion.processors import build_metadata, find_pii, normalize_text
+from app.ingestion.quality import ExtractionQuality, assess_extraction
+from app.ingestion.versions import LATEST_PIPELINE
 from app.integrations.storage import get_storage
 from app.integrations.storage.keys import document_object_key
 from app.jobs.status import IngestionStage, JobStatus
 from app.observability.metrics import INGESTION_COMPLETED, INGESTION_FAILED
-from app.rag.chunking import chunk_text
 from app.rag.embeddings import embed_text
 
 
@@ -48,15 +49,44 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             await _stage_delay()
             data = await get_storage().get(version.storage_key)
             extension = Path(version.filename).suffix.lower()
-            text = normalize_text(load_document(extension, data))
-            if not text:
-                raise ValueError("No readable text could be extracted")
+            extracted = extract_document(extension, data, filename=version.filename)
+            for block in extracted.blocks:
+                block.text = normalize_text(block.text)
+            text = extracted.text
+            quality = assess_extraction(extracted)
+            pipeline_versions = LATEST_PIPELINE.as_dict()
+            if quality.status == ExtractionQuality.REQUIRES_OCR:
+                version.extracted_text = None
+                version.metadata_json = (
+                    build_metadata(version.filename, version.mime_type, version.size_bytes, "")
+                    | pipeline_versions
+                    | {
+                        "extraction_quality": quality.as_dict(),
+                        "page_count": extracted.page_count,
+                        "chunk_count": 0,
+                    }
+                )
+                document.status = "requires_ocr"
+                job.status = JobStatus.COMPLETED
+                job.stage = IngestionStage.COMPLETED
+                job.result_json = {
+                    **existing_result,
+                    "request_id": effective_request_id,
+                    "chunks": 0,
+                    "status": "REQUIRES_OCR",
+                    **pipeline_versions,
+                }
+                await session.commit()
+                INGESTION_COMPLETED.inc()
+                return job.result_json
+            if quality.status == ExtractionQuality.FAILED:
+                raise ValueError("extraction_empty")
             job.stage = IngestionStage.CHUNKING
             await session.commit()
             await _stage_delay()
-            raw_chunks = deduplicate_chunks(chunk_text(text))
-            if not raw_chunks:
-                raise ValueError("No chunks were generated")
+            structured_chunks = chunk_document(extracted)
+            if not structured_chunks:
+                raise ValueError("no_usable_chunks")
             job.stage = IngestionStage.EMBEDDING
             await session.commit()
             await _stage_delay()
@@ -71,17 +101,21 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                         content=content,
                         token_count=len(content.split()),
                         metadata_json={
+                            "document_id": str(document.id),
+                            "source_filename": version.filename,
                             "filename": version.filename,
+                            "mime_type": version.mime_type,
                             "ordinal": index,
                             "document_version_id": str(version.id),
-                            "section": _section_from_chunk(content),
-                            "question_number": _question_number_from_chunk(content),
-                            "chunking_strategy": "structure-aware-v2",
-                            "chunking_features": ["heading_value", "question_group"],
+                            **structured.metadata,
+                            **pipeline_versions,
+                            "extraction_quality": quality.status.value,
+                            "chunking_strategy": "structure-aware-v3",
                         },
-                        embedding=embed_text(content),
+                        embedding=embed_text(structured.content),
                     )
-                    for index, content in enumerate(raw_chunks)
+                    for index, structured in enumerate(structured_chunks)
+                    for content in [structured.content]
                 ]
             )
             storage = get_storage()
@@ -101,22 +135,33 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 await storage.delete(version.storage_key)
                 version.storage_key = approved_key
             version.extracted_text = text
-            version.metadata_json = build_metadata(
-                version.filename, version.mime_type, version.size_bytes, text
-            ) | {"pii_findings": pii_count}
-            document.status = "ready"
+            version.metadata_json = (
+                build_metadata(version.filename, version.mime_type, version.size_bytes, text)
+                | pipeline_versions
+                | {
+                    "pii_findings": pii_count,
+                    "extraction_quality": quality.as_dict(),
+                    "page_count": extracted.page_count,
+                    "chunk_count": len(structured_chunks),
+                }
+            )
+            document.status = (
+                "ready_with_warnings"
+                if quality.status in {ExtractionQuality.ACCEPTABLE, ExtractionQuality.LOW_QUALITY}
+                else "ready"
+            )
             job.status = JobStatus.COMPLETED
             job.stage = IngestionStage.COMPLETED
             job.result_json = {
+                **existing_result,
                 "request_id": effective_request_id,
-                "chunks": len(raw_chunks),
+                "chunks": len(structured_chunks),
                 "characters": len(text),
                 "pii_findings": pii_count,
-                "chunking_strategy": "structure-aware-v2",
-                "reingestion_note": (
-                    "Existing documents ingested before question_group chunking should be "
-                    "re-ingested for best practice-question topic discovery."
-                ),
+                "status": document.status.upper(),
+                "extraction_quality": quality.status.value,
+                "chunking_strategy": "structure-aware-v3",
+                **pipeline_versions,
             }
             await session.commit()
             INGESTION_COMPLETED.inc()
@@ -128,14 +173,22 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             if job:
                 job.status = JobStatus.FAILED
                 job.stage = IngestionStage.FAILED
-                job.error_message = str(exc)[:2000]
+                category = _safe_error_category(exc)
+                job.error_message = category
                 job.result_json = {
                     **(job.result_json or {}),
                     **({"request_id": effective_request_id} if effective_request_id else {}),
-                    "error_type": type(exc).__name__,
+                    "error_category": category,
                 }
             if document:
-                document.status = "failed"
+                document.status = "extraction_failed"
+            version = await session.get(DocumentVersion, job.document_version_id) if job else None
+            if version:
+                version.metadata_json = {
+                    **(version.metadata_json or {}),
+                    **LATEST_PIPELINE.as_dict(),
+                    "error_category": category,
+                }
             await session.commit()
             INGESTION_FAILED.inc()
             raise
@@ -146,17 +199,10 @@ async def _stage_delay() -> None:
         await sleep(settings.ingestion_stage_delay_seconds)
 
 
-def _section_from_chunk(content: str) -> str | None:
-    first = next((line.strip(" #") for line in content.splitlines() if line.strip()), "")
-    if not first:
-        return None
-    if ":" in first:
-        return first.split(":", 1)[0].strip()[:120] or None
-    if len(first.split()) <= 10:
-        return first[:120]
-    return None
-
-
-def _question_number_from_chunk(content: str) -> str | None:
-    match = re.search(r"(?im)^\s*(?:question|q)\s*(?P<number>\d+[A-Za-z]?)\s*[:.)-]", content)
-    return match.group("number") if match else None
+def _safe_error_category(exc: Exception) -> str:
+    value = str(exc)
+    if value in {"extraction_empty", "no_usable_chunks"}:
+        return value.upper()
+    if isinstance(exc, (ValueError, UnicodeError)):
+        return "MALFORMED_OR_UNSUPPORTED_CONTENT"
+    return "INTERNAL_PROCESSING_ERROR"

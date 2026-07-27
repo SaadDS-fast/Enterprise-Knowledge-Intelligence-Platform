@@ -60,6 +60,15 @@ class DocumentRead(ORMModel):
     created_by: UUID
     created_at: datetime
     updated_at: datetime
+    filename: str | None = None
+    extraction_quality: str | None = None
+    page_count: int | None = None
+    chunk_count: int = 0
+    pipeline_version: dict = Field(default_factory=dict)
+    latest_pipeline_version: dict = Field(default_factory=dict)
+    reprocessing_recommended: bool = False
+    processing_progress: str | None = None
+    error_category: str | None = None
 
 
 class DocumentVersionRead(ORMModel):
@@ -78,6 +87,24 @@ class UploadResponse(BaseModel):
     version: DocumentVersionRead
     job_id: UUID
     status: str
+
+
+class ReprocessResponse(BaseModel):
+    document_id: UUID
+    job_id: UUID
+    status: str
+    idempotent: bool
+
+
+class StructureChunkRead(BaseModel):
+    page: int | None = None
+    heading: str | None = None
+    section: str | None = None
+    question_number: str | None = None
+    chunk_order: int
+    excerpt: str
+    quality_status: str | None = None
+    pipeline_version: dict = Field(default_factory=dict)
 
 
 class JobRead(ORMModel):
