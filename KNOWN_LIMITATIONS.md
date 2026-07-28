@@ -91,3 +91,14 @@ from until an authorized OCR-capable future pipeline reprocesses them. See
   set before quality can be declared complete.
 - The corpus is intentionally small (14 documents, 9 queries); the latency and memory
   figures are validation-host observations, not capacity guarantees.
+
+## Calibration holdout limitations
+
+- The expanded 40-query holdout reached Recall@5 `.9688` rather than `.98` and answer
+  support `.9375` rather than `.95`; Phase 2 therefore remains partial.
+- One terminology-light materials prompt and one terminology-light physics prompt still
+  miss rank one. Future work should add development examples and deterministic
+  question-number/title anchors, then evaluate on a new holdout rather than retuning the
+  consumed set.
+- The synthetic benchmark contains 12 documents and 100 queries. It is broader than the
+  live smoke corpus but is not a substitute for an approved domain-specific evaluation.

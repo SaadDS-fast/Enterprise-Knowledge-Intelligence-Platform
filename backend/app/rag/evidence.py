@@ -169,6 +169,8 @@ def assess_evidence_support(
     globally_sufficient = max_score >= settings.evidence_min_score and coverage >= (
         0.75 if compound_query else 0.34
     )
+    if attribute is RequestedAttribute.NUMERIC and not direct_facts:
+        globally_sufficient = False
     directly_supported = bool(direct_facts) and support_score >= 0.72 and not compound_query
     if globally_sufficient or directly_supported:
         return SupportAssessment(
@@ -219,11 +221,25 @@ def extract_facts(
     )
     for index, content in enumerate(contents):
         for match in pair_re.finditer(content):
+            if not _numeric_label_matches_query(query, attribute, match.group(1)):
+                continue
             value = normalize_answer_value(match.group("value"))
             if _valid_fact_value(value):
                 facts.append(ExtractedFact(attribute, value, index, match.group(0).strip()))
         facts.extend(_sentence_facts(content, index, attribute))
     return _dedupe_facts(facts)
+
+
+def _numeric_label_matches_query(
+    query: str, attribute: RequestedAttribute, matched_label: str
+) -> bool:
+    if attribute is not RequestedAttribute.NUMERIC:
+        return True
+    query_terms = key_terms(query)
+    label_terms = key_terms(matched_label)
+    sensitive = {"revenue", "budget", "allowance", "cost", "amount"}
+    requested = query_terms & sensitive
+    return not requested or bool(requested & label_terms)
 
 
 def synthesize_direct_answer(query: str, assessment: SupportAssessment) -> str | None:

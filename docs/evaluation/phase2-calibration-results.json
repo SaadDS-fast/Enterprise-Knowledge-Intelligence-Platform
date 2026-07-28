@@ -1,0 +1,2260 @@
+{
+  "approximate_peak_rss_mib": 535.406,
+  "cold_load_ms": {
+    "embedding": 4809.475,
+    "reranker": 180.344
+  },
+  "development": {
+    "metrics": {
+      "calibrated_reranker": {
+        "answer_support_rate": 0.9167,
+        "citation_precision": 1.0,
+        "citation_recall": 1.0,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 20.116,
+          "p50_ms": 19.727,
+          "p95_ms": 22.677
+        },
+        "mrr": 0.9583,
+        "ndcg_at_5": 0.9692,
+        "recall_at_1": 0.9167,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "retrieval_recovery_accuracy": 1.0,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      },
+      "lexical": {
+        "answer_support_rate": 0.8125,
+        "citation_precision": 1.0,
+        "citation_recall": 0.875,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 0.169,
+          "p50_ms": 0.167,
+          "p95_ms": 0.189
+        },
+        "mrr": 0.8668,
+        "ndcg_at_5": 0.877,
+        "recall_at_1": 0.8125,
+        "recall_at_3": 0.875,
+        "recall_at_5": 0.9375,
+        "retrieval_recovery_accuracy": 0.875,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      },
+      "semantic_hybrid": {
+        "answer_support_rate": 0.8333,
+        "citation_precision": 1.0,
+        "citation_recall": 0.9167,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 7.397,
+          "p50_ms": 7.283,
+          "p95_ms": 8.173
+        },
+        "mrr": 0.8903,
+        "ndcg_at_5": 0.9172,
+        "recall_at_1": 0.8333,
+        "recall_at_3": 0.9167,
+        "recall_at_5": 1.0,
+        "retrieval_recovery_accuracy": 0.9167,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      }
+    },
+    "rankings": {
+      "calibrated_reranker": {
+        "absent-dev-0": [
+          "finance",
+          "leave",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "absent-dev-1": [
+          "leave",
+          "finance",
+          "lodging",
+          "relocation",
+          "travel"
+        ],
+        "absent-dev-10": [
+          "finance",
+          "leave",
+          "travel",
+          "lodging",
+          "math"
+        ],
+        "absent-dev-11": [
+          "finance",
+          "lodging",
+          "math",
+          "equation",
+          "leave"
+        ],
+        "absent-dev-2": [
+          "finance",
+          "cafeteria",
+          "manager",
+          "leave",
+          "lodging"
+        ],
+        "absent-dev-3": [
+          "finance",
+          "leave",
+          "procurement",
+          "travel",
+          "lodging"
+        ],
+        "absent-dev-4": [
+          "manager",
+          "relocation",
+          "finance",
+          "cafeteria",
+          "travel"
+        ],
+        "absent-dev-5": [
+          "cafeteria",
+          "manager",
+          "finance",
+          "lodging",
+          "leave"
+        ],
+        "absent-dev-6": [
+          "relocation",
+          "manager",
+          "finance",
+          "lodging",
+          "travel"
+        ],
+        "absent-dev-7": [
+          "leave",
+          "lodging",
+          "travel",
+          "manager",
+          "procurement"
+        ],
+        "absent-dev-8": [
+          "finance",
+          "leave",
+          "relocation",
+          "manager",
+          "cafeteria"
+        ],
+        "absent-dev-9": [
+          "cafeteria",
+          "finance",
+          "manager",
+          "lodging",
+          "equation"
+        ],
+        "finance-0": [
+          "finance",
+          "procurement",
+          "travel",
+          "lodging",
+          "manager"
+        ],
+        "finance-1": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "finance-2": [
+          "finance",
+          "manager",
+          "travel",
+          "lodging",
+          "procurement"
+        ],
+        "finance-3": [
+          "finance",
+          "procurement",
+          "manager",
+          "travel",
+          "lodging"
+        ],
+        "finance-4": [
+          "finance",
+          "procurement",
+          "lodging",
+          "travel",
+          "manager"
+        ],
+        "finance-5": [
+          "finance",
+          "physics",
+          "math",
+          "materials",
+          "procurement"
+        ],
+        "finance-6": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "lodging"
+        ],
+        "finance-7": [
+          "manager",
+          "finance",
+          "materials",
+          "physics",
+          "math"
+        ],
+        "finance-8": [
+          "finance",
+          "procurement",
+          "math",
+          "materials",
+          "physics"
+        ],
+        "finance-9": [
+          "finance",
+          "manager",
+          "procurement",
+          "cafeteria",
+          "relocation"
+        ],
+        "leave-0": [
+          "leave",
+          "relocation",
+          "finance",
+          "lodging",
+          "manager"
+        ],
+        "leave-1": [
+          "leave",
+          "procurement",
+          "finance",
+          "lodging",
+          "equation"
+        ],
+        "leave-2": [
+          "leave",
+          "lodging",
+          "travel",
+          "manager",
+          "cafeteria"
+        ],
+        "leave-3": [
+          "leave",
+          "relocation",
+          "math",
+          "lodging",
+          "travel"
+        ],
+        "leave-4": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "lodging"
+        ],
+        "leave-5": [
+          "leave",
+          "materials",
+          "equation",
+          "travel",
+          "lodging"
+        ],
+        "leave-6": [
+          "leave",
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging"
+        ],
+        "leave-7": [
+          "leave",
+          "lodging",
+          "travel",
+          "finance",
+          "relocation"
+        ],
+        "leave-8": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "leave-9": [
+          "leave",
+          "travel",
+          "lodging",
+          "finance",
+          "procurement"
+        ],
+        "math-0": [
+          "math",
+          "equation",
+          "procurement",
+          "physics",
+          "relocation"
+        ],
+        "math-1": [
+          "math",
+          "physics",
+          "materials",
+          "equation",
+          "manager"
+        ],
+        "math-2": [
+          "math",
+          "equation",
+          "manager",
+          "relocation",
+          "procurement"
+        ],
+        "math-3": [
+          "math",
+          "equation",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "math-4": [
+          "math",
+          "equation",
+          "relocation",
+          "physics",
+          "materials"
+        ],
+        "math-5": [
+          "equation",
+          "math",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "math-6": [
+          "math",
+          "equation",
+          "manager",
+          "relocation",
+          "physics"
+        ],
+        "math-7": [
+          "math",
+          "cafeteria",
+          "manager",
+          "equation",
+          "finance"
+        ],
+        "procurement-0": [
+          "procurement",
+          "equation",
+          "travel",
+          "finance",
+          "lodging"
+        ],
+        "procurement-1": [
+          "procurement",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "procurement-2": [
+          "procurement",
+          "travel",
+          "lodging",
+          "finance",
+          "equation"
+        ],
+        "procurement-3": [
+          "procurement",
+          "finance",
+          "travel",
+          "lodging",
+          "equation"
+        ],
+        "procurement-4": [
+          "manager",
+          "procurement",
+          "cafeteria",
+          "finance",
+          "equation"
+        ],
+        "procurement-5": [
+          "procurement",
+          "math",
+          "finance",
+          "travel",
+          "lodging"
+        ],
+        "procurement-6": [
+          "procurement",
+          "manager",
+          "finance",
+          "cafeteria",
+          "travel"
+        ],
+        "procurement-7": [
+          "procurement",
+          "travel",
+          "equation",
+          "lodging",
+          "relocation"
+        ],
+        "procurement-8": [
+          "procurement",
+          "relocation",
+          "finance",
+          "manager",
+          "travel"
+        ],
+        "procurement-9": [
+          "procurement",
+          "manager",
+          "cafeteria",
+          "finance",
+          "physics"
+        ],
+        "travel-0": [
+          "travel",
+          "cafeteria",
+          "math",
+          "lodging",
+          "equation"
+        ],
+        "travel-1": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "lodging",
+          "finance"
+        ],
+        "travel-2": [
+          "travel",
+          "lodging",
+          "cafeteria",
+          "leave",
+          "relocation"
+        ],
+        "travel-3": [
+          "travel",
+          "lodging",
+          "finance",
+          "procurement",
+          "cafeteria"
+        ],
+        "travel-4": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "finance",
+          "leave"
+        ],
+        "travel-5": [
+          "cafeteria",
+          "travel",
+          "lodging",
+          "math",
+          "physics"
+        ],
+        "travel-6": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "finance",
+          "lodging"
+        ],
+        "travel-7": [
+          "travel",
+          "procurement",
+          "equation",
+          "lodging",
+          "leave"
+        ],
+        "travel-8": [
+          "travel",
+          "lodging",
+          "leave",
+          "cafeteria",
+          "manager"
+        ],
+        "travel-9": [
+          "travel",
+          "lodging",
+          "leave",
+          "relocation",
+          "cafeteria"
+        ]
+      },
+      "lexical": {
+        "absent-dev-0": [
+          "finance",
+          "leave",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "absent-dev-1": [
+          "leave",
+          "finance",
+          "travel",
+          "procurement",
+          "math"
+        ],
+        "absent-dev-10": [
+          "travel",
+          "leave",
+          "finance",
+          "procurement",
+          "math"
+        ],
+        "absent-dev-11": [
+          "travel",
+          "leave",
+          "finance",
+          "procurement",
+          "math"
+        ],
+        "absent-dev-2": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "absent-dev-3": [
+          "travel",
+          "leave",
+          "finance",
+          "procurement",
+          "math"
+        ],
+        "absent-dev-4": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "absent-dev-5": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "absent-dev-6": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "absent-dev-7": [
+          "travel",
+          "leave",
+          "finance",
+          "procurement",
+          "math"
+        ],
+        "absent-dev-8": [
+          "finance",
+          "relocation",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "absent-dev-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "finance-0": [
+          "finance",
+          "procurement",
+          "manager",
+          "lodging",
+          "travel"
+        ],
+        "finance-1": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "finance-2": [
+          "finance",
+          "travel",
+          "leave",
+          "procurement",
+          "math"
+        ],
+        "finance-3": [
+          "finance",
+          "procurement",
+          "travel",
+          "leave",
+          "math"
+        ],
+        "finance-4": [
+          "finance",
+          "lodging",
+          "travel",
+          "procurement",
+          "manager"
+        ],
+        "finance-5": [
+          "finance",
+          "math",
+          "physics",
+          "materials",
+          "travel"
+        ],
+        "finance-6": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "finance-7": [
+          "manager",
+          "finance",
+          "math",
+          "physics",
+          "materials"
+        ],
+        "finance-8": [
+          "finance",
+          "procurement",
+          "math",
+          "physics",
+          "materials"
+        ],
+        "finance-9": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "leave-0": [
+          "leave",
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "leave-1": [
+          "leave",
+          "equation",
+          "procurement",
+          "finance",
+          "travel"
+        ],
+        "leave-2": [
+          "leave",
+          "lodging",
+          "travel",
+          "manager",
+          "cafeteria"
+        ],
+        "leave-3": [
+          "leave",
+          "relocation",
+          "math",
+          "travel",
+          "finance"
+        ],
+        "leave-4": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "leave-5": [
+          "leave",
+          "equation",
+          "materials",
+          "travel",
+          "finance"
+        ],
+        "leave-6": [
+          "leave",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "leave-7": [
+          "leave",
+          "relocation",
+          "finance",
+          "lodging",
+          "travel"
+        ],
+        "leave-8": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "leave-9": [
+          "leave",
+          "lodging",
+          "travel",
+          "finance",
+          "procurement"
+        ],
+        "math-0": [
+          "math",
+          "equation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "math-1": [
+          "math",
+          "physics",
+          "materials",
+          "travel",
+          "leave"
+        ],
+        "math-2": [
+          "math",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "math-3": [
+          "math",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "math-4": [
+          "math",
+          "relocation",
+          "equation",
+          "physics",
+          "materials"
+        ],
+        "math-5": [
+          "equation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "math-6": [
+          "math",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "math-7": [
+          "cafeteria",
+          "math",
+          "manager",
+          "finance",
+          "travel"
+        ],
+        "procurement-0": [
+          "procurement",
+          "equation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "procurement-1": [
+          "procurement",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "procurement-2": [
+          "procurement",
+          "travel",
+          "leave",
+          "finance",
+          "math"
+        ],
+        "procurement-3": [
+          "procurement",
+          "finance",
+          "equation",
+          "lodging",
+          "travel"
+        ],
+        "procurement-4": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "procurement-5": [
+          "math",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "procurement-6": [
+          "procurement",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "procurement-7": [
+          "procurement",
+          "travel",
+          "leave",
+          "finance",
+          "math"
+        ],
+        "procurement-8": [
+          "procurement",
+          "relocation",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "procurement-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "travel-0": [
+          "travel",
+          "cafeteria",
+          "math",
+          "equation",
+          "materials"
+        ],
+        "travel-1": [
+          "travel",
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave"
+        ],
+        "travel-2": [
+          "cafeteria",
+          "relocation",
+          "lodging",
+          "travel",
+          "leave"
+        ],
+        "travel-3": [
+          "travel",
+          "finance",
+          "lodging",
+          "procurement",
+          "leave"
+        ],
+        "travel-4": [
+          "travel",
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave"
+        ],
+        "travel-5": [
+          "cafeteria",
+          "math",
+          "physics",
+          "materials",
+          "travel"
+        ],
+        "travel-6": [
+          "travel",
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave"
+        ],
+        "travel-7": [
+          "travel",
+          "equation",
+          "procurement",
+          "leave",
+          "finance"
+        ],
+        "travel-8": [
+          "lodging",
+          "travel",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "travel-9": [
+          "travel",
+          "relocation",
+          "lodging",
+          "leave",
+          "finance"
+        ]
+      },
+      "semantic_hybrid": {
+        "absent-dev-0": [
+          "finance",
+          "leave",
+          "manager",
+          "cafeteria",
+          "lodging"
+        ],
+        "absent-dev-1": [
+          "leave",
+          "finance",
+          "relocation",
+          "manager",
+          "cafeteria"
+        ],
+        "absent-dev-10": [
+          "finance",
+          "travel",
+          "procurement",
+          "lodging",
+          "leave"
+        ],
+        "absent-dev-11": [
+          "leave",
+          "finance",
+          "travel",
+          "lodging",
+          "procurement"
+        ],
+        "absent-dev-2": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave",
+          "lodging"
+        ],
+        "absent-dev-3": [
+          "finance",
+          "procurement",
+          "travel",
+          "leave",
+          "lodging"
+        ],
+        "absent-dev-4": [
+          "relocation",
+          "manager",
+          "finance",
+          "cafeteria",
+          "leave"
+        ],
+        "absent-dev-5": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave",
+          "relocation"
+        ],
+        "absent-dev-6": [
+          "relocation",
+          "manager",
+          "finance",
+          "cafeteria",
+          "lodging"
+        ],
+        "absent-dev-7": [
+          "leave",
+          "lodging",
+          "travel",
+          "manager",
+          "relocation"
+        ],
+        "absent-dev-8": [
+          "finance",
+          "relocation",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "absent-dev-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "leave",
+          "relocation"
+        ],
+        "finance-0": [
+          "finance",
+          "procurement",
+          "lodging",
+          "travel",
+          "manager"
+        ],
+        "finance-1": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "finance-2": [
+          "finance",
+          "travel",
+          "procurement",
+          "lodging",
+          "leave"
+        ],
+        "finance-3": [
+          "finance",
+          "procurement",
+          "travel",
+          "lodging",
+          "manager"
+        ],
+        "finance-4": [
+          "finance",
+          "lodging",
+          "procurement",
+          "travel",
+          "manager"
+        ],
+        "finance-5": [
+          "finance",
+          "physics",
+          "math",
+          "materials",
+          "procurement"
+        ],
+        "finance-6": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "finance-7": [
+          "manager",
+          "finance",
+          "materials",
+          "physics",
+          "math"
+        ],
+        "finance-8": [
+          "finance",
+          "procurement",
+          "math",
+          "materials",
+          "physics"
+        ],
+        "finance-9": [
+          "finance",
+          "procurement",
+          "manager",
+          "cafeteria",
+          "relocation"
+        ],
+        "leave-0": [
+          "leave",
+          "relocation",
+          "finance",
+          "manager",
+          "cafeteria"
+        ],
+        "leave-1": [
+          "leave",
+          "procurement",
+          "finance",
+          "equation",
+          "lodging"
+        ],
+        "leave-2": [
+          "leave",
+          "lodging",
+          "travel",
+          "manager",
+          "cafeteria"
+        ],
+        "leave-3": [
+          "leave",
+          "relocation",
+          "math",
+          "travel",
+          "lodging"
+        ],
+        "leave-4": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "lodging"
+        ],
+        "leave-5": [
+          "leave",
+          "materials",
+          "equation",
+          "travel",
+          "lodging"
+        ],
+        "leave-6": [
+          "leave",
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging"
+        ],
+        "leave-7": [
+          "leave",
+          "finance",
+          "relocation",
+          "lodging",
+          "travel"
+        ],
+        "leave-8": [
+          "leave",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "leave-9": [
+          "leave",
+          "travel",
+          "lodging",
+          "finance",
+          "procurement"
+        ],
+        "math-0": [
+          "math",
+          "equation",
+          "procurement",
+          "manager",
+          "relocation"
+        ],
+        "math-1": [
+          "math",
+          "physics",
+          "materials",
+          "equation",
+          "relocation"
+        ],
+        "math-2": [
+          "math",
+          "equation",
+          "manager",
+          "relocation",
+          "procurement"
+        ],
+        "math-3": [
+          "math",
+          "manager",
+          "cafeteria",
+          "finance",
+          "equation"
+        ],
+        "math-4": [
+          "math",
+          "equation",
+          "relocation",
+          "physics",
+          "materials"
+        ],
+        "math-5": [
+          "equation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "math"
+        ],
+        "math-6": [
+          "math",
+          "equation",
+          "materials",
+          "physics",
+          "procurement"
+        ],
+        "math-7": [
+          "cafeteria",
+          "math",
+          "manager",
+          "finance",
+          "equation"
+        ],
+        "procurement-0": [
+          "procurement",
+          "equation",
+          "travel",
+          "finance",
+          "relocation"
+        ],
+        "procurement-1": [
+          "procurement",
+          "finance",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "procurement-2": [
+          "procurement",
+          "travel",
+          "finance",
+          "lodging",
+          "equation"
+        ],
+        "procurement-3": [
+          "procurement",
+          "finance",
+          "lodging",
+          "travel",
+          "equation"
+        ],
+        "procurement-4": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "procurement",
+          "lodging"
+        ],
+        "procurement-5": [
+          "math",
+          "procurement",
+          "travel",
+          "finance",
+          "lodging"
+        ],
+        "procurement-6": [
+          "procurement",
+          "manager",
+          "finance",
+          "cafeteria",
+          "travel"
+        ],
+        "procurement-7": [
+          "procurement",
+          "travel",
+          "equation",
+          "cafeteria",
+          "relocation"
+        ],
+        "procurement-8": [
+          "procurement",
+          "relocation",
+          "finance",
+          "manager",
+          "travel"
+        ],
+        "procurement-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "procurement",
+          "physics"
+        ],
+        "travel-0": [
+          "travel",
+          "cafeteria",
+          "math",
+          "equation",
+          "materials"
+        ],
+        "travel-1": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "finance",
+          "lodging"
+        ],
+        "travel-2": [
+          "cafeteria",
+          "relocation",
+          "travel",
+          "lodging",
+          "leave"
+        ],
+        "travel-3": [
+          "travel",
+          "lodging",
+          "finance",
+          "procurement",
+          "cafeteria"
+        ],
+        "travel-4": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "finance",
+          "lodging"
+        ],
+        "travel-5": [
+          "cafeteria",
+          "math",
+          "physics",
+          "materials",
+          "travel"
+        ],
+        "travel-6": [
+          "travel",
+          "cafeteria",
+          "manager",
+          "finance",
+          "lodging"
+        ],
+        "travel-7": [
+          "travel",
+          "procurement",
+          "equation",
+          "lodging",
+          "finance"
+        ],
+        "travel-8": [
+          "travel",
+          "lodging",
+          "leave",
+          "cafeteria",
+          "manager"
+        ],
+        "travel-9": [
+          "travel",
+          "relocation",
+          "lodging",
+          "leave",
+          "cafeteria"
+        ]
+      }
+    }
+  },
+  "development_queries": 60,
+  "frozen_configuration": {
+    "lexical_weight": 0.45,
+    "reranker_blend_weight": 0.25,
+    "reranker_min_margin": 0.08,
+    "return_k": 8,
+    "semantic_weight": 0.55,
+    "top_n": 20
+  },
+  "holdout": {
+    "metrics": {
+      "calibrated_reranker": {
+        "answer_support_rate": 0.9375,
+        "citation_precision": 1.0,
+        "citation_recall": 0.9688,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 19.109,
+          "p50_ms": 19.074,
+          "p95_ms": 20.338
+        },
+        "mrr": 0.957,
+        "ndcg_at_5": 0.9572,
+        "recall_at_1": 0.9375,
+        "recall_at_3": 0.9688,
+        "recall_at_5": 0.9688,
+        "retrieval_recovery_accuracy": 0.9688,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      },
+      "lexical": {
+        "answer_support_rate": 0.6562,
+        "citation_precision": 1.0,
+        "citation_recall": 0.8438,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 0.164,
+          "p50_ms": 0.159,
+          "p95_ms": 0.194
+        },
+        "mrr": 0.7714,
+        "ndcg_at_5": 0.788,
+        "recall_at_1": 0.6562,
+        "recall_at_3": 0.8438,
+        "recall_at_5": 0.875,
+        "retrieval_recovery_accuracy": 0.8438,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      },
+      "semantic_hybrid": {
+        "answer_support_rate": 0.7812,
+        "citation_precision": 1.0,
+        "citation_recall": 0.875,
+        "knowledge_absence_accuracy": 1.0,
+        "latency": {
+          "average_ms": 7.447,
+          "p50_ms": 7.085,
+          "p95_ms": 8.162
+        },
+        "mrr": 0.8594,
+        "ndcg_at_5": 0.8942,
+        "recall_at_1": 0.7812,
+        "recall_at_3": 0.875,
+        "recall_at_5": 1.0,
+        "retrieval_recovery_accuracy": 0.875,
+        "tenant_isolation_pass_rate": 1.0,
+        "unsupported_claim_rate": 0.0
+      }
+    },
+    "rankings": {
+      "calibrated_reranker": {
+        "absent-holdout-0": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "relocation",
+          "lodging"
+        ],
+        "absent-holdout-1": [
+          "relocation",
+          "lodging",
+          "procurement",
+          "travel",
+          "finance"
+        ],
+        "absent-holdout-2": [
+          "finance",
+          "cafeteria",
+          "manager",
+          "lodging",
+          "travel"
+        ],
+        "absent-holdout-3": [
+          "leave",
+          "finance",
+          "lodging",
+          "travel",
+          "procurement"
+        ],
+        "absent-holdout-4": [
+          "relocation",
+          "travel",
+          "cafeteria",
+          "lodging",
+          "finance"
+        ],
+        "absent-holdout-5": [
+          "relocation",
+          "leave",
+          "lodging",
+          "finance",
+          "travel"
+        ],
+        "absent-holdout-6": [
+          "cafeteria",
+          "manager",
+          "lodging",
+          "finance",
+          "travel"
+        ],
+        "absent-holdout-7": [
+          "finance",
+          "relocation",
+          "procurement",
+          "travel",
+          "cafeteria"
+        ],
+        "lodging-0": [
+          "lodging",
+          "travel",
+          "relocation",
+          "leave",
+          "cafeteria"
+        ],
+        "lodging-1": [
+          "lodging",
+          "cafeteria",
+          "manager",
+          "finance",
+          "travel"
+        ],
+        "lodging-2": [
+          "lodging",
+          "relocation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "lodging-3": [
+          "lodging",
+          "cafeteria",
+          "manager",
+          "finance",
+          "travel"
+        ],
+        "lodging-4": [
+          "lodging",
+          "relocation",
+          "leave",
+          "travel",
+          "finance"
+        ],
+        "lodging-5": [
+          "lodging",
+          "finance",
+          "travel",
+          "procurement",
+          "manager"
+        ],
+        "lodging-6": [
+          "lodging",
+          "travel",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "lodging-7": [
+          "lodging",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "lodging-8": [
+          "lodging",
+          "travel",
+          "finance",
+          "procurement",
+          "leave"
+        ],
+        "lodging-9": [
+          "lodging",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "materials-0": [
+          "materials",
+          "physics",
+          "math",
+          "relocation",
+          "equation"
+        ],
+        "materials-1": [
+          "materials",
+          "cafeteria",
+          "manager",
+          "finance",
+          "physics"
+        ],
+        "materials-2": [
+          "materials",
+          "physics",
+          "cafeteria",
+          "relocation",
+          "procurement"
+        ],
+        "materials-3": [
+          "materials",
+          "math",
+          "physics",
+          "relocation",
+          "equation"
+        ],
+        "materials-4": [
+          "materials",
+          "physics",
+          "relocation",
+          "equation",
+          "lodging"
+        ],
+        "materials-5": [
+          "materials",
+          "physics",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "materials-6": [
+          "materials",
+          "physics",
+          "relocation",
+          "math",
+          "equation"
+        ],
+        "materials-7": [
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance",
+          "physics"
+        ],
+        "materials-8": [
+          "materials",
+          "physics",
+          "math",
+          "leave",
+          "equation"
+        ],
+        "materials-9": [
+          "physics",
+          "materials",
+          "cafeteria",
+          "manager",
+          "finance"
+        ],
+        "math-8": [
+          "math",
+          "equation",
+          "relocation",
+          "manager",
+          "physics"
+        ],
+        "math-9": [
+          "math",
+          "manager",
+          "cafeteria",
+          "finance",
+          "equation"
+        ],
+        "physics-0": [
+          "physics",
+          "relocation",
+          "cafeteria",
+          "manager",
+          "finance"
+        ],
+        "physics-1": [
+          "physics",
+          "materials",
+          "equation",
+          "procurement",
+          "travel"
+        ],
+        "physics-2": [
+          "physics",
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-3": [
+          "physics",
+          "equation",
+          "math",
+          "materials",
+          "relocation"
+        ],
+        "physics-4": [
+          "physics",
+          "materials",
+          "equation",
+          "relocation",
+          "cafeteria"
+        ],
+        "physics-5": [
+          "physics",
+          "relocation",
+          "manager",
+          "equation",
+          "materials"
+        ],
+        "physics-6": [
+          "physics",
+          "materials",
+          "cafeteria",
+          "manager",
+          "finance"
+        ],
+        "physics-7": [
+          "physics",
+          "equation",
+          "math",
+          "materials",
+          "manager"
+        ],
+        "physics-8": [
+          "cafeteria",
+          "manager",
+          "relocation",
+          "finance",
+          "lodging"
+        ],
+        "physics-9": [
+          "physics",
+          "relocation",
+          "materials",
+          "equation",
+          "cafeteria"
+        ]
+      },
+      "lexical": {
+        "absent-holdout-0": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "absent-holdout-1": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "absent-holdout-2": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "absent-holdout-3": [
+          "leave",
+          "travel",
+          "finance",
+          "procurement",
+          "math"
+        ],
+        "absent-holdout-4": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "absent-holdout-5": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "absent-holdout-6": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "absent-holdout-7": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "lodging-0": [
+          "relocation",
+          "lodging",
+          "travel",
+          "leave",
+          "manager"
+        ],
+        "lodging-1": [
+          "lodging",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "lodging-2": [
+          "lodging",
+          "relocation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "lodging-3": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "lodging-4": [
+          "relocation",
+          "lodging",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "lodging-5": [
+          "finance",
+          "manager",
+          "cafeteria",
+          "lodging",
+          "travel"
+        ],
+        "lodging-6": [
+          "lodging",
+          "travel",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "lodging-7": [
+          "lodging",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "lodging-8": [
+          "lodging",
+          "finance",
+          "travel",
+          "procurement",
+          "leave"
+        ],
+        "lodging-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "materials-0": [
+          "materials",
+          "physics",
+          "math",
+          "travel",
+          "leave"
+        ],
+        "materials-1": [
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "materials-2": [
+          "materials",
+          "physics",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "materials-3": [
+          "math",
+          "materials",
+          "physics",
+          "travel",
+          "leave"
+        ],
+        "materials-4": [
+          "materials",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "materials-5": [
+          "physics",
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "materials-6": [
+          "materials",
+          "physics",
+          "relocation",
+          "math",
+          "travel"
+        ],
+        "materials-7": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "materials-8": [
+          "materials",
+          "math",
+          "physics",
+          "travel",
+          "leave"
+        ],
+        "materials-9": [
+          "physics",
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "math-8": [
+          "math",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "math-9": [
+          "math",
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel"
+        ],
+        "physics-0": [
+          "relocation",
+          "physics",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-1": [
+          "physics",
+          "materials",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "physics-2": [
+          "physics",
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-3": [
+          "physics",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "physics-4": [
+          "physics",
+          "materials",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "physics-5": [
+          "physics",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "physics-6": [
+          "physics",
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-7": [
+          "physics",
+          "travel",
+          "leave",
+          "finance",
+          "procurement"
+        ],
+        "physics-8": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "travel",
+          "leave"
+        ],
+        "physics-9": [
+          "physics",
+          "relocation",
+          "materials",
+          "travel",
+          "leave"
+        ]
+      },
+      "semantic_hybrid": {
+        "absent-holdout-0": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "relocation",
+          "lodging"
+        ],
+        "absent-holdout-1": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging"
+        ],
+        "absent-holdout-2": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "equation",
+          "procurement"
+        ],
+        "absent-holdout-3": [
+          "leave",
+          "finance",
+          "travel",
+          "materials",
+          "lodging"
+        ],
+        "absent-holdout-4": [
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging"
+        ],
+        "absent-holdout-5": [
+          "relocation",
+          "finance",
+          "manager",
+          "cafeteria",
+          "lodging"
+        ],
+        "absent-holdout-6": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging",
+          "travel"
+        ],
+        "absent-holdout-7": [
+          "relocation",
+          "finance",
+          "manager",
+          "cafeteria",
+          "procurement"
+        ],
+        "lodging-0": [
+          "relocation",
+          "lodging",
+          "travel",
+          "leave",
+          "cafeteria"
+        ],
+        "lodging-1": [
+          "lodging",
+          "cafeteria",
+          "manager",
+          "finance",
+          "travel"
+        ],
+        "lodging-2": [
+          "lodging",
+          "relocation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "lodging-3": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging",
+          "relocation"
+        ],
+        "lodging-4": [
+          "lodging",
+          "relocation",
+          "travel",
+          "leave",
+          "finance"
+        ],
+        "lodging-5": [
+          "finance",
+          "lodging",
+          "manager",
+          "cafeteria",
+          "travel"
+        ],
+        "lodging-6": [
+          "lodging",
+          "travel",
+          "leave",
+          "manager",
+          "cafeteria"
+        ],
+        "lodging-7": [
+          "lodging",
+          "travel",
+          "finance",
+          "leave",
+          "procurement"
+        ],
+        "lodging-8": [
+          "lodging",
+          "finance",
+          "travel",
+          "procurement",
+          "leave"
+        ],
+        "lodging-9": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "lodging",
+          "travel"
+        ],
+        "materials-0": [
+          "materials",
+          "physics",
+          "math",
+          "relocation",
+          "procurement"
+        ],
+        "materials-1": [
+          "materials",
+          "cafeteria",
+          "manager",
+          "finance",
+          "physics"
+        ],
+        "materials-2": [
+          "materials",
+          "physics",
+          "cafeteria",
+          "procurement",
+          "relocation"
+        ],
+        "materials-3": [
+          "materials",
+          "math",
+          "physics",
+          "relocation",
+          "equation"
+        ],
+        "materials-4": [
+          "materials",
+          "physics",
+          "relocation",
+          "equation",
+          "lodging"
+        ],
+        "materials-5": [
+          "materials",
+          "physics",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "materials-6": [
+          "materials",
+          "physics",
+          "relocation",
+          "math",
+          "equation"
+        ],
+        "materials-7": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "materials",
+          "physics"
+        ],
+        "materials-8": [
+          "materials",
+          "physics",
+          "math",
+          "leave",
+          "equation"
+        ],
+        "materials-9": [
+          "materials",
+          "physics",
+          "cafeteria",
+          "manager",
+          "finance"
+        ],
+        "math-8": [
+          "math",
+          "equation",
+          "manager",
+          "relocation",
+          "physics"
+        ],
+        "math-9": [
+          "math",
+          "manager",
+          "cafeteria",
+          "finance",
+          "equation"
+        ],
+        "physics-0": [
+          "relocation",
+          "physics",
+          "cafeteria",
+          "manager",
+          "finance"
+        ],
+        "physics-1": [
+          "physics",
+          "materials",
+          "procurement",
+          "equation",
+          "travel"
+        ],
+        "physics-2": [
+          "physics",
+          "relocation",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-3": [
+          "physics",
+          "math",
+          "equation",
+          "materials",
+          "relocation"
+        ],
+        "physics-4": [
+          "physics",
+          "materials",
+          "cafeteria",
+          "equation",
+          "relocation"
+        ],
+        "physics-5": [
+          "physics",
+          "relocation",
+          "manager",
+          "equation",
+          "procurement"
+        ],
+        "physics-6": [
+          "physics",
+          "materials",
+          "manager",
+          "cafeteria",
+          "finance"
+        ],
+        "physics-7": [
+          "physics",
+          "manager",
+          "math",
+          "materials",
+          "relocation"
+        ],
+        "physics-8": [
+          "manager",
+          "cafeteria",
+          "finance",
+          "physics",
+          "relocation"
+        ],
+        "physics-9": [
+          "physics",
+          "relocation",
+          "materials",
+          "equation",
+          "cafeteria"
+        ]
+      }
+    }
+  },
+  "holdout_queries": 40,
+  "models": {
+    "embedding": "all-minilm-l6-v2",
+    "reranker": "ms-marco-minilm-l-6-v2"
+  },
+  "version": "phase2-calibration-v1"
+}

@@ -1,0 +1,767 @@
+{
+  "version": "phase2-calibration-v1",
+  "development": [
+    {
+      "id": "travel-0",
+      "query": "How much may an employee spend on food each day during official travel?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-1",
+      "query": "State the domestic daily meal limit.",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-2",
+      "query": "What is the travel food allowance?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-3",
+      "query": "Which policy permits PKR 5,000 for meals?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-4",
+      "query": "Give the per-day meal reimbursement.",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-5",
+      "query": "What daily amount covers food on a business trip?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-6",
+      "query": "Identify the official travel meal ceiling.",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-7",
+      "query": "How many rupees are allowed for domestic meals?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-8",
+      "query": "Find the allowance for eating while travelling.",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "travel-9",
+      "query": "What is reimbursed per day for travel meals?",
+      "relevant": [
+        "travel"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-0",
+      "query": "What is the yearly paid leave entitlement?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-1",
+      "query": "How many annual leave days are allowed?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-2",
+      "query": "State the employee leave allowance.",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-3",
+      "query": "What paid time off is provided each year?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-4",
+      "query": "Find the annual leave limit.",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-5",
+      "query": "How many paid days may an employee take?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-6",
+      "query": "Identify the yearly leave entitlement.",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-7",
+      "query": "What is the annual allowance for leave?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-8",
+      "query": "Give the number of paid annual days.",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "leave-9",
+      "query": "Which policy grants 20 days per year?",
+      "relevant": [
+        "leave"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-0",
+      "query": "Who approves capital expenditure above PKR 500,000?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-1",
+      "query": "State the finance capital approval rule.",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-2",
+      "query": "Which role authorizes large capital spending?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-3",
+      "query": "What threshold needs finance director approval?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-4",
+      "query": "Identify the approver for PKR 600,000 capital spend.",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-5",
+      "query": "Who must authorize a major capital purchase?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-6",
+      "query": "Give the large expenditure approval limit.",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-7",
+      "query": "Does a department manager approve capital spending?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-8",
+      "query": "Which finance rule applies above half a million rupees?",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "finance-9",
+      "query": "Name the role responsible for capital approval.",
+      "relevant": [
+        "finance"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-0",
+      "query": "When are three supplier quotations required?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-1",
+      "query": "State the procurement approval threshold.",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-2",
+      "query": "What purchase amount requires competing quotations?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-3",
+      "query": "How many quotations are needed above PKR 100,000?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-4",
+      "query": "Identify the supplier-pricing rule.",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-5",
+      "query": "Which policy controls purchases over one hundred thousand?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-6",
+      "query": "Give the procurement quotation requirement.",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-7",
+      "query": "When must buyers collect three prices?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-8",
+      "query": "What approval evidence is needed for procurement?",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "procurement-9",
+      "query": "Find the competitive quotation threshold.",
+      "relevant": [
+        "procurement"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-0",
+      "query": "Which mathematical relation guarantees one result for every input?",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-1",
+      "query": "Define a function.",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-2",
+      "query": "What assigns exactly one output to each input?",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-3",
+      "query": "State the function definition.",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-4",
+      "query": "How is a function different from a general equation?",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-5",
+      "query": "Identify the single-output mathematical relation.",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-6",
+      "query": "What does function mean in these notes?",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-7",
+      "query": "Find the definition involving inputs and outputs.",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "absent-dev-0",
+      "query": "What was the company's annual revenue?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-1",
+      "query": "State annual corporate turnover.",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-2",
+      "query": "What profit did the company earn?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-3",
+      "query": "Give last year's sales revenue.",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-4",
+      "query": "Who is the chief executive officer?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-5",
+      "query": "When was the company founded?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-6",
+      "query": "What is the Karachi office address?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-7",
+      "query": "How many total employees work here?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-8",
+      "query": "What is the annual marketing budget?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-9",
+      "query": "State the company tax liability.",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-10",
+      "query": "What was quarterly revenue?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-dev-11",
+      "query": "Give net profit after tax.",
+      "relevant": [],
+      "category": "absence"
+    }
+  ],
+  "holdout": [
+    {
+      "id": "math-8",
+      "query": "Which concept maps every input to one output?",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "math-9",
+      "query": "Give the exact function rule.",
+      "relevant": [
+        "math"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-0",
+      "query": "Find the problem involving change in displacement over time.",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-1",
+      "query": "Which question asks for particle velocity?",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-2",
+      "query": "Identify the displacement s(t) exercise.",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-3",
+      "query": "What physics problem determines velocity?",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-4",
+      "query": "Find Question 4.",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-5",
+      "query": "Which item concerns particle motion?",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-6",
+      "query": "Locate the velocity-from-displacement question.",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-7",
+      "query": "What should be determined from s(t)?",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-8",
+      "query": "Identify the kinematics practice problem.",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "physics-9",
+      "query": "Which question uses displacement rather than deformation?",
+      "relevant": [
+        "physics"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-0",
+      "query": "Which question concerns deformation of a material under force?",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-1",
+      "query": "Find the composite-wire extension problem.",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-2",
+      "query": "Identify Question 7.",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-3",
+      "query": "Which exercise applies a load to a wire?",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-4",
+      "query": "What materials problem calculates extension?",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-5",
+      "query": "Locate the deformation-under-force question.",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-6",
+      "query": "Which item is about a composite wire rather than a particle?",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-7",
+      "query": "Find the applied-force materials exercise.",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-8",
+      "query": "What problem asks how far a wire extends?",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "materials-9",
+      "query": "Identify the structural deformation question.",
+      "relevant": [
+        "materials"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-0",
+      "query": "What is the nightly hotel allowance?",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-1",
+      "query": "State the lodging reimbursement limit.",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-2",
+      "query": "How much hotel cost is covered per night?",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-3",
+      "query": "Find the travel accommodation ceiling.",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-4",
+      "query": "What is reimbursed for lodging?",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-5",
+      "query": "Give the nightly PKR limit.",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-6",
+      "query": "Identify the hotel allowance.",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-7",
+      "query": "How many rupees may lodging cost?",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-8",
+      "query": "Which policy allows PKR 18,000 nightly?",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "lodging-9",
+      "query": "State the accommodation amount.",
+      "relevant": [
+        "lodging"
+      ],
+      "category": "positive"
+    },
+    {
+      "id": "absent-holdout-0",
+      "query": "Who chairs the board?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-1",
+      "query": "What is the customer count?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-2",
+      "query": "State the share price.",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-3",
+      "query": "What dividend was paid?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-4",
+      "query": "Where is the London branch?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-5",
+      "query": "What is the pension contribution?",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-6",
+      "query": "Give the insurance premium.",
+      "relevant": [],
+      "category": "absence"
+    },
+    {
+      "id": "absent-holdout-7",
+      "query": "What is the product revenue?",
+      "relevant": [],
+      "category": "absence"
+    }
+  ]
+}

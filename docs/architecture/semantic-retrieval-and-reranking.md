@@ -42,3 +42,15 @@ The 2026-07-28 corpus showed that semantic fusion improved Recall@5, but direct
 cross-encoder replacement of the fused score harmed top-rank quality. Accordingly the
 architecture keeps both features disabled by default; live availability is not itself a
 quality rollout decision.
+
+## Calibrated policy
+
+Intent controls diversity, reranking and sufficiency without rewriting entities or
+scope. Fusion remains `.45` lexical/`.55` semantic. Cross-encoder scores contribute
+`.25` to a blended score; they never replace fused evidence. Absence and ambiguous
+intents skip reranking, a margin below `.08` preserves fusion, and failures use the same
+fused fallback. Diagnostics expose policy state but no vectors.
+
+The evidence layer requires typed sufficiency and claim-to-span support. Sensitive
+numeric labels must match the requested concept, composite answers require distinct
+sources, and low-quality evidence cannot become sufficient solely from similarity.

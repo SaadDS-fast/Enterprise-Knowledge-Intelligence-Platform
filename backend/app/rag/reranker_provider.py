@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from app.core.config import LocalInferenceProvider, settings
+from app.rag.query_intent import QueryIntent
 from app.rag.reranker import rerank_score
 
 ALLOWED_RERANKERS: dict[str, tuple[str, str]] = {
@@ -20,6 +21,7 @@ class RerankResult:
     used: bool
     fallback_used: bool
     version: str
+    policy: str
 
 
 class LocalCrossEncoder:
@@ -69,29 +71,45 @@ def configured_reranker() -> LocalCrossEncoder | None:
     return LocalCrossEncoder(settings.reranker_model.strip().lower())
 
 
-async def rerank(query: str, contents: list[str], fused_scores: list[float]) -> RerankResult:
+async def rerank(
+    query: str,
+    contents: list[str],
+    fused_scores: list[float],
+    intent: QueryIntent = QueryIntent.FACT,
+) -> RerankResult:
     if not settings.reranker_enabled:
         scores = [
             rerank_score(query, content, score)
             for content, score in zip(contents, fused_scores, strict=True)
         ]
-        return RerankResult(scores, False, False, "lexical-calibrator-v1")
+        return RerankResult(scores, False, False, "lexical-calibrator-v1", "disabled")
     if settings.reranker_provider is LocalInferenceProvider.DETERMINISTIC:
         scores = [
             rerank_score(query, content, score)
             for content, score in zip(contents, fused_scores, strict=True)
         ]
-        return RerankResult(scores, True, False, "deterministic-reranker-v1")
+        return RerankResult(scores, True, False, "deterministic-reranker-v1", "deterministic")
+    if intent in {QueryIntent.AMBIGUOUS, QueryIntent.KNOWLEDGE_ABSENCE_PROBE}:
+        return RerankResult(fused_scores, False, False, "fused-policy-v1", "intent_skipped")
     try:
         model = configured_reranker()
         if model is None:
             raise RuntimeError("Configured reranker is unavailable")
         scores = await model.score(query, contents)
-        return RerankResult(scores, True, False, model.version)
+        if len(scores) > 1:
+            ordered = sorted(scores, reverse=True)
+            if ordered[0] - ordered[1] < settings.reranker_min_margin:
+                return RerankResult(fused_scores, False, True, model.version, "low_margin_fused")
+        weight = settings.reranker_blend_weight
+        blended = [
+            (1.0 - weight) * fused + weight * cross
+            for fused, cross in zip(fused_scores, scores, strict=True)
+        ]
+        return RerankResult(blended, True, False, model.version, "blended")
     except (RuntimeError, TimeoutError, ValueError):
         if not settings.reranker_fallback_enabled:
             raise
-        return RerankResult(fused_scores, False, True, "fused-fallback-v1")
+        return RerankResult(fused_scores, False, True, "fused-fallback-v1", "unavailable_fused")
 
 
 def _minmax(values: list[float]) -> list[float]:

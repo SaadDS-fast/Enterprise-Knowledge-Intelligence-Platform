@@ -182,6 +182,8 @@ class Settings(BaseSettings):
     reranker_device: str = "cpu"
     reranker_timeout_seconds: float = Field(default=15.0, gt=0, le=120)
     reranker_fallback_enabled: bool = True
+    reranker_blend_weight: float = Field(default=0.25, ge=0.0, le=0.5)
+    reranker_min_margin: float = Field(default=0.08, ge=0.0, le=1.0)
     chunk_size: int = Field(default=900, ge=100, le=5000)
     chunk_overlap: int = Field(default=120, ge=0, le=1000)
     retrieval_top_k: int = Field(default=20, ge=1, le=100)

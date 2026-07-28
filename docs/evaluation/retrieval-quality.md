@@ -38,3 +38,19 @@ Citation precision/recall were .8000/.8889, support .8750, unsupported claims .2
 recovery 1.0000, and isolation 1.0000 in every mode. Absence accuracy was .0000.
 Semantic Recall@5 improved over lexical, but the cross-encoder harmed Recall@1/MRR;
 therefore the release status is partial and no blanket improvement is claimed.
+
+## Calibration benchmark v1
+
+Development contains 60 queries; holdout contains 40 and was executed once after
+freezing `.45/.55` fusion, `.25` reranker blend, `.08` margin, top-N 20 and return-K 8.
+
+| Holdout mode | R@1 | R@3 | R@5 | MRR | nDCG@5 |
+|---|---:|---:|---:|---:|---:|
+| Lexical | .6562 | .8438 | .8750 | .7714 | .7880 |
+| Semantic hybrid | .7812 | .8750 | 1.0000 | .8594 | .8942 |
+| Calibrated reranker | .9375 | .9688 | .9688 | .9570 | .9572 |
+
+Calibrated citation precision/recall were `1.0000/.9688`, support `.9375`,
+unsupported claims `.0000`, absence `1.0000`, recovery `.9688`, and isolation `1.0000`.
+Because Recall@5 and support missed acceptance, status is partial. The consumed holdout
+must not be used for further tuning.

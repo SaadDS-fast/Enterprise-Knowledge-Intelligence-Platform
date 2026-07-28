@@ -213,3 +213,21 @@ required.
   passed 1; feature-enabled responsive agent checks passed 3.
 - Docker config/build/up/health and Alembic upgrade/check passed. Semantic and reranker
   defaults were restored disabled.
+
+## Phase 2 retrieval calibration — 2026-07-28
+
+Overall: **PARTIAL PASS**. A 60-query development set selected the frozen configuration;
+the separate 40-query holdout was executed once and was not used for retuning.
+
+Holdout calibrated reranker: Recall@1/.3/.5 `.9375/.9688/.9688`, MRR `.9570`,
+nDCG@5 `.9572`, citation precision/recall `1.0000/.9688`, answer support `.9375`,
+unsupported claims `.0000`, absence `1.0000`, recovery `.9688`, and isolation `1.0000`.
+Recall@5 missed the `.98` target and answer support missed `.95`; all other targets
+passed. Materials deformation ranked first in 9/10 holdout variants, including the
+required query. Revenue probes abstained without budget citations.
+
+Frozen weights are lexical `.45`, semantic `.55`, reranker blend `.25`, minimum margin
+`.08`, top-N `20`, return-K `8`. Cross-encoder output is blended rather than replacing
+fusion; ambiguous/absence intents skip it and low-margin/unavailable calls preserve
+fusion. Cold load was 4809.475 ms embedding and 180.344 ms reranker; peak RSS was about
+535.406 MiB.

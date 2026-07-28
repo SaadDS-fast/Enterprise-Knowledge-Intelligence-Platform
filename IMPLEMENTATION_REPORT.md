@@ -236,3 +236,17 @@ The implementation is operationally complete but quality status remains partial:
 semantic fusion recovered one Recall@5 miss; the uncalibrated raw cross-encoder harmed
 top-rank quality on the materials query, and the absent-revenue case did not abstain.
 No thresholds were changed to conceal those outcomes.
+
+## Phase 2 calibration implementation
+
+The shared retriever now classifies deterministic query intent, emits safe reranking
+policy diagnostics, and uses bounded blended reranking. Typed sufficiency decisions are
+`SUFFICIENT_DIRECT`, `SUFFICIENT_COMPOSITE`, `RETRIEVAL_RETRY_REQUIRED`,
+`RETRIEVAL_FAILURE_UNRESOLVED`, `KNOWLEDGE_ABSENT`, `AMBIGUOUS_QUERY`, and
+`LOW_QUALITY_SOURCE`.
+
+Numeric fact extraction preserves terminology: revenue cannot be supported by budget,
+nor allowance by an unrelated amount. Answer citations select the matched supporting
+span and identify the supported claim instead of returning five chunk prefixes.
+Search remains the shared service consumed by controlled Agent, Evaluation, and
+Research.

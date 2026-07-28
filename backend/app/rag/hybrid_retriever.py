@@ -14,6 +14,7 @@ from app.rag.bm25 import bm25_scores
 from app.rag.embeddings import cosine_similarity
 from app.rag.evidence import ATTRIBUTE_LABELS, requested_attribute
 from app.rag.fusion import weighted_fusion
+from app.rag.query_intent import classify_query_intent
 from app.rag.reranker_provider import rerank
 from app.rag.semantic_provider import embed_with_fallback
 
@@ -43,6 +44,7 @@ async def retrieve(
 ) -> list[RetrievedEvidence]:
     started = time.perf_counter()
     normalized_query = _normalize_query(query)
+    intent = classify_query_intent(normalized_query)
     latest_version = (
         select(func.max(DocumentVersion.version_number))
         .where(DocumentVersion.document_id == Document.id)
@@ -130,6 +132,7 @@ async def retrieve(
         normalized_query,
         [item.chunk.content for item in candidates],
         [item.fused for item in candidates],
+        intent,
     )
     scored = list(zip(candidates, reranked.scores, strict=True))
     scored.sort(key=lambda item: item[1], reverse=True)
@@ -165,6 +168,14 @@ async def retrieve(
                     "retrieval_duration_ms": duration_ms,
                     "embedding_version": provider.identity.version,
                     "reranker_version": reranked.version,
+                    "query_intent": intent.value,
+                    "reranker_policy": reranked.policy,
+                    "reranker_applied": reranked.used,
+                    "reranker_skipped": not reranked.used and not reranked.fallback_used,
+                    "reranker_low_margin_fallback": reranked.policy == "low_margin_fused",
+                    "fused_rank_preserved": reranked.policy
+                    in {"low_margin_fused", "intent_skipped", "unavailable_fused"},
+                    "blended_reranking_used": reranked.policy == "blended",
                     "lexical_rank": candidate.lexical_rank,
                     "lexical_score": round(candidate.lexical, 6),
                     "semantic_rank": candidate.semantic_rank

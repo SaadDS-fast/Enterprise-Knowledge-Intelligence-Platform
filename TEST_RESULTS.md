@@ -140,3 +140,14 @@ Regression totals: backend 155 passed/4 skipped with 76% coverage; frontend 28/2
 Bandit zero findings; pip-audit no known vulnerabilities; npm production audit zero.
 Docker builds, health, Alembic upgrade and drift check passed. A first Chromium launch
 was denied by the macOS sandbox and passed on the permitted retry.
+
+## Phase 2 calibration tests
+
+- Benchmark: 60 development queries and 40 untouched holdout queries.
+- Backend: 158 passed, 4 expected skips; 77% coverage.
+- Frontend: 28 passed; lint had zero errors/one existing warning; typecheck and build
+  passed.
+- Ruff, compileall, Bandit, pip-audit and npm production audit passed.
+- New deterministic coverage includes intent classification, revenue/budget hard
+  negative, low-quality rejection and incomplete composite rejection.
+- Safe aggregate output: `docs/evaluation/phase2-calibration-results.json`.

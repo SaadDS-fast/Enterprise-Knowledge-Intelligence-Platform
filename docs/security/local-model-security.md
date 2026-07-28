@@ -33,3 +33,8 @@ The dependency audit initially identified advisories in transformers 4.57.6. The
 optional stack was moved to transformers 5.14.1 and sentence-transformers 5.6.1; the
 final pip-audit reported no known vulnerabilities (the private project package itself is
 not published on PyPI and was skipped).
+
+Calibration adds no remote provider or user-selected model. Intent and sufficiency are
+deterministic enums. Reranker diagnostics expose only applied/skipped/fallback policy,
+and focused citations contain supporting text already authorized for the response.
+Tenant, workspace and selected-document predicates still execute before model scoring.
