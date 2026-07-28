@@ -38,3 +38,8 @@ Calibration adds no remote provider or user-selected model. Intent and sufficien
 deterministic enums. Reranker diagnostics expose only applied/skipped/fallback policy,
 and focused citations contain supporting text already authorized for the response.
 Tenant, workspace and selected-document predicates still execute before model scoring.
+
+Acceptance tests additionally isolate organizations, workspaces, users, document names,
+PostgreSQL data, Redis state, and object-storage data. Cleanup targets only the named
+acceptance Compose project and deletes its disposable volumes. No model cache is mounted
+into or deleted with those volumes.

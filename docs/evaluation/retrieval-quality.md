@@ -54,3 +54,21 @@ Calibrated citation precision/recall were `1.0000/.9688`, support `.9375`,
 unsupported claims `.0000`, absence `1.0000`, recovery `.9688`, and isolation `1.0000`.
 Because Recall@5 and support missed acceptance, status is partial. The consumed holdout
 must not be used for further tuning.
+
+## Blind holdout v2
+
+The v2 fixture contains 120 new queries across 15 equally sized categories and has
+SHA-256 `16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807`.
+It was pre-registered at execution count zero and executed once with the unchanged
+frozen configuration.
+
+| Mode | R@1 | R@3 | R@5 | MRR | nDCG@5 |
+|---|---:|---:|---:|---:|---:|
+| Lexical | .6667 | .7604 | .7604 | .7392 | .7258 |
+| Semantic hybrid | .7500 | .8750 | .9792 | .8325 | .8664 |
+| Calibrated reranker | .8854 | .9688 | .9792 | .9274 | .9384 |
+
+Metrics use 96 positive retrieval queries. Absence and isolation each use 8 cases and
+scored 1.0. Citation precision/recall and support are `.8854/.9688/.8854`;
+unsupported claims are zero. Results fail final acceptance and the fixture is now
+consumed.

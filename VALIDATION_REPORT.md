@@ -231,3 +231,25 @@ Frozen weights are lexical `.45`, semantic `.55`, reranker blend `.25`, minimum 
 fusion; ambiguous/absence intents skip it and low-margin/unavailable calls preserve
 fusion. Cold load was 4809.475 ms embedding and 180.344 ms reranker; peak RSS was about
 535.406 MiB.
+
+## Final Phase 2 acceptance closure — 2026-07-28
+
+Status: **BLOCKED / PARTIAL PASS** on the new blind quality gate. The frozen calibration
+was unchanged. A new 120-query fixture was pre-registered with SHA-256
+`16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807`,
+then executed exactly once. It did not reuse the consumed 40-query holdout.
+
+Calibrated results over 96 positive retrieval queries were Recall@1/3/5
+`.8854/.9688/.9792`, MRR `.9274`, nDCG@5 `.9384`, citation precision/recall
+`.8854/.9688`, answer support `.8854`, and unsupported claims `.0000`. Eight absence
+and eight tenant-isolation cases each scored `1.0000`. Recovery-at-3 was `.9688`
+over the same 96 positive queries; 40 were explicitly marked recovery cases.
+Elasticity hard negatives ranked first in 6/8 cases.
+
+Operational closure passed: backend tests use unique tenant/workspace identities;
+browser documents use exact run-scoped names; a dedicated Compose project used
+disposable PostgreSQL, Redis, and MinIO volumes. Default Chromium passed 1 with 5 gates;
+feature-enabled Chromium passed 5 with 1 live gate. The full backend suite passed
+158/158 with 4 expected skips and 76% coverage. Docker builds, Alembic upgrade/check,
+Bandit, pip-audit, and npm audit passed. Disposable containers, network, and volumes
+were removed after validation.

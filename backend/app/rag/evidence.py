@@ -90,7 +90,15 @@ ATTRIBUTE_SYNONYMS: dict[RequestedAttribute, set[str]] = {
     RequestedAttribute.TOPIC: {"topic", "about", "covered", "covers", "subject"},
     RequestedAttribute.DEFINITION: {"definition", "define", "meaning", "what"},
     RequestedAttribute.OWNER: {"owner", "owns", "owned", "responsible", "accountable"},
-    RequestedAttribute.DATE: {"when", "date", "launched", "started", "began", "deadline"},
+    RequestedAttribute.DATE: {
+        "when",
+        "date",
+        "launch",
+        "launched",
+        "started",
+        "began",
+        "deadline",
+    },
     RequestedAttribute.NUMERIC: {"budget", "cost", "amount", "revenue", "allowance", "number"},
     RequestedAttribute.STATUS: {"status", "state", "approved", "enabled", "disabled"},
     RequestedAttribute.LOCATION: {"where", "location", "office", "region"},
@@ -114,7 +122,7 @@ def requested_attribute(query: str) -> RequestedAttribute:
         return RequestedAttribute.TOPIC
     if terms & {"owner", "owns", "owned", "responsible", "accountable"}:
         return RequestedAttribute.OWNER
-    if terms & {"when", "date", "launched", "started", "began", "deadline"}:
+    if terms & {"when", "date", "launch", "launched", "started", "began", "deadline"}:
         return RequestedAttribute.DATE
     if terms & {"budget", "cost", "amount", "revenue", "allowance"}:
         return RequestedAttribute.NUMERIC

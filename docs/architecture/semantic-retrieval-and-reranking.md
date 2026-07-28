@@ -54,3 +54,8 @@ fused fallback. Diagnostics expose policy state but no vectors.
 The evidence layer requires typed sufficiency and claim-to-span support. Sensitive
 numeric labels must match the requested concept, composite answers require distinct
 sources, and low-quality evidence cannot become sufficient solely from similarity.
+
+Acceptance environments use independently scoped tenants/workspaces and a dedicated
+Compose project. Test isolation is part of retrieval correctness: stale authorized
+documents can distort rankings without violating SQL tenant predicates, so fixed test
+identities and fuzzy document lookup are prohibited.

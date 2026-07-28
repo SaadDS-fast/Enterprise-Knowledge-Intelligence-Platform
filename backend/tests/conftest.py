@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+from uuid import uuid4
 
 os.environ.update(
     {
@@ -44,21 +45,18 @@ def client():
 
 @pytest.fixture()
 def auth_headers(client):
+    run = uuid4().hex
     response = client.post(
         "/api/v1/auth/register",
         json={
-            "email": "engineer@example.com",
+            "email": f"engineer-{run}@example.com",
             "full_name": "AI Engineer",
             "password": "correct-horse-battery-staple",
-            "organization_name": "Example",
-            "workspace_name": "General",
+            "organization_name": f"Example {run}",
+            "workspace_name": f"General {run}",
         },
     )
-    if response.status_code == 409:
-        response = client.post(
-            "/api/v1/auth/login",
-            json={"email": "engineer@example.com", "password": "correct-horse-battery-staple"},
-        )
+    assert response.status_code == 201
     payload = response.json()
     return {
         "Authorization": f"Bearer {payload['access_token']}",

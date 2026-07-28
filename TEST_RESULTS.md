@@ -151,3 +151,19 @@ was denied by the macOS sandbox and passed on the permitted retry.
 - New deterministic coverage includes intent classification, revenue/budget hard
   negative, low-quality rejection and incomplete composite rejection.
 - Safe aggregate output: `docs/evaluation/phase2-calibration-results.json`.
+
+## Blind acceptance closure
+
+- Pre-registered blind fixture: 120 queries, 15 categories × 8.
+- Fixture checksum:
+  `16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807`.
+- Execution count: exactly 1.
+- Denominators: 120 total, 96 positive retrieval, 8 absence, 8 isolation, 8 hard
+  negative; recovery metric evaluated all 96 positives, of which 40 were marked
+  recovery.
+- Backend: 158 passed, 4 gated; coverage 76%.
+- Frontend: 28 passed; lint/typecheck/build passed.
+- Playwright isolated default: 1 passed/5 gated. Isolated agent profile:
+  5 passed/1 gated.
+- Docker isolated build/up, Alembic upgrade/check, Bandit, pip-audit and npm audit
+  passed. The isolated project and volumes were deleted.

@@ -102,3 +102,12 @@ from until an authorized OCR-capable future pipeline reprocesses them. See
   consumed set.
 - The synthetic benchmark contains 12 documents and 100 queries. It is broader than the
   live smoke corpus but is not a substitute for an approved domain-specific evaluation.
+
+## Blind acceptance blocker
+
+The new 120-query blind holdout failed final quality acceptance without calibration
+changes: Recall@1 `.8854`, nDCG@5 `.9384`, citation precision `.8854`, and answer support
+`.8854` remain below targets. Recall@5 was `.9792`, narrowly below `.98`. Only 6/8
+elasticity hard negatives ranked first. The fixture is consumed and must not be used for
+tuning; further work requires development-only changes followed by another newly
+pre-registered holdout.

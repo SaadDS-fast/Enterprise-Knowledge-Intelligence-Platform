@@ -250,3 +250,14 @@ nor allowance by an unrelated amount. Answer citations select the matched suppor
 span and identify the supported claim instead of returning five chunk prefixes.
 Search remains the shared service consumed by controlled Agent, Evaluation, and
 Research.
+
+## Acceptance isolation
+
+Backend authentication fixtures now register a unique organization, workspace, user,
+and token per test instead of sharing a session workspace. This exposed and fixed a
+real date-conflict bug: `launch` is now recognized alongside `launched`.
+
+Chromium uploads use a run-scoped filename and exact document lookup. The acceptance
+Compose override publishes non-conflicting ports under a dedicated project; project
+names scope all database, cache, and object-storage volumes so cleanup can delete only
+acceptance data.

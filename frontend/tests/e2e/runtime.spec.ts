@@ -29,7 +29,7 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
   const run = Date.now().toString(36);
   const emailA = `e2e-a-${run}@validation.localhost.com`;
   const emailB = `e2e-b-${run}@validation.localhost.com`;
-  const title = `E2E Project Atlas ${run}`;
+  const filename = `project-atlas-e2e-${run}.txt`;
   const createdDocumentIds: string[] = [];
 
   await page.goto("/login");
@@ -52,7 +52,7 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
   await page.getByTestId("nav-documents").click();
   await expect(page).toHaveURL(/\/documents$/);
   await page.getByTestId("document-file-input").setInputFiles({
-    name: "project-atlas-e2e.txt",
+    name: filename,
     mimeType: "text/plain",
     buffer: Buffer.from(
       [
@@ -72,14 +72,14 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
         page,
         "/documents",
       );
-      const doc = docs.find((item) => item.title === "project-atlas-e2e" || item.title === title);
+      const doc = docs.find((item) => item.title === filename.replace(/\.txt$/, ""));
       if (doc && !createdDocumentIds.includes(doc.id)) createdDocumentIds.push(doc.id);
       return doc?.status ?? "missing";
     }, { timeout: 30_000 })
     .toBe("ready");
 
   await page.reload();
-  await expect(page.getByTestId("document-row").filter({ hasText: "project-atlas-e2e" })).toContainText("ready");
+  await expect(page.getByTestId("document-row").filter({ hasText: filename.replace(/\.txt$/, "") })).toContainText("ready");
 
   await page.getByTestId("nav-search").click();
   await page.getByTestId("search-query").fill("When was Project Atlas launched and who owns it?");
