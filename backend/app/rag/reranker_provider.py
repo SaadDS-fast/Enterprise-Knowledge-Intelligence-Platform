@@ -39,7 +39,7 @@ class LocalCrossEncoder:
                     self.model_id,
                     device="cpu",
                     max_length=settings.reranker_max_length,
-                    local_files_only=settings.is_production,
+                    local_files_only=True,
                 )
             except Exception as exc:
                 raise RuntimeError("Local reranker model is unavailable") from exc

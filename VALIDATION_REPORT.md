@@ -183,3 +183,33 @@ model was downloaded.
   RSS 70.92 MiB. This is not a live semantic benchmark.
 - Live Recall@1/3/5, MRR, nDCG@5, citation precision/recall, model load time, and semantic
   latency are N/A. Metric/contract fixtures passed; no quality improvement is claimed.
+
+## Phase 2 live-model completion — 2026-07-28
+
+Overall: **PARTIAL PASS**. The live models, offline execution, re-index integrity,
+fallbacks, isolation, browser UI, and regressions passed. Quality is not a full pass:
+semantic hybrid improved Recall@5 from 0.9375 to 1.0000, but the raw cross-encoder
+reduced Recall@1 from 0.9375 to 0.8125 and MRR from 1.0000 to 0.9375. All four modes
+scored 0.0000 on the deliberately absent-revenue case, so abstention calibration remains
+required.
+
+- Embedding: `all-minilm-l6-v2` →
+  `sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions, `st-v1`.
+- Reranker: `ms-marco-minilm-l-6-v2` →
+  `cross-encoder/ms-marco-MiniLM-L-6-v2`, `ce-v1`.
+- Packages: sentence-transformers 5.6.1, transformers 5.14.1,
+  huggingface-hub 1.25.1, torch 2.13.0.
+- Offline cache-only inference passed for both models. No runtime download or remote
+  inference endpoint was used.
+- Re-index passed with one live 384-dimensional vector per active chunk, zero
+  deterministic vectors, zero duplicate ordinals, obsolete metadata detection, tenant
+  isolation, selected-document scope, and idempotent-key replay.
+- Cold embedding load plus 12-document batch: 4611.192 ms; warm query: 6.574 ms;
+  warm document batch: 15.672 ms. Cold reranker plus four candidates: 152.546 ms;
+  warm batch: 18.272 ms. Benchmark process peak RSS: about 559.812 MiB.
+- Backend: 155 passed, 4 expected skips, 76% coverage; Ruff, compileall, Bandit and
+  pip-audit passed. Frontend: 28 tests, lint/typecheck/build passed; npm audit found
+  zero vulnerabilities. Default Playwright passed 1 with 5 gates; live-model browser
+  passed 1; feature-enabled responsive agent checks passed 3.
+- Docker config/build/up/health and Alembic upgrade/check passed. Semantic and reranker
+  defaults were restored disabled.

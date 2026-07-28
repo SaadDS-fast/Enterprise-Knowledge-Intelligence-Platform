@@ -19,3 +19,17 @@ Provider errors are reduced to safe availability categories. Metrics and API dia
 contain timing, counts, booleans, and version aliases, but no document content,
 embeddings, secrets, hidden reasoning, raw exception messages, or remote addresses.
 Lexical retrieval remains available during local model failure when fallback is enabled.
+
+## Live security validation
+
+Explicit provisioning resolved only the fixed allowlist identifiers. Both providers then
+passed enforced offline/cache-only inference. Missing caches, an invalid operator alias,
+embedding timeout, reranker timeout/unavailability, and incompatible dimension were
+tested: requests used deterministic/lexical or fused-score fallback as configured, while
+dimension mismatch was rejected before vector comparison. Diagnostics contained no
+cache paths, vector values, document bodies, credentials, or raw internal exceptions.
+
+The dependency audit initially identified advisories in transformers 4.57.6. The
+optional stack was moved to transformers 5.14.1 and sentence-transformers 5.6.1; the
+final pip-audit reported no known vulnerabilities (the private project package itself is
+not published on PyPI and was skipped).

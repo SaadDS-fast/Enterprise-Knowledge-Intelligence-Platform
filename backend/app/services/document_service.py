@@ -12,6 +12,7 @@ from app.integrations.storage import get_storage
 from app.integrations.storage.keys import document_object_key
 from app.jobs.status import JobStatus
 from app.observability.metrics import INGESTION_SUBMITTED
+from app.rag.semantic_provider import embedding_metadata_is_current
 from app.security.file_validation import validate_file
 from app.security.malware_scan import scan_bytes
 from app.utils.hashing import hash_bytes, hash_text
@@ -109,12 +110,7 @@ def document_summary(document: Document) -> dict:
         "pipeline_version": current,
         "latest_pipeline_version": LATEST_PIPELINE.as_dict(),
         "reprocessing_recommended": bool(
-            version
-            and (
-                not is_current(metadata)
-                or metadata.get("embedding_version") is None
-                or metadata.get("embedding_dimension") is None
-            )
+            version and (not is_current(metadata) or not embedding_metadata_is_current(metadata))
         ),
         "processing_progress": "processing" if document.status == "processing" else None,
         "error_category": metadata.get("error_category"),

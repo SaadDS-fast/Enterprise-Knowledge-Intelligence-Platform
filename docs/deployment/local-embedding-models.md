@@ -37,3 +37,23 @@ directly on the host uses its own local cache.
 Model caches belong outside Git. If a model is missing, lexical/deterministic fallback
 keeps retrieval available when fallback is enabled. No network connection is required
 during provisioned inference.
+
+## Validated provisioning recipe
+
+Use a dedicated operator cache outside the checkout (for example,
+`$XDG_CACHE_HOME/ekip-models`; do not place it in Git):
+
+```bash
+cd backend
+.venv/bin/pip install '.[semantic]'
+HF_HOME=/operator/cache/ekip-models HF_HUB_DISABLE_XET=1 .venv/bin/python -c \
+  "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
+```
+
+The validated package set was sentence-transformers 5.6.1, transformers 5.14.1,
+huggingface-hub 1.25.1, and torch 2.13.0. Validate cache-only operation with
+`HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`. Runtime loaders always request local files;
+missing cache entries fall back safely and do not trigger downloads. Host-direct
+backend/worker connectivity was validated; container deployments must bind the same
+cache read-only into every model-using process. Re-index after any provider, alias,
+dimension, or embedding-version change.

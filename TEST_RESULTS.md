@@ -118,3 +118,25 @@ Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
   services were healthy after restart.
 - Alembic upgrade and drift check passed.
 - Live local model: unavailable, not downloaded, result `PARTIAL`.
+
+## Phase 2 live-model test results — 2026-07-28
+
+The opt-in live tests passed cache-only with network-offline flags. The 14-document,
+9-query safe corpus produced:
+
+| Mode | Recall@1/3/5 | MRR | nDCG@5 | Avg / p50 / p95 ms |
+|---|---|---:|---:|---:|
+| Lexical | .9375 / .9375 / .9375 | 1.0000 | .9516 | .196 / .187 / .291 |
+| Deterministic hybrid | .9375 / .9375 / 1.0000 | 1.0000 | .9813 | .289 / .288 / .312 |
+| Live semantic hybrid | .9375 / .9375 / 1.0000 | 1.0000 | .9813 | 7.743 / 7.530 / 9.439 |
+| Live semantic + reranker | .8125 / 1.0000 / 1.0000 | .9375 | .9539 | 17.621 / 16.817 / 21.100 |
+
+Every mode measured citation precision .8000, citation recall .8889, answer support
+.8750, unsupported-claim rate .2222, recovery 1.0000, tenant isolation 1.0000, and
+knowledge-absence accuracy .0000. Raw safe results are in
+`docs/evaluation/phase2-live-results.json`; re-index and failure matrices are adjacent.
+
+Regression totals: backend 155 passed/4 skipped with 76% coverage; frontend 28/28;
+Bandit zero findings; pip-audit no known vulnerabilities; npm production audit zero.
+Docker builds, health, Alembic upgrade and drift check passed. A first Chromium launch
+was denied by the macOS sandbox and passed on the permitted retry.

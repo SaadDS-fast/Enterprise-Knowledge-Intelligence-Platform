@@ -169,6 +169,7 @@ class Settings(BaseSettings):
     semantic_embedding_normalize: bool = True
     semantic_embedding_fallback_enabled: bool = True
     semantic_embedding_max_retries: int = Field(default=2, ge=0, le=5)
+    semantic_embedding_timeout_seconds: float = Field(default=30.0, gt=0, le=120)
     hybrid_lexical_weight: float = Field(default=0.45, ge=0.0, le=1.0)
     hybrid_semantic_weight: float = Field(default=0.55, ge=0.0, le=1.0)
     reranker_enabled: bool = False

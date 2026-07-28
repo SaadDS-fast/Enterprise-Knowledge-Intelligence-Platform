@@ -1,0 +1,25 @@
+{
+  "incompatible_dimension": {
+    "rejected": true,
+    "sanitized_error": "Configured semantic embedding dimension does not match model"
+  },
+  "invalid_operator_alias": {
+    "fallback_provider": "deterministic",
+    "sanitized": true
+  },
+  "missing_embedding_cache": {
+    "fallback_used": true,
+    "provider": "deterministic",
+    "request_completed": true,
+    "version": "deterministic-hash-v1"
+  },
+  "missing_reranker_cache": {
+    "fallback_used": true,
+    "ranking_preserved": true,
+    "request_completed": true,
+    "used": false,
+    "version": "fused-fallback-v1"
+  },
+  "paths_exposed": false,
+  "vectors_exposed": false
+}

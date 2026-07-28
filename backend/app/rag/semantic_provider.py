@@ -128,12 +128,15 @@ class LocalSentenceTransformerProvider:
         output: list[list[float]] = []
         for start in range(0, len(bounded), settings.semantic_embedding_batch_size):
             batch = bounded[start : start + settings.semantic_embedding_batch_size]
-            encoded = await asyncio.to_thread(
-                self._load().encode,
-                batch,
-                batch_size=settings.semantic_embedding_batch_size,
-                normalize_embeddings=settings.semantic_embedding_normalize,
-                show_progress_bar=False,
+            encoded = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self._load().encode,
+                    batch,
+                    batch_size=settings.semantic_embedding_batch_size,
+                    normalize_embeddings=settings.semantic_embedding_normalize,
+                    show_progress_bar=False,
+                ),
+                timeout=settings.semantic_embedding_timeout_seconds,
             )
             output.extend(row.tolist() for row in encoded)
         return output
@@ -154,6 +157,17 @@ class LocalSentenceTransformerProvider:
 def _bounded_text(text: str) -> str:
     # A character bound is enforced before the tokenizer's model-specific token bound.
     return " ".join(text.split())[: settings.semantic_embedding_max_length * 8]
+
+
+def embedding_metadata_is_current(metadata: dict | None) -> bool:
+    values = metadata or {}
+    identity = configured_embedding_provider().identity
+    return (
+        values.get("embedding_provider") == identity.provider
+        and values.get("embedding_model") == identity.model_alias
+        and values.get("embedding_dimension") == identity.dimension
+        and values.get("embedding_version") == identity.version
+    )
 
 
 @lru_cache(maxsize=1)
@@ -181,7 +195,7 @@ async def embed_with_fallback(
                 provider,
                 isinstance(provider, DeterministicEmbeddingProvider) and provider.fallback,
             )
-        except RuntimeError:
+        except (RuntimeError, TimeoutError):
             if attempt < settings.semantic_embedding_max_retries:
                 await asyncio.sleep(0.05 * (attempt + 1))
     if not settings.semantic_embedding_fallback_enabled:

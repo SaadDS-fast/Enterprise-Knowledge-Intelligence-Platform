@@ -29,3 +29,16 @@ vectors. Documents lacking current vector metadata are reported as requiring re-
 Safe diagnostics expose ranks and scores, boosts, scope, timing, versions, and fallback
 state. Raw embeddings, model paths, document content, and model internals are never
 returned as diagnostics.
+
+## Live validation
+
+The validated local identities are `all-minilm-l6-v2`/`st-v1` at 384 dimensions and
+`ms-marco-minilm-l-6-v2`/`ce-v1`. Both lazy singletons loaded and ran from an
+operator-provisioned cache with offline enforcement. The re-index path produced exactly
+one compatible live vector for every active chunk and did not mix
+`deterministic-hash-v1`.
+
+The 2026-07-28 corpus showed that semantic fusion improved Recall@5, but direct
+cross-encoder replacement of the fused score harmed top-rank quality. Accordingly the
+architecture keeps both features disabled by default; live availability is not itself a
+quality rollout decision.

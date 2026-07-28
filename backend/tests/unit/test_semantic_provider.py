@@ -6,6 +6,8 @@ from app.rag.semantic_provider import (
     DETERMINISTIC_VERSION,
     DeterministicEmbeddingProvider,
     LocalSentenceTransformerProvider,
+    embed_with_fallback,
+    embedding_metadata_is_current,
 )
 
 
@@ -35,3 +37,41 @@ def test_local_model_dimension_must_match_index(monkeypatch):
     monkeypatch.setattr("app.rag.semantic_provider.settings.semantic_embedding_dimension", 768)
     with pytest.raises(ValueError, match="dimension"):
         LocalSentenceTransformerProvider("all-minilm-l6-v2")
+
+
+def test_obsolete_embedding_metadata_is_detected():
+    current = DeterministicEmbeddingProvider().identity
+    assert embedding_metadata_is_current(
+        {
+            "embedding_provider": current.provider,
+            "embedding_model": current.model_alias,
+            "embedding_dimension": current.dimension,
+            "embedding_version": current.version,
+        }
+    )
+    assert not embedding_metadata_is_current(
+        {
+            "embedding_provider": "local",
+            "embedding_model": "all-minilm-l6-v2",
+            "embedding_dimension": 384,
+            "embedding_version": "st-v1",
+        }
+    )
+
+
+@pytest.mark.asyncio
+async def test_embedding_timeout_uses_deterministic_fallback(monkeypatch):
+    class TimedOutProvider:
+        identity = DeterministicEmbeddingProvider().identity
+
+        async def embed(self, texts):
+            raise TimeoutError
+
+    monkeypatch.setattr(
+        "app.rag.semantic_provider.configured_embedding_provider",
+        lambda: TimedOutProvider(),
+    )
+    vectors, provider, fallback_used = await embed_with_fallback(["bounded query"])
+    assert len(vectors) == 1
+    assert provider.identity.version == DETERMINISTIC_VERSION
+    assert fallback_used is True

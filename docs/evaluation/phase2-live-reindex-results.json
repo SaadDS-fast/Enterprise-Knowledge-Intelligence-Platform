@@ -1,0 +1,31 @@
+{
+  "obsolete_version_marked": true,
+  "reindex": {
+    "chunks": 1,
+    "deterministic_vectors": 0,
+    "distinct_ordinals": 1,
+    "duplicate_chunks": 0,
+    "first_job_completed": true,
+    "idempotent_replay": true,
+    "live_vectors": 1,
+    "max_dimension": 384,
+    "min_dimension": 384
+  },
+  "selected_document_scope": {
+    "all_evidence_authorized": true,
+    "candidate_count": 1,
+    "embedding_version": "st-v1",
+    "fallback_used": false,
+    "final_evidence_count": 1,
+    "requested_document_count": 1,
+    "reranker_used": true,
+    "reranker_version": "ce-v1",
+    "returned_document_count": 1,
+    "semantic_used": true
+  },
+  "tenant_isolation": {
+    "tenant_a_document_count": 2,
+    "tenant_b_document_count": 1,
+    "tenant_b_only": true
+  }
+}

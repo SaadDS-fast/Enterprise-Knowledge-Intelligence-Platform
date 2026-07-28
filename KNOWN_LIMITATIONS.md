@@ -76,3 +76,18 @@ from until an authorized OCR-capable future pipeline reprocesses them. See
   not representative of sentence-transformer resource use.
 - Next is evidence/conflict calibration; Ollama is a later separate phase and was not
   used here.
+
+### Live findings
+
+- Live measurements supersede the earlier “unmeasured” note: embedding cold load plus
+  corpus batch was 4611.192 ms, reranker cold load plus four candidates was 152.546 ms,
+  and benchmark peak RSS was approximately 559.812 MiB on the validation host.
+- The raw `ms-marco-minilm-l-6-v2` cross-encoder reduced Recall@1 to .8125 and MRR to
+  .9375 versus .9375/1.0000 for live semantic fusion. It confused the composite-wire
+  deformation query with a physics displacement item. Production enablement needs
+  domain calibration or a guarded blending policy.
+- Knowledge-absence accuracy was 0 on the one absent-revenue query in every mode.
+  Evidence sufficiency/abstention thresholds require calibration on a larger absence
+  set before quality can be declared complete.
+- The corpus is intentionally small (14 documents, 9 queries); the latency and memory
+  figures are validation-host observations, not capacity guarantees.

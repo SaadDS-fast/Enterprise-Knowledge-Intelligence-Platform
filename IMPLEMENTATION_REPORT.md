@@ -218,3 +218,21 @@ Runtime probes passed:
 Live model validation is `PARTIAL`: neither the optional package nor a provisioned model
 cache existed, and no download was attempted. Tests used the deterministic
 384-dimensional provider (`deterministic-hash-v1`).
+
+### Live completion
+
+Operators explicitly provisioned the two fixed allowlist identifiers into a cache
+outside the repository. Normal inference is now cache-only for both providers, including
+development, and embedding calls have the same bounded timeout/fallback behavior as
+reranking. Optional dependency ranges were advanced to patched, reproducible major
+versions (`sentence-transformers>=5.2,<6`, `transformers>=5.5,<6`).
+
+The live validation added safe benchmark, fallback, and re-index harnesses plus gated
+live Chromium coverage. Obsolete-vector recommendations now compare the full configured
+provider/model/dimension/version identity. A real browser run also found and fixed
+horizontal overflow in the main grid and long diagnosis labels.
+
+The implementation is operationally complete but quality status remains partial:
+semantic fusion recovered one Recall@5 miss; the uncalibrated raw cross-encoder harmed
+top-rank quality on the materials query, and the absent-revenue case did not abstain.
+No thresholds were changed to conceal those outcomes.
