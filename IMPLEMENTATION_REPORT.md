@@ -198,3 +198,23 @@ Runtime probes passed:
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
 - Arbitrary browsing, unrestricted external APIs, admin UI, and AWS deployment are intentionally not included in this phase.
+
+## Phase 2 — Semantic Retrieval and Reranking (2026-07-28)
+
+- Added typed, lazy, CPU-only sentence embedding and cross-encoder providers with
+  allowlisted aliases, bounded inputs/batches/candidates, normalized vectors, timeout,
+  retry, readiness, deterministic tests, and safe fallback.
+- Upgraded indexing to `2.0`. Clean chunks embed safe title, heading, and section
+  context, and record provider, alias, dimension, embedding/index versions, and time.
+- Added authorized idempotent `POST /documents/{id}/reindex` and obsolete-vector
+  identification.
+- Calibrated the shared Search, Agent, Evaluation, and Research retriever with
+  latest-version and selected-document scope, quality controls, duplicate suppression,
+  safe diagnostics, and collapsible frontend labels.
+- Added Recall@1/3/5, MRR, and nDCG@5 primitives without replacing historical metrics.
+- No generative model, Ollama inference, AWS integration, remote inference endpoint, or
+  controlled-agent replacement was introduced.
+
+Live model validation is `PARTIAL`: neither the optional package nor a provisioned model
+cache existed, and no download was attempted. Tests used the deterministic
+384-dimensional provider (`deterministic-hash-v1`).

@@ -145,6 +145,24 @@ export default function SearchBar() {
                 {diagnosis.retry_performed ? "Additional retrieval attempted" : "Initial retrieval only"} ·
                 support score {diagnosis.final_support_score.toFixed(2)}
               </span>
+              <span>
+                {diagnosis.semantic_used
+                  ? "Hybrid lexical + semantic retrieval"
+                  : diagnosis.fallback_used
+                    ? "Semantic model unavailable — lexical fallback used"
+                    : "Lexical retrieval"}
+                {diagnosis.reranker_used ? " · Reranker applied" : ""}
+                {diagnosis.selected_document_scope ? " · Selected-document scope" : ""}
+                {diagnosis.retrieval_recovery_used ? " · Retrieval recovery used" : ""}
+              </span>
+              <details>
+                <summary>Technical retrieval diagnostics</summary>
+                <small>
+                  Candidates: {diagnosis.candidate_count ?? 0} · Evidence:{" "}
+                  {diagnosis.final_evidence_count ?? diagnosis.evidence_count} · Duration:{" "}
+                  {diagnosis.retrieval_duration_ms ?? 0} ms
+                </small>
+              </details>
             </div>
           ) : null}
           <p className="muted" data-testid="search-result-scope">

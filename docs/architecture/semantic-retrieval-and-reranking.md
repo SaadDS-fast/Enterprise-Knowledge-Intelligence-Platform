@@ -1,0 +1,31 @@
+# Semantic retrieval and reranking
+
+Phase 2 keeps one retrieval path for Search, controlled Agent internal search,
+Evaluation, and Research. Candidate generation applies workspace and selected-document
+filters in SQL before any text is embedded or reranked. Only chunks from each document's
+latest version and usable document states are eligible.
+
+## Pipeline
+
+1. Normalize whitespace in the query without adding entities or changing scope.
+2. Score the scoped candidate set with BM25.
+3. Embed the normalized query with the configured local sentence model.
+4. Reject semantic comparisons whose dimension or embedding version is incompatible.
+5. Fuse normalized lexical and cosine scores using operator-configured weights.
+6. Apply bounded title, heading, attribute, extraction-quality, and duplicate controls.
+7. Rerank at most `RERANKER_TOP_N` candidates and return at most
+   `RERANKER_RETURN_K`.
+8. If evidence is insufficient, the existing bounded recovery pass expands retrieval
+   using the original normalized query and controlled synonym reformulation.
+
+Defaults use 0.45 lexical and 0.55 semantic weight. Semantic retrieval and the
+cross-encoder are both disabled until configured. The deterministic provider exists for
+tests and continuity fallback; it is not represented as a semantic quality improvement.
+
+Each chunk records provider, allowlisted model alias, dimension, embedding version,
+indexing version, and creation time. Retrieval does not compare incompatible or obsolete
+vectors. Documents lacking current vector metadata are reported as requiring re-indexing.
+
+Safe diagnostics expose ranks and scores, boosts, scope, timing, versions, and fallback
+state. Raw embeddings, model paths, document content, and model internals are never
+returned as diagnostics.

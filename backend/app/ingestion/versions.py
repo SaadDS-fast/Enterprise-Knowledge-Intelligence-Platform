@@ -6,7 +6,7 @@ class PipelineVersions:
     extraction: str = "3.0"
     normalization: str = "3.0"
     chunking: str = "3.0"
-    indexing: str = "1.0"
+    indexing: str = "2.0"
 
     def as_dict(self) -> dict[str, str]:
         return {

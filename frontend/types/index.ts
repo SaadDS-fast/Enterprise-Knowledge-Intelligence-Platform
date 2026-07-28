@@ -65,6 +65,18 @@ export type RetrievalDiagnosis = {
   final_support_score: number;
   evidence_count: number;
   reason_code: string;
+  retrieval_mode?: string;
+  lexical_used?: boolean;
+  semantic_used?: boolean;
+  reranker_used?: boolean;
+  fallback_used?: boolean;
+  candidate_count?: number;
+  final_evidence_count?: number;
+  retrieval_duration_ms?: number;
+  embedding_version?: string | null;
+  reranker_version?: string | null;
+  selected_document_scope?: boolean;
+  retrieval_recovery_used?: boolean;
 };
 
 export type SearchResult = {

@@ -59,3 +59,20 @@ Image-only/scanned PDFs are detected and marked `REQUIRES_OCR`; this phase inten
 not include a heavyweight OCR engine. Such documents are not indexed and cannot be answered
 from until an authorized OCR-capable future pipeline reprocesses them. See
 `docs/implementation/document-extraction-chunking-v3.md`.
+
+## Phase 2 limitations
+
+- Live semantic quality and cross-encoder performance were not measured because no
+  operator-provisioned package/model cache was present. Ranked comparison metrics remain
+  N/A instead of an unverified improvement claim.
+- The pgvector schema is fixed at 384 dimensions. Only compatible aliases are allowlisted;
+  another dimension requires a schema/index migration and complete re-index.
+- Models are optional and disabled by default. Operators must provision weights outside
+  Git, enable aliases, restart affected services, and re-index documents.
+- Candidate text is currently loaded after strict SQL scope and then scored in-process.
+  A future scale phase should push approximate lexical/vector candidate generation into
+  PostgreSQL.
+- Live model load time and memory remain unmeasured. The deterministic fallback probe is
+  not representative of sentence-transformer resource use.
+- Next is evidence/conflict calibration; Ollama is a later separate phase and was not
+  used here.

@@ -26,3 +26,7 @@ data/postgres/
 data/redis/
 *.sqlite3
 *.db
+.cache/huggingface/
+.cache/torch/
+models/
+model-cache/

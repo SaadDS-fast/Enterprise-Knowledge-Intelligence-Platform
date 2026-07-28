@@ -27,6 +27,11 @@ class ProviderType(StrEnum):
     AZURE_OPENAI = "azure_openai"
 
 
+class LocalInferenceProvider(StrEnum):
+    LOCAL = "local"
+    DETERMINISTIC = "deterministic"
+
+
 class StorageProvider(StrEnum):
     LOCAL = "local"
     MINIO = "minio"
@@ -154,6 +159,28 @@ class Settings(BaseSettings):
     llm_max_output_tokens: int = Field(default=1200, ge=64, le=32768)
 
     embedding_dimension: int = Field(default=384, ge=64, le=8192)
+    semantic_embeddings_enabled: bool = False
+    semantic_embedding_provider: LocalInferenceProvider = LocalInferenceProvider.LOCAL
+    semantic_embedding_model: str = ""
+    semantic_embedding_dimension: int = Field(default=384, ge=64, le=8192)
+    semantic_embedding_batch_size: int = Field(default=32, ge=1, le=128)
+    semantic_embedding_max_length: int = Field(default=512, ge=32, le=2048)
+    semantic_embedding_device: str = "cpu"
+    semantic_embedding_normalize: bool = True
+    semantic_embedding_fallback_enabled: bool = True
+    semantic_embedding_max_retries: int = Field(default=2, ge=0, le=5)
+    hybrid_lexical_weight: float = Field(default=0.45, ge=0.0, le=1.0)
+    hybrid_semantic_weight: float = Field(default=0.55, ge=0.0, le=1.0)
+    reranker_enabled: bool = False
+    reranker_provider: LocalInferenceProvider = LocalInferenceProvider.LOCAL
+    reranker_model: str = ""
+    reranker_top_n: int = Field(default=20, ge=1, le=100)
+    reranker_return_k: int = Field(default=8, ge=1, le=50)
+    reranker_max_length: int = Field(default=512, ge=32, le=2048)
+    reranker_batch_size: int = Field(default=16, ge=1, le=64)
+    reranker_device: str = "cpu"
+    reranker_timeout_seconds: float = Field(default=15.0, gt=0, le=120)
+    reranker_fallback_enabled: bool = True
     chunk_size: int = Field(default=900, ge=100, le=5000)
     chunk_overlap: int = Field(default=120, ge=0, le=1000)
     retrieval_top_k: int = Field(default=20, ge=1, le=100)
@@ -228,6 +255,8 @@ class Settings(BaseSettings):
         "local_llm_backend",
         "agent_planner_provider",
         "web_search_provider",
+        "semantic_embedding_provider",
+        "reranker_provider",
         mode="before",
     )
     @classmethod
@@ -312,6 +341,12 @@ class Settings(BaseSettings):
             raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
         if self.rerank_top_k > self.retrieval_top_k:
             raise ValueError("RERANK_TOP_K cannot exceed RETRIEVAL_TOP_K")
+        if self.reranker_return_k > self.reranker_top_n:
+            raise ValueError("RERANKER_RETURN_K cannot exceed RERANKER_TOP_N")
+        if abs(self.hybrid_lexical_weight + self.hybrid_semantic_weight - 1.0) > 1e-6:
+            raise ValueError("Hybrid lexical and semantic weights must sum to 1")
+        if self.semantic_embedding_device != "cpu" or self.reranker_device != "cpu":
+            raise ValueError("Phase 2 local inference is restricted to CPU")
         if self.llm_provider is ProviderType.OPENAI and not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY is required")
         if self.is_production:

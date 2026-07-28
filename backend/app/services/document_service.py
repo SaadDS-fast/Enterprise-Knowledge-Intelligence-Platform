@@ -108,7 +108,14 @@ def document_summary(document: Document) -> dict:
         "chunk_count": metadata.get("chunk_count", 0),
         "pipeline_version": current,
         "latest_pipeline_version": LATEST_PIPELINE.as_dict(),
-        "reprocessing_recommended": bool(version and not is_current(metadata)),
+        "reprocessing_recommended": bool(
+            version
+            and (
+                not is_current(metadata)
+                or metadata.get("embedding_version") is None
+                or metadata.get("embedding_dimension") is None
+            )
+        ),
         "processing_progress": "processing" if document.status == "processing" else None,
         "error_category": metadata.get("error_category"),
     }
@@ -119,6 +126,7 @@ async def create_reprocess_job(
     document: Document,
     *,
     idempotency_key: str | None = None,
+    operation: str = "reprocess",
 ) -> tuple[IngestionJob, bool]:
     if not document.versions:
         raise ValueError("Document has no uploaded version")
@@ -166,7 +174,7 @@ async def create_reprocess_job(
         status=JobStatus.PENDING,
         stage="queued",
         result_json={
-            "operation": "reprocess",
+            "operation": operation,
             **({"idempotency_key_hash": key_hash} if key_hash else {}),
             **LATEST_PIPELINE.as_dict(),
         },

@@ -77,6 +77,46 @@ describe("SearchBar", () => {
     await waitFor(() => expect(screen.getByText("Search failed with 500")).toBeInTheDocument());
   });
 
+  it("renders collapsible semantic retrieval diagnostics without vectors", async () => {
+    mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+      answer: "PKR 5,000 per day.",
+      evidence: [],
+      sufficient_evidence: true,
+      abstained: false,
+      retrieval_diagnosis: {
+        status: "RETRIEVAL_FAILURE_RECOVERED",
+        initial_evidence_sufficient: false,
+        retry_performed: true,
+        retry_strategy: ["top_k_expansion"],
+        initial_support_score: 0.2,
+        final_support_score: 0.9,
+        evidence_count: 1,
+        reason_code: "RETRY_FOUND_SUPPORTING_EVIDENCE",
+        semantic_used: true,
+        reranker_used: true,
+        selected_document_scope: true,
+        retrieval_recovery_used: true,
+        candidate_count: 4,
+        final_evidence_count: 1,
+        retrieval_duration_ms: 12.4,
+      },
+      outcome: "ANSWER_SUPPORTED",
+      support_status: "SUPPORTED",
+      confidence_category: "high",
+      active_document_scope: [],
+    });
+    render(<SearchBar />);
+    await userEvent.type(screen.getByTestId("search-query"), "What is the meal allowance?");
+    fireEvent.click(screen.getByTestId("search-submit"));
+
+    await screen.findByText(/Hybrid lexical \+ semantic retrieval/);
+    expect(screen.getByText(/Reranker applied/)).toBeInTheDocument();
+    expect(screen.getByText(/Selected-document scope/)).toBeInTheDocument();
+    expect(screen.getByText(/Retrieval recovery used/)).toBeInTheDocument();
+    expect(screen.getByText("Technical retrieval diagnostics")).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/embedding_values|raw_vector/);
+  });
+
   it.each([
     ["SUFFICIENT_EVIDENCE", "Evidence found directly"],
     ["RETRIEVAL_FAILURE_RECOVERED", "Evidence found after an additional search"],

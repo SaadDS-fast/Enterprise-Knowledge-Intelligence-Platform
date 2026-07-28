@@ -41,6 +41,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+semantic = [
+  "sentence-transformers>=3.4,<4",
+]
 dev = [
   "pytest>=9.0.3,<10",
   "pytest-asyncio>=1.0,<2",

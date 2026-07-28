@@ -43,6 +43,29 @@ def test_upload_ingest_and_search(client, auth_headers):
         payload["evidence"]
         and "hybrid" in (payload["answer"] + payload["evidence"][0]["content"]).lower()
     )
+    metadata = payload["evidence"][0]["metadata"]
+    assert metadata["embedding_version"] == "deterministic-hash-v1"
+    assert metadata["embedding_dimension"] == 384
+    assert metadata["indexing_version"] == "2.0"
+
+
+def test_reindex_is_authorized_and_idempotent(client, auth_headers):
+    upload = client.post(
+        "/api/v1/documents",
+        headers=auth_headers,
+        files={"file": ("reindex.txt", b"Function: exactly one output per input.", "text/plain")},
+    )
+    assert upload.status_code == 202, upload.text
+    document_id = upload.json()["document"]["id"]
+    headers = {**auth_headers, "Idempotency-Key": "phase-2-reindex"}
+
+    first = client.post(f"/api/v1/documents/{document_id}/reindex", headers=headers)
+    replay = client.post(f"/api/v1/documents/{document_id}/reindex", headers=headers)
+
+    assert first.status_code == 202, first.text
+    assert replay.status_code == 202, replay.text
+    assert first.json()["job_id"] == replay.json()["job_id"]
+    assert replay.json()["idempotent"] is True
 
 
 def test_unrelated_question_abstains(client, auth_headers):

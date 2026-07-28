@@ -119,6 +119,11 @@ async def search_and_answer(
         KNOWLEDGE_ABSENCE.inc()
     elif diagnosis.status is DiagnosisStatus.PARTIAL_EVIDENCE:
         PARTIAL_EVIDENCE.inc()
+    diagnosis_payload = {
+        **diagnosis.as_dict(),
+        **_retrieval_metadata(final_evidence),
+        "retrieval_recovery_used": retry_performed,
+    }
 
     if is_topic_list_query(query):
         topic_items = discover_topic_items(final_evidence)
@@ -132,7 +137,7 @@ async def search_and_answer(
                 abstained=False,
                 request_id=request_id,
                 retrieval_diagnosis={
-                    **diagnosis.as_dict(),
+                    **diagnosis_payload,
                     "status": DiagnosisStatus.SUFFICIENT_EVIDENCE.value,
                     "reason_code": "TOPIC_LIST_SUPPORTED",
                 },
@@ -159,7 +164,7 @@ async def search_and_answer(
             abstained=True,
             request_id=request_id,
             retrieval_diagnosis={
-                **diagnosis.as_dict(),
+                **diagnosis_payload,
                 "status": status,
                 "reason_code": "LOW_CONFIDENCE_TOPIC_INFERENCE",
             },
@@ -193,7 +198,7 @@ async def search_and_answer(
             sufficient_evidence=final_sufficient,
             abstained=True,
             request_id=request_id,
-            retrieval_diagnosis=diagnosis.as_dict(),
+            retrieval_diagnosis=diagnosis_payload,
             outcome=(
                 "CONFLICTING_EVIDENCE"
                 if support.status is SupportStatus.CONFLICT
@@ -223,7 +228,7 @@ async def search_and_answer(
         sufficient_evidence=True,
         abstained=False,
         request_id=request_id,
-        retrieval_diagnosis=diagnosis.as_dict(),
+        retrieval_diagnosis=diagnosis_payload,
         outcome="ANSWER_SUPPORTED",
         answer_value=support.answer_value,
         support_status=support.status.value,
@@ -247,6 +252,38 @@ def _evidence_items(evidence: list) -> list[EvidenceItem]:
         )
         for e in evidence
     ]
+
+
+def _retrieval_metadata(evidence: list) -> dict:
+    if not evidence:
+        return {
+            "retrieval_mode": "no_candidates",
+            "lexical_used": True,
+            "semantic_used": False,
+            "reranker_used": False,
+            "fallback_used": False,
+            "candidate_count": 0,
+            "final_evidence_count": 0,
+            "retrieval_duration_ms": 0.0,
+            "embedding_version": None,
+            "reranker_version": None,
+            "selected_document_scope": False,
+        }
+    metadata = evidence[0].metadata or {}
+    keys = {
+        "retrieval_mode",
+        "lexical_used",
+        "semantic_used",
+        "reranker_used",
+        "fallback_used",
+        "candidate_count",
+        "final_evidence_count",
+        "retrieval_duration_ms",
+        "embedding_version",
+        "reranker_version",
+        "selected_document_scope",
+    }
+    return {key: metadata.get(key) for key in keys}
 
 
 def _citations(evidence: list) -> list[dict]:

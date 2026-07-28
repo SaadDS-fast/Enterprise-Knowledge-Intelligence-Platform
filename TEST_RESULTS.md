@@ -105,3 +105,16 @@ Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 - Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
 - Agentic frontend Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery with feature flags enabled for the probe.
 - Next.js was upgraded to `16.2.11`; `npm audit --omit=dev` now reports 0 vulnerabilities.
+
+## Phase 2 Test Results — 2026-07-28
+
+- Backend: 157 collected; 153 passed and 4 skipped. The opt-in live model checks were
+  skipped because no operator-provisioned model was available.
+- Coverage: 76%.
+- Frontend: 10 files, 28 tests passed.
+- Playwright default: 1 passed, 4 gated skipped.
+- Playwright deterministic agentic profile: 5 passed.
+- Backend, frontend, ingestion, evaluation, and report-worker images built; all affected
+  services were healthy after restart.
+- Alembic upgrade and drift check passed.
+- Live local model: unavailable, not downloaded, result `PARTIAL`.

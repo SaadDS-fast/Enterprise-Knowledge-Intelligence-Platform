@@ -177,6 +177,23 @@ async def _internal_search_handler(payload: BaseModel, context: dict[str, Any]) 
             "tenant_scope_preserved": True,
             "workspace_scope_preserved": True,
             "evidence_count": len(evidence),
+            **(
+                {
+                    key: evidence[0].metadata.get(key)
+                    for key in (
+                        "retrieval_mode",
+                        "semantic_used",
+                        "reranker_used",
+                        "fallback_used",
+                        "candidate_count",
+                        "retrieval_duration_ms",
+                        "embedding_version",
+                        "reranker_version",
+                    )
+                }
+                if evidence
+                else {}
+            ),
         },
     )
 

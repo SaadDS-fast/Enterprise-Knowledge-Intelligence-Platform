@@ -160,3 +160,26 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 - Deep destructive outage testing was limited to previously validated Redis/MinIO paths plus a final report-worker restart probe.
 - Several scaffolded enterprise modules remain low coverage, reflected in the 76% backend coverage.
 - Agentic mode, research mode, and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are future work.
+
+## Phase 2 Validation — 2026-07-28
+
+Overall: **PARTIAL PASS** because an already-provisioned live model was unavailable. No
+model was downloaded.
+
+- Backend compileall, Ruff lint/format, full pytest, and 76% coverage passed.
+- Provider allowlist, dimensions, batching, normalization, versioning, unavailability,
+  reranker timeout/fallback, scope, isolation, recovery, absence, and shared-service
+  regressions passed.
+- Authorized idempotent re-index passed; indexing version is `2.0`.
+- Frontend `npm ci`, lint (0 errors, one existing warning), typecheck, 28 tests, and
+  production build passed.
+- Playwright: default 1 passed/4 gated skipped; gated deterministic agentic run 5 passed.
+- Bandit passed; pip-audit found no known vulnerabilities; `npm audit --omit=dev`
+  found 0 vulnerabilities.
+- Docker config/build/restart/health and Alembic upgrade/drift checks passed; all affected
+  services ended healthy with defaults restored.
+- Live model: N/A (`sentence_transformers` absent and no allowlisted cache).
+- Deterministic probe: 96 vectors at dimension 384 in 3.25 ms; approximate process peak
+  RSS 70.92 MiB. This is not a live semantic benchmark.
+- Live Recall@1/3/5, MRR, nDCG@5, citation precision/recall, model load time, and semantic
+  latency are N/A. Metric/contract fixtures passed; no quality improvement is claimed.
