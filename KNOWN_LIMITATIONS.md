@@ -53,3 +53,9 @@ Updated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 - The Redis outage test intentionally produced broker reconnect warnings in worker logs; workers recovered and processed the retry-pending job.
 - The MinIO outage test intentionally produced backend storage exception logs; the API response stayed sanitized and no document row persisted.
 - Agent persistence stores operational summaries only; private chain-of-thought storage is intentionally excluded.
+# Document extraction OCR
+
+Image-only/scanned PDFs are detected and marked `REQUIRES_OCR`; this phase intentionally does
+not include a heavyweight OCR engine. Such documents are not indexed and cannot be answered
+from until an authorized OCR-capable future pipeline reprocesses them. See
+`docs/implementation/document-extraction-chunking-v3.md`.

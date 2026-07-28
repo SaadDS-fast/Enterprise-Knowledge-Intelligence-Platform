@@ -24,6 +24,15 @@ export type DocumentItem = {
   created_by: string;
   created_at: string;
   updated_at: string;
+  filename?: string | null;
+  extraction_quality?: string | null;
+  page_count?: number | null;
+  chunk_count: number;
+  pipeline_version: Record<string, string | null>;
+  latest_pipeline_version: Record<string, string>;
+  reprocessing_recommended: boolean;
+  processing_progress?: string | null;
+  error_category?: string | null;
 };
 
 export type Job = {

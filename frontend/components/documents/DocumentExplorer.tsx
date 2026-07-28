@@ -12,6 +12,7 @@ export default function DocumentExplorer() {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [reprocessing, setReprocessing] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -46,6 +47,20 @@ export default function DocumentExplorer() {
     }
   }
 
+  async function reprocess(documentId: string) {
+    setReprocessing(documentId);
+    setError("");
+    try {
+      await api(`/documents/${documentId}/reprocess`, { method: "POST" });
+      await load();
+      setTimeout(() => void load(), 1200);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Reprocessing failed");
+    } finally {
+      setReprocessing(null);
+    }
+  }
+
   return (
     <div>
       <form className="upload-card" onSubmit={upload} data-testid="document-upload-form">
@@ -68,7 +83,11 @@ export default function DocumentExplorer() {
             <tr>
               <th>Document</th>
               <th>Status</th>
+              <th>Extraction</th>
+              <th>Pages / chunks</th>
+              <th>Pipeline</th>
               <th>Created</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -76,14 +95,34 @@ export default function DocumentExplorer() {
               <tr key={doc.id} data-testid="document-row">
                 <td>
                   <strong>{doc.title}</strong>
-                  <small>{doc.description}</small>
+                  <small>{doc.filename ?? doc.description}</small>
                 </td>
                 <td>
                   <span data-testid="document-status">
                     <StatusBadge value={doc.status} />
                   </span>
                 </td>
+                <td>
+                  <StatusBadge value={doc.extraction_quality ?? "pending"} />
+                  {doc.status === "requires_ocr" ? <small>OCR is required before search.</small> : null}
+                </td>
+                <td>{doc.page_count ?? "—"} / {doc.chunk_count ?? 0}</td>
+                <td>
+                  <small>{doc.pipeline_version?.chunking_version ?? "legacy"}</small>
+                  {doc.reprocessing_recommended ? <small>Update recommended</small> : null}
+                </td>
                 <td>{new Date(doc.created_at).toLocaleString()}</td>
+                <td>
+                  <button
+                    type="button"
+                    disabled={reprocessing === doc.id || doc.status === "processing"}
+                    onClick={() => void reprocess(doc.id)}
+                    aria-label={`Reprocess ${doc.title}`}
+                  >
+                    {reprocessing === doc.id ? "Starting…" : "Reprocess"}
+                  </button>
+                  {doc.error_category ? <small>{doc.error_category}</small> : null}
+                </td>
               </tr>
             ))}
           </tbody>

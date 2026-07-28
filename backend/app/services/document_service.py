@@ -3,15 +3,18 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import UUID, uuid4
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Document, DocumentVersion, IngestionJob
+from app.ingestion.versions import LATEST_PIPELINE, is_current
 from app.integrations.storage import get_storage
 from app.integrations.storage.keys import document_object_key
+from app.jobs.status import JobStatus
 from app.observability.metrics import INGESTION_SUBMITTED
 from app.security.file_validation import validate_file
 from app.security.malware_scan import scan_bytes
-from app.utils.hashing import hash_bytes
+from app.utils.hashing import hash_bytes, hash_text
 
 
 async def create_document_upload(
@@ -81,3 +84,96 @@ async def delete_document_and_objects(session: AsyncSession, document: Document)
             await storage.delete(version.storage_key)
     await session.delete(document)
     await session.commit()
+
+
+def document_summary(document: Document) -> dict:
+    version = document.versions[-1] if document.versions else None
+    metadata = version.metadata_json if version else {}
+    quality = metadata.get("extraction_quality") or {}
+    current = {key: metadata.get(key) for key in LATEST_PIPELINE.as_dict()}
+    return {
+        "id": document.id,
+        "workspace_id": document.workspace_id,
+        "title": document.title,
+        "status": "reprocessing_recommended"
+        if document.status in {"ready", "ready_with_warnings"} and not is_current(metadata)
+        else document.status,
+        "description": document.description,
+        "created_by": document.created_by,
+        "created_at": document.created_at,
+        "updated_at": document.updated_at,
+        "filename": version.filename if version else None,
+        "extraction_quality": quality.get("status"),
+        "page_count": metadata.get("page_count"),
+        "chunk_count": metadata.get("chunk_count", 0),
+        "pipeline_version": current,
+        "latest_pipeline_version": LATEST_PIPELINE.as_dict(),
+        "reprocessing_recommended": bool(version and not is_current(metadata)),
+        "processing_progress": "processing" if document.status == "processing" else None,
+        "error_category": metadata.get("error_category"),
+    }
+
+
+async def create_reprocess_job(
+    session: AsyncSession,
+    document: Document,
+    *,
+    idempotency_key: str | None = None,
+) -> tuple[IngestionJob, bool]:
+    if not document.versions:
+        raise ValueError("Document has no uploaded version")
+    version = document.versions[-1]
+    jobs = (
+        await session.scalars(
+            select(IngestionJob)
+            .where(
+                IngestionJob.workspace_id == document.workspace_id,
+                IngestionJob.document_version_id == version.id,
+            )
+            .order_by(IngestionJob.created_at.desc())
+        )
+    ).all()
+    key_hash = hash_text(idempotency_key) if idempotency_key else None
+    replay = next(
+        (
+            item
+            for item in jobs
+            if key_hash and (item.result_json or {}).get("idempotency_key_hash") == key_hash
+        ),
+        None,
+    )
+    if replay:
+        return replay, True
+    active = next(
+        (
+            item
+            for item in jobs
+            if item.status
+            in {
+                JobStatus.PENDING,
+                JobStatus.RUNNING,
+                JobStatus.RETRY_PENDING,
+                JobStatus.DISPATCH_FAILED,
+            }
+        ),
+        None,
+    )
+    if active:
+        return active, True
+    job = IngestionJob(
+        workspace_id=document.workspace_id,
+        document_version_id=version.id,
+        status=JobStatus.PENDING,
+        stage="queued",
+        result_json={
+            "operation": "reprocess",
+            **({"idempotency_key_hash": key_hash} if key_hash else {}),
+            **LATEST_PIPELINE.as_dict(),
+        },
+    )
+    session.add(job)
+    document.status = "processing"
+    await session.commit()
+    await session.refresh(job)
+    INGESTION_SUBMITTED.inc()
+    return job, False
