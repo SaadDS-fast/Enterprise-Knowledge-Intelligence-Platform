@@ -18,6 +18,7 @@ ALLOWED_MODELS: dict[str, tuple[str, int, str]] = {
         384,
         "st-v1",
     ),
+    "bge-small-en-v1.5": ("BAAI/bge-small-en-v1.5", 384, "bge-v1.5"),
 }
 DETERMINISTIC_VERSION = "deterministic-hash-v1"
 

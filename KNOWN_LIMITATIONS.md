@@ -111,3 +111,20 @@ changes: Recall@1 `.8854`, nDCG@5 `.9384`, citation precision `.8854`, and answe
 elasticity hard negatives ranked first. The fixture is consumed and must not be used for
 tuning; further work requires development-only changes followed by another newly
 pre-registered holdout.
+# Phase 2B limitations
+
+The consumed Phase 2 benchmark retained only aggregate stage results, so
+per-query attribution among retrieval, reranking, sufficiency, citation
+selection, and answer mapping is not recoverable without an impermissible
+rerun. The safe aggregate taxonomy records two top-five candidate misses and
+nine additional top-one misses. The larger L12 reranker was allowlisted but its
+operator-cache provisioning did not complete; no comparison claim is made for
+it. Synthetic results do not replace evaluation on an organization's own
+terminology and documents.
+
+The original broad-agentic failure run predated runtime identity endpoints, so
+the exact Git commits of the unidentified processes on ports 3000/8000 cannot
+be reconstructed. Their behavior proves the frontend feature mismatch, and the
+same runtime test passes against current isolated source, but it would be
+incorrect to assign an unverified historical commit or claim stale documents
+were present.

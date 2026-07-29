@@ -12,6 +12,10 @@ from app.rag.reranker import rerank_score
 
 ALLOWED_RERANKERS: dict[str, tuple[str, str]] = {
     "ms-marco-minilm-l-6-v2": ("cross-encoder/ms-marco-MiniLM-L-6-v2", "ce-v1"),
+    "ms-marco-minilm-l-12-v2": (
+        "cross-encoder/ms-marco-MiniLM-L-12-v2",
+        "ce-v2",
+    ),
 }
 
 

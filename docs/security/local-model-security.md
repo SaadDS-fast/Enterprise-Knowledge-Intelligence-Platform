@@ -43,3 +43,11 @@ Acceptance tests additionally isolate organizations, workspaces, users, document
 PostgreSQL data, Redis state, and object-storage data. Cleanup targets only the named
 acceptance Compose project and deletes its disposable volumes. No model cache is mounted
 into or deleted with those volumes.
+# Phase 2B model controls
+
+The BGE-small embedding and MiniLM L12 reranker identifiers are explicit aliases
+in the operator allowlist. Providers remain CPU-only, bounded, offline and
+`local_files_only`; aliases cannot supply arbitrary paths and runtime download
+is prohibited. Model weights and caches remain outside Git. The selected runtime
+pair is unchanged, and semantic embeddings and reranking remain disabled by
+default.

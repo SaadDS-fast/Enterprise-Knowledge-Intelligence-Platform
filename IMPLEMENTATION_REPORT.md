@@ -261,3 +261,21 @@ Chromium uploads use a run-scoped filename and exact document lookup. The accept
 Compose override publishes non-conflicting ports under a dedicated project; project
 names scope all database, cache, and object-storage volumes so cleanup can delete only
 acceptance data.
+# Phase 2B terminology-sensitive retrieval
+
+Added reusable typed concept families for numerical attributes, scientific
+concepts, allowance types, approval processes, roles, mathematical objects,
+date types, and policy state. Candidate scoring rewards complete concept and
+heading coverage, penalizes missing or contradictory sibling concepts, accounts
+for extraction quality and superseded metadata, and exposes safe diagnostics.
+Evidence sufficiency and citation fact selection now exclude contradictory
+sources while preserving original source indexes and document authorization.
+
+# Phase 2B agentic E2E closure
+
+Added safe frontend/backend runtime identities and a strict Playwright
+preflight. The isolated runner selects explicit default, agentic, or Phase 2B
+profiles; rejects occupied alternate ports; builds current source; provisions
+run-unique Compose services and volumes; verifies commit, compatibility,
+readiness, and flags; runs Playwright and Alembic; and always removes disposable
+state. No retrieval or product behavior required modification.

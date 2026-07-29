@@ -33,6 +33,12 @@ def test_local_model_allowlist_rejects_operator_typo():
         LocalSentenceTransformerProvider("../../untrusted-model")
 
 
+def test_stronger_local_model_is_explicitly_allowlisted():
+    provider = LocalSentenceTransformerProvider("bge-small-en-v1.5")
+    assert provider.model_id == "BAAI/bge-small-en-v1.5"
+    assert provider.identity.dimension == 384
+
+
 def test_local_model_dimension_must_match_index(monkeypatch):
     monkeypatch.setattr("app.rag.semantic_provider.settings.semantic_embedding_dimension", 768)
     with pytest.raises(ValueError, match="dimension"):

@@ -1,7 +1,13 @@
 import pytest
 
 from app.core.config import LocalInferenceProvider
-from app.rag.reranker_provider import rerank
+from app.rag.reranker_provider import LocalCrossEncoder, rerank
+
+
+def test_stronger_local_reranker_is_explicitly_allowlisted():
+    reranker = LocalCrossEncoder("ms-marco-minilm-l-12-v2")
+    assert reranker.model_id == "cross-encoder/ms-marco-MiniLM-L-12-v2"
+    assert reranker.version == "ce-v2"
 
 
 @pytest.mark.asyncio

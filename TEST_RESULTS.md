@@ -167,3 +167,52 @@ was denied by the macOS sandbox and passed on the permitted retry.
   5 passed/1 gated.
 - Docker isolated build/up, Alembic upgrade/check, Bandit, pip-audit and npm audit
   passed. The isolated project and volumes were deleted.
+# Phase 2B retrieval quality
+
+The 127-query development set compared all-MiniLM-L6-v2/L6 against
+BGE-small-en-v1.5/L6. Both produced hard-negative Recall@1 1.0000 and overall
+Recall@1 0.9346; BGE had higher steady-state latency and peak RSS, so the
+predeclared selection policy retained the current pair. The 160-query blind
+result is recorded in `docs/evaluation/phase2b-blind-holdout-v1-results.json`.
+
+Regression closure: backend 165 passed/4 environment-gated skipped with 77%
+coverage; Ruff, formatting, compileall, Bandit, and pip-audit passed. Frontend
+lint had one pre-existing Fast Refresh warning and no errors; typecheck, 28
+Vitest tests, production build, and npm audit passed. The isolated 15-case
+Chromium acceptance passed, as did the real-stack runtime Playwright test
+against the disposable Docker project. A broad agentic-flag run against an
+older process on ports 3000/8000 was not a valid isolated run (feature-build
+mismatch and stale retrieval data); the relevant agent workspace test passed,
+while three accessibility cases and the runtime case failed in that mismatched
+environment. Docker builds, service health, Alembic upgrade/check, and
+disposable-volume cleanup passed.
+
+# Phase 2B agentic Playwright closure
+
+The prior four failures were diagnosed as follows:
+
+| Tests | Expected | Historical actual | URLs/process | Evidence-based classification |
+| --- | --- | --- | --- | --- |
+| responsive desktop/tablet/mobile | agent form visible with controlled agent flag enabled | `agent-form` absent | default `http://localhost:3000`; frontend was an older developer process compiled with the public agent flag off; mocked backend routes were not reached for the initial assertion | frontend feature/build mismatch |
+| runtime registration/search/isolation | the run-scoped Atlas document supports the compound answer | insufficient-evidence response | default frontend `http://localhost:3000`, API `http://localhost:8000/api/v1`; normal developer stack, not the disposable ports | unidentified backend/runtime mismatch; no stale-document claim is made |
+
+The historical processes exposed no build identity, so their Git commit was
+not safely derivable. The test fixtures themselves used timestamp-scoped
+organizations, workspaces, users, and filenames with fresh browser storage.
+
+Final isolated results:
+
+- default profile: 1 passed, 6 intentional feature-gated skips
+- agentic profile: 5 passed, 2 intentional semantic/Phase-2B skips
+- responsive agentic checks: 3/3 passed within the agentic profile
+- Phase 2B 15-case Chromium profile: 1 passed
+- production Next.js build against the isolated backend: passed in every
+  profile
+
+The preflight verified commit `c5b6e68dc247528274dfbe1b8f12c30b3d0dafde`,
+compatibility `ekip-e2e-v1`, intended alternate URLs, backend readiness, and
+matching feature flags before test execution. The blind benchmark was not
+executed or changed. Final backend regression: 166 passed, 4 environment-gated
+skips, 77% coverage; Ruff, format, compileall, Bandit, and dependency audits
+passed. Frontend lint had no errors and one existing Fast Refresh warning;
+typecheck, 29 Vitest tests, production build, and dependency audit passed.

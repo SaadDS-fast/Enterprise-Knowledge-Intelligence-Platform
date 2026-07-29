@@ -1,0 +1,115 @@
+{
+  "benchmark_version": "phase2b-development-v1",
+  "fixture_sha256": "11ee9d92345528a7e5c7c81f75c6c8279d2b3d4965cbd6d03dd438610154b3c5",
+  "query_count": 127,
+  "results": {
+    "candidate": {
+      "category_counts": {
+        "ambiguous": 5,
+        "comparison": 12,
+        "definition": 14,
+        "direct_fact": 16,
+        "hard_negative": 24,
+        "knowledge_absence": 10,
+        "list_topic": 10,
+        "numeric_table": 12,
+        "policy_role": 14,
+        "selected_document": 5,
+        "tenant_isolation": 5
+      },
+      "cold_load_ms": {
+        "embedding": 350.91,
+        "reranker": 55.272
+      },
+      "denominators": {
+        "all_queries": 127,
+        "ambiguous": 5,
+        "hard_negative": 24,
+        "knowledge_absence": 15,
+        "positive_retrieval": 107,
+        "selected_document": 5
+      },
+      "metrics": {
+        "answer_support": 1.0,
+        "citation_precision": 0.9907,
+        "citation_recall": 1.0,
+        "hard_negative_recall_at_1": 1.0,
+        "knowledge_absence": 1.0,
+        "latency_ms": {
+          "average": 50.32,
+          "p50": 50.611,
+          "p95": 57.914
+        },
+        "mrr": 0.9953,
+        "ndcg_at_5": 0.9966,
+        "recall_at_1": 0.9346,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "retrieval_recovery": 1.0,
+        "tenant_isolation": 1.0,
+        "unsupported_claims": 0.0
+      },
+      "model_pair": {
+        "embedding": "bge-small-en-v1.5",
+        "reranker": "ms-marco-minilm-l-6-v2"
+      },
+      "peak_rss_mib": 755.438,
+      "special_case_pass_count": 127
+    },
+    "current": {
+      "category_counts": {
+        "ambiguous": 5,
+        "comparison": 12,
+        "definition": 14,
+        "direct_fact": 16,
+        "hard_negative": 24,
+        "knowledge_absence": 10,
+        "list_topic": 10,
+        "numeric_table": 12,
+        "policy_role": 14,
+        "selected_document": 5,
+        "tenant_isolation": 5
+      },
+      "cold_load_ms": {
+        "embedding": 5504.799,
+        "reranker": 179.771
+      },
+      "denominators": {
+        "all_queries": 127,
+        "ambiguous": 5,
+        "hard_negative": 24,
+        "knowledge_absence": 15,
+        "positive_retrieval": 107,
+        "selected_document": 5
+      },
+      "metrics": {
+        "answer_support": 1.0,
+        "citation_precision": 0.9907,
+        "citation_recall": 1.0,
+        "hard_negative_recall_at_1": 1.0,
+        "knowledge_absence": 1.0,
+        "latency_ms": {
+          "average": 46.277,
+          "p50": 44.944,
+          "p95": 52.654
+        },
+        "mrr": 0.9953,
+        "ndcg_at_5": 0.9966,
+        "recall_at_1": 0.9346,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "retrieval_recovery": 1.0,
+        "tenant_isolation": 1.0,
+        "unsupported_claims": 0.0
+      },
+      "model_pair": {
+        "embedding": "all-minilm-l6-v2",
+        "reranker": "ms-marco-minilm-l-6-v2"
+      },
+      "peak_rss_mib": 607.969,
+      "special_case_pass_count": 127
+    }
+  },
+  "selected_pair": "current",
+  "selection_policy": "candidate requires higher hard-negative R@1 without lower overall R@1"
+}

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from app.core.config import settings
+from app.rag.concept_constraints import assess_concept_constraints
 
 STOPWORDS = {
     "a",
@@ -145,12 +146,21 @@ def assess_evidence_support(
 ) -> SupportAssessment:
     attribute = requested_attribute(query)
     direct_facts = extract_facts(query, contents, attribute)
+    concept_assessments = [assess_concept_constraints(query, content) for content in contents]
+    eligible_indexes = {
+        index for index, assessment in enumerate(concept_assessments) if assessment.eligible_support
+    }
+    direct_facts = [fact for fact in direct_facts if fact.source_index in eligible_indexes]
     query_terms = key_terms(query)
-    evidence_terms = key_terms(" ".join(contents[:3]))
+    evidence_terms = key_terms(
+        " ".join(content for index, content in enumerate(contents[:3]) if index in eligible_indexes)
+    )
     coverage = len(query_terms & evidence_terms) / max(1, len(query_terms))
     max_score = max(scores, default=0.0)
     support_score = max(0.0, min(1.0, 0.55 * max_score + 0.35 * coverage))
     reasons: list[str] = []
+    if concept_assessments and not eligible_indexes:
+        reasons.append("contradictory_concept")
     if max_score >= settings.evidence_min_score:
         reasons.append("retrieval_score")
     if coverage >= 0.34:

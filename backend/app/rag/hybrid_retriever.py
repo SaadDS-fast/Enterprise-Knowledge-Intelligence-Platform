@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.db.models import Chunk, Document, DocumentVersion
 from app.models.domain import RetrievedEvidence
 from app.rag.bm25 import bm25_scores
+from app.rag.concept_constraints import ConceptAssessment, assess_concept_constraints
 from app.rag.embeddings import cosine_similarity
 from app.rag.evidence import ATTRIBUTE_LABELS, requested_attribute
 from app.rag.fusion import weighted_fusion
@@ -32,6 +33,7 @@ class Candidate:
     fused: float
     title_heading_boost: float
     quality_factor: float
+    concept_assessment: ConceptAssessment
 
 
 async def retrieve(
@@ -110,7 +112,17 @@ async def retrieve(
             row.Chunk.content,
         )
         quality_factor = _quality_factor(metadata)
-        calibrated = max(0.0, min(1.0, (fused[index] + boost) * quality_factor))
+        concept = assess_concept_constraints(
+            normalized_query,
+            row.Chunk.content,
+            title=row.Document.title,
+            heading=str(metadata.get("heading") or metadata.get("section") or ""),
+            metadata=metadata,
+        )
+        calibrated = max(
+            0.0,
+            min(1.0, (fused[index] + boost + concept.score_adjustment) * quality_factor),
+        )
         candidates.append(
             Candidate(
                 row.Chunk,
@@ -124,6 +136,7 @@ async def retrieve(
                 calibrated,
                 boost,
                 quality_factor,
+                concept,
             )
         )
     candidates.sort(key=lambda item: item.fused, reverse=True)
@@ -187,6 +200,7 @@ async def retrieve(
                     "fused_score": round(candidate.fused, 6),
                     "title_heading_boost": round(candidate.title_heading_boost, 6),
                     "quality_factor": candidate.quality_factor,
+                    "concept_constraints": candidate.concept_assessment.as_dict(),
                     "selected_document_scope": bool(document_ids),
                     "final_rank": final_rank,
                     "requires_reindex": metadata.get("embedding_version")

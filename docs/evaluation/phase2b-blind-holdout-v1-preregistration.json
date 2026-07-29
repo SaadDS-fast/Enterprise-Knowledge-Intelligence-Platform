@@ -1,0 +1,46 @@
+{
+  "benchmark_version": "phase2b-blind-v1",
+  "calibration": {
+    "concept_constraint_version": "typed-concepts-v1",
+    "lexical_weight": 0.45,
+    "reranker_blend_weight": 0.25,
+    "reranker_min_margin": 0.08,
+    "return_k": 8,
+    "semantic_weight": 0.55,
+    "top_n": 20
+  },
+  "category_counts": {
+    "ambiguous": 5,
+    "comparison": 15,
+    "definition": 20,
+    "direct_fact": 30,
+    "hard_negative": 20,
+    "knowledge_absence": 10,
+    "list_topic": 15,
+    "numeric_table": 15,
+    "policy_role": 20,
+    "selected_document": 5,
+    "tenant_isolation": 5
+  },
+  "embedding_version": "st-v1",
+  "execution_count": 1,
+  "expected_evidence_identifiers": [
+    "budget",
+    "deformation",
+    "equation",
+    "function",
+    "procurement",
+    "revenue",
+    "security",
+    "table"
+  ],
+  "fixture_sha256": "47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c",
+  "indexing_version": "2.0",
+  "model_aliases": [
+    "all-minilm-l6-v2",
+    "ms-marco-minilm-l-6-v2"
+  ],
+  "query_count": 160,
+  "registered_at": "2026-07-29T12:48:10.559040+00:00",
+  "results_file": "docs/evaluation/phase2b-blind-holdout-v1-results.json"
+}

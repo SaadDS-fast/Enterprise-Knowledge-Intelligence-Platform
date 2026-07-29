@@ -1,0 +1,1570 @@
+{
+  "benchmark_version": "phase2b-development-v1",
+  "category_counts": {
+    "ambiguous": 5,
+    "comparison": 12,
+    "definition": 14,
+    "direct_fact": 16,
+    "hard_negative": 24,
+    "knowledge_absence": 10,
+    "list_topic": 10,
+    "numeric_table": 12,
+    "policy_role": 14,
+    "selected_document": 5,
+    "tenant_isolation": 5
+  },
+  "documents": [
+    {
+      "content": "Annual revenue: PKR 38,750,000.",
+      "heading": "Operating Results",
+      "id": "revenue",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Atlas Annual Report"
+    },
+    {
+      "content": "Annual budget: PKR 38,250,000.",
+      "heading": "Approved Budget",
+      "id": "budget",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Atlas Planning Book"
+    },
+    {
+      "content": "Elastic deformation is reversible extension under an applied load.",
+      "heading": "Elastic Deformation",
+      "id": "deformation",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Materials Handbook"
+    },
+    {
+      "content": "Particle motion is described by displacement, velocity, and acceleration.",
+      "heading": "Motion",
+      "id": "motion",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Particle Mechanics"
+    },
+    {
+      "content": "Force is a push or pull; load is the applied external force, measured in newtons.",
+      "heading": "Force and Load",
+      "id": "force",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Engineering Fundamentals"
+    },
+    {
+      "content": "Travel allowance: PKR 6,850 per day. Travel approval: travel manager.",
+      "heading": "Travel Allowance",
+      "id": "travel",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Employee Travel Policy"
+    },
+    {
+      "content": "Leave allowance: 18 paid working days. Approval: department manager.",
+      "heading": "Leave Allowance",
+      "id": "leave",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Employee Leave Policy"
+    },
+    {
+      "content": "Procurement approval: procurement manager. Three bids are required.",
+      "heading": "Purchase Approval",
+      "id": "procurement",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Procurement Controls"
+    },
+    {
+      "content": "A function maps every input to exactly one output.",
+      "heading": "Function",
+      "id": "function",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Mathematics Glossary"
+    },
+    {
+      "content": "An equation asserts that two expressions are equal.",
+      "heading": "Equation",
+      "id": "equation",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Mathematics Glossary"
+    },
+    {
+      "content": "Effective date: 12 August 2026. This is the current policy.",
+      "heading": "Effective Date",
+      "id": "effective",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Records Policy 2026"
+    },
+    {
+      "content": "Launch date: 3 July 2026. Publication date: 20 June 2026.",
+      "heading": "Launch Date",
+      "id": "launch",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Records Rollout Note"
+    },
+    {
+      "content": "The former policy allowed paper-only filing.",
+      "heading": "Archived Policy",
+      "id": "superseded",
+      "quality": "high_quality",
+      "state": "superseded",
+      "tenant": "tenant-a",
+      "title": "Records Policy 2024"
+    },
+    {
+      "content": "Medical allowance: PKR 92,000.\nDental allowance: PKR 34,000.\nTravel allowance: PKR 41,000.",
+      "heading": "Annual Benefits",
+      "id": "table",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Benefits Table"
+    },
+    {
+      "content": "Finance director: capital plans. Department manager: leave. Travel manager: trips.",
+      "heading": "Approval Matrix",
+      "id": "roles",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Operations Roles"
+    },
+    {
+      "content": "Travel allowance may be PKR 68?0 daily.",
+      "heading": "Allowances",
+      "id": "low-quality",
+      "quality": "low_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Damaged Scan"
+    },
+    {
+      "content": "Isolate the host, preserve logs, and notify the security lead.",
+      "heading": "Incident Response",
+      "id": "security",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-a",
+      "title": "Security Runbook"
+    },
+    {
+      "content": "Annual revenue: PKR 999,000,000.",
+      "heading": "Operating Results",
+      "id": "tenant-b",
+      "quality": "high_quality",
+      "state": "current",
+      "tenant": "tenant-b",
+      "title": "Other Tenant Finance"
+    }
+  ],
+  "frozen_calibration": {
+    "concept_constraint_version": "typed-concepts-v1",
+    "lexical_weight": 0.45,
+    "reranker_blend_weight": 0.25,
+    "reranker_min_margin": 0.08,
+    "return_k": 8,
+    "semantic_weight": 0.55,
+    "top_n": 20
+  },
+  "queries": [
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-001",
+      "query": "Please answer precisely: What annual revenue did Atlas report? (development formulation 1)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-002",
+      "query": "Using the authoritative material, What annual revenue did Atlas report? (development formulation 2)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-003",
+      "query": "Find the evidence and answer: What annual revenue did Atlas report? (development formulation 3)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-004",
+      "query": "For an audit response, What annual revenue did Atlas report? (development formulation 4)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-005",
+      "query": "According to the relevant section, What annual revenue did Atlas report? (development formulation 5)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-006",
+      "query": "Resolve this request: What annual revenue did Atlas report? (development formulation 6)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-007",
+      "query": "Give a focused answer: What annual revenue did Atlas report? (development formulation 7)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-008",
+      "query": "From the available documents, What annual revenue did Atlas report? (development formulation 8)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-009",
+      "query": "Please answer precisely: What annual revenue did Atlas report? (development formulation 9)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-010",
+      "query": "Using the authoritative material, What annual revenue did Atlas report? (development formulation 10)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-011",
+      "query": "Find the evidence and answer: What annual revenue did Atlas report? (development formulation 11)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-012",
+      "query": "For an audit response, What annual revenue did Atlas report? (development formulation 12)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-013",
+      "query": "According to the relevant section, What annual revenue did Atlas report? (development formulation 13)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-014",
+      "query": "Resolve this request: What annual revenue did Atlas report? (development formulation 14)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-015",
+      "query": "Give a focused answer: What annual revenue did Atlas report? (development formulation 15)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "direct_fact",
+      "id": "development-direct_fact-016",
+      "query": "From the available documents, What annual revenue did Atlas report? (development formulation 16)",
+      "relevant": [
+        "revenue"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-001",
+      "query": "Please answer precisely: Who grants procurement approval? (development formulation 1)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-002",
+      "query": "Using the authoritative material, Who grants procurement approval? (development formulation 2)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-003",
+      "query": "Find the evidence and answer: Who grants procurement approval? (development formulation 3)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-004",
+      "query": "For an audit response, Who grants procurement approval? (development formulation 4)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-005",
+      "query": "According to the relevant section, Who grants procurement approval? (development formulation 5)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-006",
+      "query": "Resolve this request: Who grants procurement approval? (development formulation 6)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-007",
+      "query": "Give a focused answer: Who grants procurement approval? (development formulation 7)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-008",
+      "query": "From the available documents, Who grants procurement approval? (development formulation 8)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-009",
+      "query": "Please answer precisely: Who grants procurement approval? (development formulation 9)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-010",
+      "query": "Using the authoritative material, Who grants procurement approval? (development formulation 10)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-011",
+      "query": "Find the evidence and answer: Who grants procurement approval? (development formulation 11)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-012",
+      "query": "For an audit response, Who grants procurement approval? (development formulation 12)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-013",
+      "query": "According to the relevant section, Who grants procurement approval? (development formulation 13)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "policy_role",
+      "id": "development-policy_role-014",
+      "query": "Resolve this request: Who grants procurement approval? (development formulation 14)",
+      "relevant": [
+        "procurement"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-001",
+      "query": "Please answer precisely: What is the definition of a function? (development formulation 1)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-002",
+      "query": "Using the authoritative material, What is the definition of a function? (development formulation 2)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-003",
+      "query": "Find the evidence and answer: What is the definition of a function? (development formulation 3)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-004",
+      "query": "For an audit response, What is the definition of a function? (development formulation 4)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-005",
+      "query": "According to the relevant section, What is the definition of a function? (development formulation 5)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-006",
+      "query": "Resolve this request: What is the definition of a function? (development formulation 6)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-007",
+      "query": "Give a focused answer: What is the definition of a function? (development formulation 7)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-008",
+      "query": "From the available documents, What is the definition of a function? (development formulation 8)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-009",
+      "query": "Please answer precisely: What is the definition of a function? (development formulation 9)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-010",
+      "query": "Using the authoritative material, What is the definition of a function? (development formulation 10)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-011",
+      "query": "Find the evidence and answer: What is the definition of a function? (development formulation 11)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-012",
+      "query": "For an audit response, What is the definition of a function? (development formulation 12)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-013",
+      "query": "According to the relevant section, What is the definition of a function? (development formulation 13)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "definition",
+      "id": "development-definition-014",
+      "query": "Resolve this request: What is the definition of a function? (development formulation 14)",
+      "relevant": [
+        "function"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-001",
+      "query": "Please answer precisely: Explain elastic material deformation. (development formulation 1)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-002",
+      "query": "Using the authoritative material, Explain elastic material deformation. (development formulation 2)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-003",
+      "query": "Find the evidence and answer: Explain elastic material deformation. (development formulation 3)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-004",
+      "query": "For an audit response, Explain elastic material deformation. (development formulation 4)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-005",
+      "query": "According to the relevant section, Explain elastic material deformation. (development formulation 5)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-006",
+      "query": "Resolve this request: Explain elastic material deformation. (development formulation 6)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-007",
+      "query": "Give a focused answer: Explain elastic material deformation. (development formulation 7)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-008",
+      "query": "From the available documents, Explain elastic material deformation. (development formulation 8)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-009",
+      "query": "Please answer precisely: Explain elastic material deformation. (development formulation 9)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-010",
+      "query": "Using the authoritative material, Explain elastic material deformation. (development formulation 10)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-011",
+      "query": "Find the evidence and answer: Explain elastic material deformation. (development formulation 11)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-012",
+      "query": "For an audit response, Explain elastic material deformation. (development formulation 12)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-013",
+      "query": "According to the relevant section, Explain elastic material deformation. (development formulation 13)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-014",
+      "query": "Resolve this request: Explain elastic material deformation. (development formulation 14)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-015",
+      "query": "Give a focused answer: Explain elastic material deformation. (development formulation 15)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-016",
+      "query": "From the available documents, Explain elastic material deformation. (development formulation 16)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-017",
+      "query": "Please answer precisely: Explain elastic material deformation. (development formulation 17)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-018",
+      "query": "Using the authoritative material, Explain elastic material deformation. (development formulation 18)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-019",
+      "query": "Find the evidence and answer: Explain elastic material deformation. (development formulation 19)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-020",
+      "query": "For an audit response, Explain elastic material deformation. (development formulation 20)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-021",
+      "query": "According to the relevant section, Explain elastic material deformation. (development formulation 21)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-022",
+      "query": "Resolve this request: Explain elastic material deformation. (development formulation 22)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-023",
+      "query": "Give a focused answer: Explain elastic material deformation. (development formulation 23)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "hard_negative",
+      "id": "development-hard_negative-024",
+      "query": "From the available documents, Explain elastic material deformation. (development formulation 24)",
+      "relevant": [
+        "deformation"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-001",
+      "query": "Please answer precisely: What is the medical allowance in the benefits table? (development formulation 1)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-002",
+      "query": "Using the authoritative material, What is the medical allowance in the benefits table? (development formulation 2)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-003",
+      "query": "Find the evidence and answer: What is the medical allowance in the benefits table? (development formulation 3)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-004",
+      "query": "For an audit response, What is the medical allowance in the benefits table? (development formulation 4)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-005",
+      "query": "According to the relevant section, What is the medical allowance in the benefits table? (development formulation 5)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-006",
+      "query": "Resolve this request: What is the medical allowance in the benefits table? (development formulation 6)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-007",
+      "query": "Give a focused answer: What is the medical allowance in the benefits table? (development formulation 7)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-008",
+      "query": "From the available documents, What is the medical allowance in the benefits table? (development formulation 8)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-009",
+      "query": "Please answer precisely: What is the medical allowance in the benefits table? (development formulation 9)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-010",
+      "query": "Using the authoritative material, What is the medical allowance in the benefits table? (development formulation 10)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-011",
+      "query": "Find the evidence and answer: What is the medical allowance in the benefits table? (development formulation 11)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "numeric_table",
+      "id": "development-numeric_table-012",
+      "query": "For an audit response, What is the medical allowance in the benefits table? (development formulation 12)",
+      "relevant": [
+        "table"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-001",
+      "query": "Please answer precisely: List the incident response steps. (development formulation 1)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-002",
+      "query": "Using the authoritative material, List the incident response steps. (development formulation 2)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-003",
+      "query": "Find the evidence and answer: List the incident response steps. (development formulation 3)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-004",
+      "query": "For an audit response, List the incident response steps. (development formulation 4)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-005",
+      "query": "According to the relevant section, List the incident response steps. (development formulation 5)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-006",
+      "query": "Resolve this request: List the incident response steps. (development formulation 6)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-007",
+      "query": "Give a focused answer: List the incident response steps. (development formulation 7)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-008",
+      "query": "From the available documents, List the incident response steps. (development formulation 8)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-009",
+      "query": "Please answer precisely: List the incident response steps. (development formulation 9)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "list_topic",
+      "id": "development-list_topic-010",
+      "query": "Using the authoritative material, List the incident response steps. (development formulation 10)",
+      "relevant": [
+        "security"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-001",
+      "query": "Please answer precisely: Compare Atlas annual revenue with its annual budget. (development formulation 1)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-002",
+      "query": "Using the authoritative material, Compare Atlas annual revenue with its annual budget. (development formulation 2)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-003",
+      "query": "Find the evidence and answer: Compare Atlas annual revenue with its annual budget. (development formulation 3)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-004",
+      "query": "For an audit response, Compare Atlas annual revenue with its annual budget. (development formulation 4)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-005",
+      "query": "According to the relevant section, Compare Atlas annual revenue with its annual budget. (development formulation 5)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-006",
+      "query": "Resolve this request: Compare Atlas annual revenue with its annual budget. (development formulation 6)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-007",
+      "query": "Give a focused answer: Compare Atlas annual revenue with its annual budget. (development formulation 7)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-008",
+      "query": "From the available documents, Compare Atlas annual revenue with its annual budget. (development formulation 8)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-009",
+      "query": "Please answer precisely: Compare Atlas annual revenue with its annual budget. (development formulation 9)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-010",
+      "query": "Using the authoritative material, Compare Atlas annual revenue with its annual budget. (development formulation 10)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-011",
+      "query": "Find the evidence and answer: Compare Atlas annual revenue with its annual budget. (development formulation 11)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "comparison",
+      "id": "development-comparison-012",
+      "query": "For an audit response, Compare Atlas annual revenue with its annual budget. (development formulation 12)",
+      "relevant": [
+        "revenue",
+        "budget"
+      ],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-001",
+      "query": "Please answer precisely: What dividend did Atlas declare? (development formulation 1)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-002",
+      "query": "Using the authoritative material, What dividend did Atlas declare? (development formulation 2)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-003",
+      "query": "Find the evidence and answer: What dividend did Atlas declare? (development formulation 3)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-004",
+      "query": "For an audit response, What dividend did Atlas declare? (development formulation 4)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-005",
+      "query": "According to the relevant section, What dividend did Atlas declare? (development formulation 5)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-006",
+      "query": "Resolve this request: What dividend did Atlas declare? (development formulation 6)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-007",
+      "query": "Give a focused answer: What dividend did Atlas declare? (development formulation 7)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-008",
+      "query": "From the available documents, What dividend did Atlas declare? (development formulation 8)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-009",
+      "query": "Please answer precisely: What dividend did Atlas declare? (development formulation 9)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "knowledge_absence",
+      "id": "development-knowledge_absence-010",
+      "query": "Using the authoritative material, What dividend did Atlas declare? (development formulation 10)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": true,
+      "category": "ambiguous",
+      "id": "development-ambiguous-001",
+      "query": "Please answer precisely: Which policy applies? (development formulation 1)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": true,
+      "category": "ambiguous",
+      "id": "development-ambiguous-002",
+      "query": "Using the authoritative material, Which policy applies? (development formulation 2)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": true,
+      "category": "ambiguous",
+      "id": "development-ambiguous-003",
+      "query": "Find the evidence and answer: Which policy applies? (development formulation 3)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": true,
+      "category": "ambiguous",
+      "id": "development-ambiguous-004",
+      "query": "For an audit response, Which policy applies? (development formulation 4)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": true,
+      "category": "ambiguous",
+      "id": "development-ambiguous-005",
+      "query": "According to the relevant section, Which policy applies? (development formulation 5)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "selected_document",
+      "id": "development-selected_document-001",
+      "query": "Please answer precisely: Define the mathematical object in the selected glossary entry. (development formulation 1)",
+      "relevant": [
+        "equation"
+      ],
+      "selected_documents": [
+        "equation"
+      ]
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "selected_document",
+      "id": "development-selected_document-002",
+      "query": "Using the authoritative material, Define the mathematical object in the selected glossary entry. (development formulation 2)",
+      "relevant": [
+        "equation"
+      ],
+      "selected_documents": [
+        "equation"
+      ]
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "selected_document",
+      "id": "development-selected_document-003",
+      "query": "Find the evidence and answer: Define the mathematical object in the selected glossary entry. (development formulation 3)",
+      "relevant": [
+        "equation"
+      ],
+      "selected_documents": [
+        "equation"
+      ]
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "selected_document",
+      "id": "development-selected_document-004",
+      "query": "For an audit response, Define the mathematical object in the selected glossary entry. (development formulation 4)",
+      "relevant": [
+        "equation"
+      ],
+      "selected_documents": [
+        "equation"
+      ]
+    },
+    {
+      "absence": false,
+      "ambiguous": false,
+      "category": "selected_document",
+      "id": "development-selected_document-005",
+      "query": "According to the relevant section, Define the mathematical object in the selected glossary entry. (development formulation 5)",
+      "relevant": [
+        "equation"
+      ],
+      "selected_documents": [
+        "equation"
+      ]
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "tenant_isolation",
+      "id": "development-tenant_isolation-001",
+      "query": "Please answer precisely: What revenue is stated in the other tenant's finance report? (development formulation 1)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "tenant_isolation",
+      "id": "development-tenant_isolation-002",
+      "query": "Using the authoritative material, What revenue is stated in the other tenant's finance report? (development formulation 2)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "tenant_isolation",
+      "id": "development-tenant_isolation-003",
+      "query": "Find the evidence and answer: What revenue is stated in the other tenant's finance report? (development formulation 3)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "tenant_isolation",
+      "id": "development-tenant_isolation-004",
+      "query": "For an audit response, What revenue is stated in the other tenant's finance report? (development formulation 4)",
+      "relevant": [],
+      "selected_documents": []
+    },
+    {
+      "absence": true,
+      "ambiguous": false,
+      "category": "tenant_isolation",
+      "id": "development-tenant_isolation-005",
+      "query": "According to the relevant section, What revenue is stated in the other tenant's finance report? (development formulation 5)",
+      "relevant": [],
+      "selected_documents": []
+    }
+  ]
+}
