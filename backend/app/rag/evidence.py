@@ -145,7 +145,19 @@ def assess_evidence_support(
     scores: list[float], query: str, contents: list[str]
 ) -> SupportAssessment:
     attribute = requested_attribute(query)
-    direct_facts = extract_facts(query, contents, attribute)
+    compound_query = bool(re.search(r"\b(and|as well as|plus)\b", query, re.I))
+    compound_attributes = _requested_attributes(query) if compound_query else []
+    direct_facts = (
+        [
+            fact
+            for requested in compound_attributes
+            for fact in extract_facts(query, contents, requested)
+        ]
+        if len(compound_attributes) > 1
+        else extract_facts(query, contents, attribute)
+    )
+    if len(compound_attributes) > 1:
+        attribute = RequestedAttribute.UNKNOWN
     concept_assessments = [assess_concept_constraints(query, content) for content in contents]
     eligible_indexes = {
         index for index, assessment in enumerate(concept_assessments) if assessment.eligible_support
@@ -165,15 +177,27 @@ def assess_evidence_support(
         reasons.append("retrieval_score")
     if coverage >= 0.34:
         reasons.append("query_term_coverage")
-    compound_query = bool(re.search(r"\b(and|as well as|plus)\b", query, re.I))
     if direct_facts:
         reasons.append("direct_attribute_match")
         support_score = max(support_score, 0.82)
     if any(_heading_label_match(attribute, fact.matched_text) for fact in direct_facts):
         reasons.append("heading_value_pair")
         support_score = max(support_score, 0.9)
-    distinct_values = _distinct_fact_values(direct_facts)
-    if len(distinct_values) > 1 and attribute is not RequestedAttribute.UNKNOWN:
+    conflicting_values = next(
+        (
+            values
+            for requested in RequestedAttribute
+            if requested is not RequestedAttribute.UNKNOWN
+            and len(
+                values := _distinct_fact_values(
+                    [fact for fact in direct_facts if fact.attribute is requested]
+                )
+            )
+            > 1
+        ),
+        [],
+    )
+    if conflicting_values:
         return SupportAssessment(
             status=SupportStatus.CONFLICT,
             sufficient=False,
@@ -182,11 +206,16 @@ def assess_evidence_support(
             support_score=support_score,
             support_reasons=[*reasons, "conflicting_values"],
             facts=direct_facts,
-            conflict_values=distinct_values,
+            conflict_values=conflicting_values,
         )
     globally_sufficient = max_score >= settings.evidence_min_score and coverage >= (
         0.75 if compound_query else 0.34
     )
+    if len(compound_attributes) > 1:
+        supported_attributes = {fact.attribute for fact in direct_facts}
+        globally_sufficient = globally_sufficient and set(compound_attributes).issubset(
+            supported_attributes
+        )
     if attribute is RequestedAttribute.NUMERIC and not direct_facts:
         globally_sufficient = False
     directly_supported = bool(direct_facts) and support_score >= 0.72 and not compound_query
@@ -222,6 +251,17 @@ def assess_evidence_support(
         facts=[],
         conflict_values=[],
     )
+
+
+def _requested_attributes(query: str) -> list[RequestedAttribute]:
+    terms = key_terms(query)
+    requested: list[RequestedAttribute] = []
+    for attribute, synonyms in ATTRIBUTE_SYNONYMS.items():
+        if attribute in {RequestedAttribute.UNKNOWN, RequestedAttribute.DEFINITION}:
+            continue
+        if terms & synonyms:
+            requested.append(attribute)
+    return requested
 
 
 def extract_facts(
@@ -291,7 +331,7 @@ def _sentence_facts(content: str, index: int, attribute: RequestedAttribute) -> 
         RequestedAttribute.OWNER: (
             re.compile(
                 r"\b(?:is\s+)?(?:owned by|owner is|accountable to|responsible for by)\s+"
-                r"(?P<value>[A-Z][A-Za-z0-9 &-]{2,120})"
+                r"(?:the\s+)?(?P<value>[A-Z][A-Za-z0-9 &-]{2,120})"
             ),
         ),
         RequestedAttribute.DATE: (

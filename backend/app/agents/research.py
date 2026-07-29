@@ -197,8 +197,11 @@ def scoped_idempotency_key(
 
 
 def build_structured_report(response: AgentQueryResponse, question: str) -> StructuredReport:
+    state = response.response_state
+    if state is None:
+        raise ValueError("canonical_response_state_missing")
     citations = response.citations
-    outcome = response.outcome
+    outcome = state.primary_state.value
     title = safe_object_name(question).replace("-", " ").title()[:120] or "Research Report"
     findings = [
         claim["claim_text"]
@@ -208,7 +211,11 @@ def build_structured_report(response: AgentQueryResponse, question: str) -> Stru
     if not findings and response.answer:
         findings = [response.answer]
     gaps = []
-    if response.abstained or outcome in {"KNOWLEDGE_ABSENT", "INSUFFICIENT_EVIDENCE"}:
+    if response.abstained or outcome in {
+        "KNOWLEDGE_ABSENT",
+        "INSUFFICIENT_EVIDENCE",
+        "RETRIEVAL_FAILURE",
+    }:
         gaps.append("The available authorized evidence did not fully answer the question.")
     if response.retrieval_diagnosis:
         gaps.append(
@@ -241,7 +248,8 @@ def build_structured_report(response: AgentQueryResponse, question: str) -> Stru
             "pipeline_version": PIPELINE_VERSION,
             "agent_run_id": str(response.run_id),
             "outcome": outcome,
-            "confidence_category": response.confidence_category,
+            "confidence_category": state.confidence.final.value,
+            "response_state": state.model_dump(mode="json"),
             "fallback_used": response.fallback_used,
         },
     )

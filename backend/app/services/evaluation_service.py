@@ -32,14 +32,19 @@ async def run_evaluation(
     case_results = []
     for case in cases:
         result = await search_and_answer(session, workspace_id=workspace_id, query=case.question)
+        response_state = result.response_state
+        if response_state is None:
+            raise ValueError("canonical_response_state_missing")
         expected = _normalize_value(case.expected_answer)
         actual_value = _normalize_value(result.answer_value or result.answer)
         exact.append(exact_match(actual_value, expected))
         value_match.append(_value_matches(expected, actual_value))
         f1.append(token_f1(actual_value, expected))
-        answered += int(not result.abstained)
-        citation_valid.append(bool(result.citations) if not result.abstained else True)
-        evidence_supported.append(result.support_status == "SUPPORTED")
+        answered += int(response_state.answer is not None)
+        citation_valid.append(
+            bool(response_state.citation_ids) if response_state.answer is not None else True
+        )
+        evidence_supported.append(response_state.evidence_decision == "SUFFICIENT")
         case_results.append(
             {
                 "pipeline": pipeline,
@@ -47,14 +52,18 @@ async def run_evaluation(
                 "expected_answer": case.expected_answer,
                 "actual_answer": result.answer,
                 "actual_value": result.answer_value,
-                "passed": bool(value_match[-1] and (result.support_status == "SUPPORTED")),
+                "passed": bool(
+                    value_match[-1] and response_state.evidence_decision == "SUFFICIENT"
+                ),
                 "normalized_answer_match": bool(value_match[-1]),
                 "token_f1": f1[-1],
                 "evidence_support": result.support_status,
                 "citation_validity": citation_valid[-1],
                 "abstained": result.abstained,
                 "retrieval_diagnosis": result.retrieval_diagnosis,
-                "conflict_status": result.outcome,
+                "primary_state": response_state.primary_state.value,
+                "conflict_status": response_state.conflict.category.value,
+                "response_state": response_state.model_dump(mode="json"),
             }
         )
     run.metrics_json = {

@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 
 import { api } from "@/lib/api";
 import { frontendConfig } from "@/lib/config";
-import type { AgentRunDetail as AgentRunDetailType } from "@/types";
+import type {
+  AgentRunDetail as AgentRunDetailType,
+  CanonicalResponseState,
+} from "@/types";
 
 import CitationList from "./CitationList";
 import ClaimStatus from "./ClaimStatus";
@@ -39,6 +42,7 @@ export default function AgentRunDetail({ runId }: { runId: string }) {
   if (error) return <p className="error" role="alert">{error}</p>;
   if (!run) return <div className="empty">Loading run detail...</div>;
   const result = run.result_json;
+  const responseState = result.response_state as CanonicalResponseState | undefined;
   const citations = Array.isArray(result.citations) ? result.citations : [];
   const claims = Array.isArray(result.claims) ? result.claims : [];
   const tools = Array.isArray(result.tools_used) ? result.tools_used : [];
@@ -56,8 +60,8 @@ export default function AgentRunDetail({ runId }: { runId: string }) {
       <p className="answer">{run.input_query}</p>
       <div className="meta-row">
         <span>Workflow status: {run.status}</span>
-        <OutcomeBadge value={String(result.outcome ?? "INSUFFICIENT_EVIDENCE")} />
-        <span>Confidence: {String(result.confidence_category ?? "none")}</span>
+        <OutcomeBadge value={responseState?.primary_state ?? String(result.outcome ?? "INSUFFICIENT_EVIDENCE")} />
+        <span>Confidence: {responseState?.confidence.final.toLowerCase() ?? String(result.confidence_category ?? "none")}</span>
         <span>{String(result.total_duration_ms ?? 0)} ms</span>
       </div>
       <h3>Final answer</h3>

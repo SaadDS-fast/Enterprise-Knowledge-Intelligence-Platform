@@ -18,9 +18,12 @@ const cases = [
   ["reranker fallback", "Travel allowance is PKR 6,850 per day.", "Employee Travel Policy"],
   ["embedding fallback", "The procurement manager grants approval.", "Procurement Controls"],
   ["multi-claim single-source", "Travel allowance is PKR 6,850 and the travel manager approves trips.", "Employee Travel Policy"],
+  ["true value conflict", "Authorized sources contain conflicting information.", "Travel Policy"],
+  ["low-quality source", "The available source quality is insufficient for a reliable answer.", ""],
+  ["retrieval failure", "Reliable retrieval could not be completed. This does not mean the information is absent.", ""],
 ] as const;
 
-test("15 retrieval outcomes render focused, safe citations in clean Chromium", async ({ page }) => {
+test("18 retrieval and response states render consistently in clean Chromium", async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -31,8 +34,36 @@ test("15 retrieval outcomes render focused, safe citations in clean Chromium", a
   let current = 0;
   await page.route("**/api/v1/search", async (route) => {
     const [query, answer, source] = cases[current];
-    const abstained = !source;
+    const conflict = query.includes("true value conflict");
+    const lowQuality = query.includes("low-quality");
+    const retrievalFailure = query.includes("retrieval failure");
+    const abstained = !source || conflict;
     const fallback = query.includes("fallback");
+    const primaryState = conflict
+      ? "CONFLICTING_EVIDENCE"
+      : lowQuality
+        ? "LOW_QUALITY_SOURCE"
+        : retrievalFailure
+          ? "RETRIEVAL_FAILURE"
+          : query.includes("ambiguous")
+            ? "AMBIGUOUS_QUERY"
+            : abstained
+              ? "KNOWLEDGE_ABSENT"
+              : query.includes("two-document comparison")
+                ? "SUPPORTED_COMPOSITE"
+                : "SUPPORTED";
+    const citationIds = source ? (conflict ? ["C1", "C2"] : ["C1"]) : [];
+    const citations = source
+      ? citationIds.map((citationId, index) => ({
+          citation_label: citationId,
+          chunk_id: `chunk-${current}-${index}`,
+          document_id: `doc-${current}-${index}`,
+          document_title: conflict ? `Travel Policy ${index ? "B" : "A"}` : source,
+          excerpt: conflict
+            ? `Meal allowance is PKR ${index ? "6,000" : "5,000"} per day.`
+            : answer,
+        }))
+      : [];
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -48,14 +79,7 @@ test("15 retrieval outcomes render focused, safe citations in clean Chromium", a
               metadata: {},
             }]
           : [],
-        citations: source
-          ? [{
-              chunk_id: `chunk-${current}`,
-              document_id: `doc-${current}`,
-              document_title: source,
-              excerpt: answer,
-            }]
-          : [],
+        citations,
         sufficient_evidence: !abstained,
         abstained,
         outcome: abstained
@@ -85,6 +109,59 @@ test("15 retrieval outcomes render focused, safe citations in clean Chromium", a
         active_document_scope: source
           ? [{ document_id: `doc-${current}`, title: source }]
           : [],
+        response_state: {
+          primary_state: primaryState,
+          answer: abstained ? null : answer,
+          claims: abstained
+            ? []
+            : citationIds.map((citationId, index) => ({
+                claim_id: `claim-${index + 1}`,
+                text: answer,
+                citation_ids: [citationId],
+              })),
+          citation_ids: citationIds,
+          citation_document_ids: Object.fromEntries(
+            citationIds.map((citationId, index) => [citationId, `doc-${current}-${index}`]),
+          ),
+          evidence_decision: conflict
+            ? "CONFLICTING"
+            : primaryState === "KNOWLEDGE_ABSENT"
+              ? "ABSENT"
+              : retrievalFailure
+                ? "UNAVAILABLE"
+                : lowQuality
+                  ? "PARTIAL"
+                  : "SUFFICIENT",
+          conflict: {
+            category: conflict ? "VALUE_CONFLICT" : "NO_CONFLICT",
+            unresolved: conflict,
+            material: conflict,
+            sides: conflict
+              ? [
+                  { claim_id: "a", text: "PKR 5,000 per day", citation_ids: ["C1"], applicability: "applicable" },
+                  { claim_id: "b", text: "PKR 6,000 per day", citation_ids: ["C2"], applicability: "applicable" },
+                ]
+              : [],
+          },
+          confidence: {
+            retrieval: abstained ? "NOT_APPLICABLE" : "HIGH",
+            evidence_support: abstained ? "NOT_APPLICABLE" : "HIGH",
+            conflict: conflict ? "HIGH" : "NOT_APPLICABLE",
+            final: abstained ? (conflict ? "LOW" : "NOT_APPLICABLE") : "HIGH",
+          },
+          retrieval: {
+            mode: fallback ? "lexical_fallback" : "hybrid",
+            semantic_applied: !fallback,
+            reranker_applied: !fallback,
+            lexical_fallback_used: fallback,
+            recovery_attempted: false,
+            recovery_succeeded: false,
+            failure_category: retrievalFailure ? "retrieval_unavailable" : null,
+          },
+          scope: { selected_document_scope: false, authorized_document_ids: [] },
+          diagnostics: {},
+          user_message: answer,
+        },
       }),
     });
   });
@@ -102,10 +179,23 @@ test("15 retrieval outcomes render focused, safe citations in clean Chromium", a
     await expect(page.getByTestId("search-answer")).toHaveText(answer);
     if (source) {
       await expect(page.getByTestId("search-citations")).toContainText(source);
-      await expect(page.getByTestId("search-citations")).toContainText(answer);
+      if (!query.includes("true value conflict")) {
+        await expect(page.getByTestId("search-citations")).toContainText(answer);
+      }
     } else {
       await expect(page.getByTestId("search-citations")).toContainText("No validated citations");
     }
+  }
+  await expect(page.getByTestId("search-outcome").locator("strong")).toHaveCount(1);
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 820, height: 1180 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1))
+      .toBeTruthy();
   }
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1))

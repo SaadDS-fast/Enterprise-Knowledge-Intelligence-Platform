@@ -195,10 +195,15 @@ export default function AgentWorkspace() {
         <section className="result agent-result" data-testid="agent-result">
           <div className="result-header">
             <h2>Agent result</h2>
-            <OutcomeBadge value={result.outcome} />
+            <OutcomeBadge value={result.response_state?.primary_state ?? result.outcome} />
           </div>
           <div className="meta-row">
-            <ConfidenceIndicator value={result.confidence_category} />
+            <ConfidenceIndicator
+              value={
+                result.response_state?.confidence.final.toLowerCase() ??
+                result.confidence_category
+              }
+            />
             <span>{result.total_duration_ms ?? 0} ms</span>
             <span>{result.fallback_used ? "Fallback used" : "No fallback"}</span>
             <Link href={`/agent/runs/${result.run_id}`}>Execution timeline</Link>
@@ -230,6 +235,16 @@ export default function AgentWorkspace() {
             ))}
             {!result.conflicts.length ? <div className="empty">No conflicts detected.</div> : null}
           </div>
+          {result.response_state?.conflict.sides.length ? (
+            <div className="evidence-list" data-testid="agent-conflict-sides">
+              {result.response_state.conflict.sides.map((side) => (
+                <article className="evidence warning-card" key={side.claim_id}>
+                  <strong>{side.text}</strong>
+                  <small>Citations: {side.citation_ids.join(", ")}</small>
+                </article>
+              ))}
+            </div>
+          ) : null}
           <h3>Claim verification</h3>
           <ClaimStatus claims={result.claims} />
           <h3>Tools used</h3>

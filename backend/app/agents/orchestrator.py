@@ -44,6 +44,7 @@ from app.observability.metrics import (
     AGENT_RUNS_STARTED,
 )
 from app.rag.evidence_diagnosis import DiagnosisStatus, reformulate_query
+from app.rag.response_state import legacy_fields, response_state_from_legacy
 from app.services.search_service import search_and_answer
 from app.tenancy.context import TenantContext
 
@@ -707,14 +708,26 @@ class AgentOrchestrator:
         await session.flush()
 
     def _result_json(self, runtime: AgentRuntimeState) -> dict:
+        response_state = response_state_from_legacy(
+            answer=runtime.answer,
+            outcome=runtime.outcome,
+            citations=runtime.citations,
+            claims=runtime.claims,
+            conflicts=runtime.conflicts,
+            confidence_category=runtime.confidence_category,
+            retrieval_diagnosis=runtime.retrieval_diagnosis,
+            fallback_used=runtime.fallback_used,
+            status=runtime.status.value,
+        )
+        compatible = legacy_fields(response_state)
         return {
             "summary": (
                 "Agent run completed"
                 if runtime.status == AgentRunStatus.COMPLETED
                 else "Agent run failed safely"
             ),
-            "answer": runtime.answer,
-            "abstained": runtime.abstained,
+            "answer": compatible["answer"],
+            "abstained": compatible["abstained"],
             "citations": runtime.citations,
             "evidence_count": len(runtime.evidence),
             "internal_evidence_count": len(runtime.internal_evidence),
@@ -729,11 +742,12 @@ class AgentOrchestrator:
             "providers_used": runtime.providers_used,
             "external_access_allowed": runtime.external_access_allowed,
             "external_access_performed": runtime.external_access_performed,
-            "outcome": runtime.outcome,
+            "outcome": compatible["outcome"],
             "claims": runtime.claims,
             "conflicts": runtime.conflicts,
             "unsupported_claims_removed": runtime.unsupported_claims_removed,
-            "confidence_category": runtime.confidence_category,
+            "confidence_category": compatible["confidence_category"],
+            "response_state": response_state.model_dump(mode="json"),
             "unified_evidence": runtime.unified_evidence,
             "evidence_ranking": runtime.evidence_ranking,
             "evidence_deduplication": runtime.evidence_deduplication,

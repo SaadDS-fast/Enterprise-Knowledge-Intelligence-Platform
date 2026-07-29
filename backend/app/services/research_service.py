@@ -341,7 +341,10 @@ async def _generate_research_report_inner(
             )
             job.source_count = source_count
             job.verified_citation_count = len(response.citations)
-            AGENT_RESEARCH_CLAIMS_VERIFIED.labels(outcome=response.outcome).inc(
+            response_state = response.response_state
+            if response_state is None:
+                raise ValueError("canonical_response_state_missing")
+            AGENT_RESEARCH_CLAIMS_VERIFIED.labels(outcome=response_state.primary_state.value).inc(
                 len(response.claims)
             )
             AGENT_RESEARCH_CITATIONS_VALIDATED.labels(outcome="accepted").inc(

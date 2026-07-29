@@ -382,6 +382,14 @@ Confirmed conflicts require contradictory values for the same normalized subject
 Evaluation compares the grounded answer with the expected answer using normalized value match,
 token F1, evidence support, citation validity, abstention status, and retrieval diagnosis.
 
+Search, Controlled Agent, Evaluation, and Research publish one validated canonical
+response state. It distinguishes supported and composite answers, real evidence
+conflicts, bounded knowledge absence, retrieval failure, ambiguity, low-quality
+sources, insufficiency, processing failure, and cancellation. Claim-linked
+citations, confidence components, retrieval/fallback state, and selected-document
+scope are validated together before rendering. See
+[response-state consistency](docs/architecture/response-state-consistency.md).
+
 ## Project Structure
 
 ```text

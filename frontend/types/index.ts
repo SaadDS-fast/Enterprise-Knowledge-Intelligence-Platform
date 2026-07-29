@@ -95,6 +95,52 @@ export type SearchResult = {
   abstention_reason?: string | null;
   topic_items?: TopicItem[];
   active_document_scope?: SearchScopeItem[];
+  response_state: CanonicalResponseState;
+};
+
+export type PrimaryResponseState =
+  | "SUPPORTED"
+  | "SUPPORTED_COMPOSITE"
+  | "CONFLICTING_EVIDENCE"
+  | "KNOWLEDGE_ABSENT"
+  | "RETRIEVAL_FAILURE"
+  | "AMBIGUOUS_QUERY"
+  | "LOW_QUALITY_SOURCE"
+  | "INSUFFICIENT_EVIDENCE"
+  | "PROCESSING_FAILED"
+  | "CANCELLED";
+
+export type CanonicalResponseState = {
+  primary_state: PrimaryResponseState;
+  answer?: string | null;
+  claims: Array<{ claim_id: string; text: string; citation_ids: string[] }>;
+  citation_ids: string[];
+  evidence_decision: "SUFFICIENT" | "PARTIAL" | "ABSENT" | "CONFLICTING" | "UNAVAILABLE";
+  conflict: {
+    category: string;
+    unresolved: boolean;
+    material: boolean;
+    sides: Array<{ claim_id: string; text: string; citation_ids: string[]; applicability: string }>;
+    resolution?: string | null;
+  };
+  confidence: {
+    retrieval: string;
+    evidence_support: string;
+    conflict: string;
+    final: string;
+  };
+  retrieval: {
+    mode: string;
+    semantic_applied: boolean;
+    reranker_applied: boolean;
+    lexical_fallback_used: boolean;
+    recovery_attempted: boolean;
+    recovery_succeeded: boolean;
+    failure_category?: string | null;
+  };
+  scope: { selected_document_scope: boolean; authorized_document_ids: string[] };
+  diagnostics: Record<string, unknown>;
+  user_message: string;
 };
 
 export type TopicItem = {
@@ -142,6 +188,7 @@ export type AgentCitation = {
   citation_label?: string;
   external_source_label?: string;
   document_title?: string;
+  document_id?: string;
   document_version_id?: string;
   page?: number;
   section?: string;
@@ -204,6 +251,7 @@ export type AgentQueryResponse = {
   unsupported_claims_removed: string[];
   confidence_category: string;
   unified_evidence: Record<string, unknown>[];
+  response_state: CanonicalResponseState;
 };
 
 export type AgentRunStep = {
