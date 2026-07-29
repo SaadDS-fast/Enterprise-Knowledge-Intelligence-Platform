@@ -186,3 +186,33 @@ mismatch and stale retrieval data); the relevant agent workspace test passed,
 while three accessibility cases and the runtime case failed in that mismatched
 environment. Docker builds, service health, Alembic upgrade/check, and
 disposable-volume cleanup passed.
+
+# Phase 2B agentic Playwright closure
+
+The prior four failures were diagnosed as follows:
+
+| Tests | Expected | Historical actual | URLs/process | Evidence-based classification |
+| --- | --- | --- | --- | --- |
+| responsive desktop/tablet/mobile | agent form visible with controlled agent flag enabled | `agent-form` absent | default `http://localhost:3000`; frontend was an older developer process compiled with the public agent flag off; mocked backend routes were not reached for the initial assertion | frontend feature/build mismatch |
+| runtime registration/search/isolation | the run-scoped Atlas document supports the compound answer | insufficient-evidence response | default frontend `http://localhost:3000`, API `http://localhost:8000/api/v1`; normal developer stack, not the disposable ports | unidentified backend/runtime mismatch; no stale-document claim is made |
+
+The historical processes exposed no build identity, so their Git commit was
+not safely derivable. The test fixtures themselves used timestamp-scoped
+organizations, workspaces, users, and filenames with fresh browser storage.
+
+Final isolated results:
+
+- default profile: 1 passed, 6 intentional feature-gated skips
+- agentic profile: 5 passed, 2 intentional semantic/Phase-2B skips
+- responsive agentic checks: 3/3 passed within the agentic profile
+- Phase 2B 15-case Chromium profile: 1 passed
+- production Next.js build against the isolated backend: passed in every
+  profile
+
+The preflight verified commit `c5b6e68dc247528274dfbe1b8f12c30b3d0dafde`,
+compatibility `ekip-e2e-v1`, intended alternate URLs, backend readiness, and
+matching feature flags before test execution. The blind benchmark was not
+executed or changed. Final backend regression: 166 passed, 4 environment-gated
+skips, 77% coverage; Ruff, format, compileall, Bandit, and dependency audits
+passed. Frontend lint had no errors and one existing Fast Refresh warning;
+typecheck, 29 Vitest tests, production build, and dependency audit passed.

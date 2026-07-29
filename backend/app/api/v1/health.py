@@ -47,3 +47,22 @@ async def ready() -> dict:
             "provider": settings.reranker_provider.value,
         },
     }
+
+
+@router.get("/runtime")
+async def runtime_identity() -> dict:
+    """Expose only public build/profile identity for strict E2E preflight."""
+    return {
+        "application": "ekip-backend",
+        "version": settings.app_version,
+        "build_commit": settings.build_commit,
+        "environment": settings.app_env.value,
+        "compatibility_id": settings.runtime_compatibility_id,
+        "features": {
+            "agentic_rag": settings.agentic_rag_enabled,
+            "agentic_research": settings.agent_research_enabled,
+            "external_apis": settings.agent_external_apis_enabled,
+            "semantic_embeddings": settings.semantic_embeddings_enabled,
+            "reranker": settings.reranker_enabled,
+        },
+    }

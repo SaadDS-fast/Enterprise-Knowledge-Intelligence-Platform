@@ -121,3 +121,10 @@ nine additional top-one misses. The larger L12 reranker was allowlisted but its
 operator-cache provisioning did not complete; no comparison claim is made for
 it. Synthetic results do not replace evaluation on an organization's own
 terminology and documents.
+
+The original broad-agentic failure run predated runtime identity endpoints, so
+the exact Git commits of the unidentified processes on ports 3000/8000 cannot
+be reconstructed. Their behavior proves the frontend feature mismatch, and the
+same runtime test passes against current isolated source, but it would be
+incorrect to assign an unverified historical commit or claim stale documents
+were present.

@@ -269,3 +269,16 @@ passed. The Docker acceptance used project `ekip_phase2b`, so PostgreSQL,
 Redis, MinIO, documents, tenant/workspace state, and its network were
 independent of normal services; all project containers, volumes, and the
 network were removed after validation.
+
+# Phase 2B closure
+
+Status: PASS. The remaining broad-agentic regression closes with a verified,
+disposable current-source runtime. Default Playwright passed 1 with 6
+intentional skips; agentic Playwright passed 5 with 2 intentional skips,
+including all three responsive checks; the isolated 15-case profile passed.
+Runtime preflight rejected mismatched identities/flags before test execution.
+No genuine product regression reproduced.
+
+The 160-query fixture was not rerun or modified. Its SHA-256 remains
+`47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`;
+models, calibration, thresholds, and recorded metrics remain frozen.

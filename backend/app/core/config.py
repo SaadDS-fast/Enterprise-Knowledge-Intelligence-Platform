@@ -71,6 +71,8 @@ class Settings(BaseSettings):
     )
     app_name: str = "Enterprise Knowledge Intelligence Platform"
     app_version: str = "1.0.0"
+    build_commit: str = "development"
+    runtime_compatibility_id: str = "ekip-v1"
     app_env: AppEnvironment = AppEnvironment.DEVELOPMENT
     debug: bool = False
     api_v1_prefix: str = "/api/v1"
