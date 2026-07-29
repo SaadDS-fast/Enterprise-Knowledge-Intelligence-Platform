@@ -118,6 +118,40 @@ async def reprocess_document(
     )
 
 
+@router.post("/{document_id}/reindex", response_model=ReprocessResponse, status_code=202)
+async def reindex_document(
+    document_id: UUID,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    tenant: Tenant,
+    session: Annotated[AsyncSession, Depends(get_db)],
+    idempotency_key: Annotated[str | None, Header(max_length=200)] = None,
+) -> ReprocessResponse:
+    """Authorized idempotent re-indexing through the versioned ingestion pipeline."""
+    if not can_manage_documents(tenant.role):
+        raise ForbiddenError("Document re-indexing requires editor access")
+    document = await get_document(session, tenant.workspace_id, document_id)
+    if not document:
+        raise NotFoundError("Document not found")
+    operation_key = f"reindex:{idempotency_key}" if idempotency_key else None
+    job, idempotent = await create_reprocess_job(
+        session, document, idempotency_key=operation_key, operation="reindex"
+    )
+    if not idempotent:
+        await dispatch_ingestion_safely(
+            session,
+            job.id,
+            background_tasks,
+            request_id=getattr(request.state, "request_id", None),
+        )
+    return ReprocessResponse(
+        document_id=document.id,
+        job_id=job.id,
+        status="completed" if job.status == "completed" else "accepted",
+        idempotent=idempotent,
+    )
+
+
 @router.get("/{document_id}/structure", response_model=list[StructureChunkRead])
 async def inspect_document_structure(
     document_id: UUID,

@@ -160,3 +160,125 @@ Controlled agentic frontend update: this phase adds disabled-by-default Next.js 
 - Deep destructive outage testing was limited to previously validated Redis/MinIO paths plus a final report-worker restart probe.
 - Several scaffolded enterprise modules remain low coverage, reflected in the 76% backend coverage.
 - Agentic mode, research mode, and external access are disabled by default. Live SearXNG launch, live public internet tests, arbitrary browsing, unrestricted external APIs, major frontend agent UX, admin UI, and AWS deployment are future work.
+
+## Phase 2 Validation — 2026-07-28
+
+Overall: **PARTIAL PASS** because an already-provisioned live model was unavailable. No
+model was downloaded.
+
+- Backend compileall, Ruff lint/format, full pytest, and 76% coverage passed.
+- Provider allowlist, dimensions, batching, normalization, versioning, unavailability,
+  reranker timeout/fallback, scope, isolation, recovery, absence, and shared-service
+  regressions passed.
+- Authorized idempotent re-index passed; indexing version is `2.0`.
+- Frontend `npm ci`, lint (0 errors, one existing warning), typecheck, 28 tests, and
+  production build passed.
+- Playwright: default 1 passed/4 gated skipped; gated deterministic agentic run 5 passed.
+- Bandit passed; pip-audit found no known vulnerabilities; `npm audit --omit=dev`
+  found 0 vulnerabilities.
+- Docker config/build/restart/health and Alembic upgrade/drift checks passed; all affected
+  services ended healthy with defaults restored.
+- Live model: N/A (`sentence_transformers` absent and no allowlisted cache).
+- Deterministic probe: 96 vectors at dimension 384 in 3.25 ms; approximate process peak
+  RSS 70.92 MiB. This is not a live semantic benchmark.
+- Live Recall@1/3/5, MRR, nDCG@5, citation precision/recall, model load time, and semantic
+  latency are N/A. Metric/contract fixtures passed; no quality improvement is claimed.
+
+## Phase 2 live-model completion — 2026-07-28
+
+Overall: **PARTIAL PASS**. The live models, offline execution, re-index integrity,
+fallbacks, isolation, browser UI, and regressions passed. Quality is not a full pass:
+semantic hybrid improved Recall@5 from 0.9375 to 1.0000, but the raw cross-encoder
+reduced Recall@1 from 0.9375 to 0.8125 and MRR from 1.0000 to 0.9375. All four modes
+scored 0.0000 on the deliberately absent-revenue case, so abstention calibration remains
+required.
+
+- Embedding: `all-minilm-l6-v2` →
+  `sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions, `st-v1`.
+- Reranker: `ms-marco-minilm-l-6-v2` →
+  `cross-encoder/ms-marco-MiniLM-L-6-v2`, `ce-v1`.
+- Packages: sentence-transformers 5.6.1, transformers 5.14.1,
+  huggingface-hub 1.25.1, torch 2.13.0.
+- Offline cache-only inference passed for both models. No runtime download or remote
+  inference endpoint was used.
+- Re-index passed with one live 384-dimensional vector per active chunk, zero
+  deterministic vectors, zero duplicate ordinals, obsolete metadata detection, tenant
+  isolation, selected-document scope, and idempotent-key replay.
+- Cold embedding load plus 12-document batch: 4611.192 ms; warm query: 6.574 ms;
+  warm document batch: 15.672 ms. Cold reranker plus four candidates: 152.546 ms;
+  warm batch: 18.272 ms. Benchmark process peak RSS: about 559.812 MiB.
+- Backend: 155 passed, 4 expected skips, 76% coverage; Ruff, compileall, Bandit and
+  pip-audit passed. Frontend: 28 tests, lint/typecheck/build passed; npm audit found
+  zero vulnerabilities. Default Playwright passed 1 with 5 gates; live-model browser
+  passed 1; feature-enabled responsive agent checks passed 3.
+- Docker config/build/up/health and Alembic upgrade/check passed. Semantic and reranker
+  defaults were restored disabled.
+
+## Phase 2 retrieval calibration — 2026-07-28
+
+Overall: **PARTIAL PASS**. A 60-query development set selected the frozen configuration;
+the separate 40-query holdout was executed once and was not used for retuning.
+
+Holdout calibrated reranker: Recall@1/.3/.5 `.9375/.9688/.9688`, MRR `.9570`,
+nDCG@5 `.9572`, citation precision/recall `1.0000/.9688`, answer support `.9375`,
+unsupported claims `.0000`, absence `1.0000`, recovery `.9688`, and isolation `1.0000`.
+Recall@5 missed the `.98` target and answer support missed `.95`; all other targets
+passed. Materials deformation ranked first in 9/10 holdout variants, including the
+required query. Revenue probes abstained without budget citations.
+
+Frozen weights are lexical `.45`, semantic `.55`, reranker blend `.25`, minimum margin
+`.08`, top-N `20`, return-K `8`. Cross-encoder output is blended rather than replacing
+fusion; ambiguous/absence intents skip it and low-margin/unavailable calls preserve
+fusion. Cold load was 4809.475 ms embedding and 180.344 ms reranker; peak RSS was about
+535.406 MiB.
+
+## Final Phase 2 acceptance closure — 2026-07-28
+
+Status: **BLOCKED / PARTIAL PASS** on the new blind quality gate. The frozen calibration
+was unchanged. A new 120-query fixture was pre-registered with SHA-256
+`16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807`,
+then executed exactly once. It did not reuse the consumed 40-query holdout.
+
+Calibrated results over 96 positive retrieval queries were Recall@1/3/5
+`.8854/.9688/.9792`, MRR `.9274`, nDCG@5 `.9384`, citation precision/recall
+`.8854/.9688`, answer support `.8854`, and unsupported claims `.0000`. Eight absence
+and eight tenant-isolation cases each scored `1.0000`. Recovery-at-3 was `.9688`
+over the same 96 positive queries; 40 were explicitly marked recovery cases.
+Elasticity hard negatives ranked first in 6/8 cases.
+
+Operational closure passed: backend tests use unique tenant/workspace identities;
+browser documents use exact run-scoped names; a dedicated Compose project used
+disposable PostgreSQL, Redis, and MinIO volumes. Default Chromium passed 1 with 5 gates;
+feature-enabled Chromium passed 5 with 1 live gate. The full backend suite passed
+158/158 with 4 expected skips and 76% coverage. Docker builds, Alembic upgrade/check,
+Bandit, pip-audit, and npm audit passed. Disposable containers, network, and volumes
+were removed after validation.
+# Phase 2B hard-negative remediation (2026-07-29)
+
+Status: PASS on the one-time 160-query blind holdout. The frozen current model
+pair achieved Recall@1 0.9250, Recall@3/5 1.0000, MRR 0.9893, nDCG@5 0.9921,
+citation precision 0.9786, citation recall and answer support 1.0000,
+unsupported claims 0, knowledge absence/recovery/tenant isolation 1.0000, and
+hard-negative Recall@1 1.0000. Denominators were 160 total, 140 positive, 20
+hard-negative, 15 absence/isolation, 5 ambiguous, and 5 selected-document.
+Fixture SHA-256: `47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`.
+It was executed exactly once.
+
+The isolated Chromium acceptance exercised all 15 requested outcomes and
+passed. The Docker acceptance used project `ekip_phase2b`, so PostgreSQL,
+Redis, MinIO, documents, tenant/workspace state, and its network were
+independent of normal services; all project containers, volumes, and the
+network were removed after validation.
+
+# Phase 2B closure
+
+Status: PASS. The remaining broad-agentic regression closes with a verified,
+disposable current-source runtime. Default Playwright passed 1 with 6
+intentional skips; agentic Playwright passed 5 with 2 intentional skips,
+including all three responsive checks; the isolated 15-case profile passed.
+Runtime preflight rejected mismatched identities/flags before test execution.
+No genuine product regression reproduced.
+
+The 160-query fixture was not rerun or modified. Its SHA-256 remains
+`47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`;
+models, calibration, thresholds, and recorded metrics remain frozen.

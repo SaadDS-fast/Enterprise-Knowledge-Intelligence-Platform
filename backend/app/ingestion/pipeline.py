@@ -18,7 +18,7 @@ from app.integrations.storage import get_storage
 from app.integrations.storage.keys import document_object_key
 from app.jobs.status import IngestionStage, JobStatus
 from app.observability.metrics import INGESTION_COMPLETED, INGESTION_FAILED
-from app.rag.embeddings import embed_text
+from app.rag.semantic_provider import embed_with_fallback
 
 
 async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> dict:
@@ -90,6 +90,20 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
             job.stage = IngestionStage.EMBEDDING
             await session.commit()
             await _stage_delay()
+            embedding_inputs = [
+                _semantic_chunk_text(
+                    title=document.title,
+                    content=structured.content,
+                    metadata=structured.metadata,
+                )
+                for structured in structured_chunks
+            ]
+            embeddings, embedding_provider, embedding_fallback = await embed_with_fallback(
+                embedding_inputs
+            )
+            embedding_metadata = embedding_provider.identity.metadata(
+                indexing_version=pipeline_versions["indexing_version"]
+            )
             await session.execute(delete(Chunk).where(Chunk.document_version_id == version.id))
             pii_count = len(find_pii(text))
             session.add_all(
@@ -111,10 +125,14 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                             **pipeline_versions,
                             "extraction_quality": quality.status.value,
                             "chunking_strategy": "structure-aware-v3",
+                            **embedding_metadata,
+                            "embedding_fallback_used": embedding_fallback,
                         },
-                        embedding=embed_text(structured.content),
+                        embedding=embedding,
                     )
-                    for index, structured in enumerate(structured_chunks)
+                    for index, (structured, embedding) in enumerate(
+                        zip(structured_chunks, embeddings, strict=True)
+                    )
                     for content in [structured.content]
                 ]
             )
@@ -143,6 +161,8 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                     "extraction_quality": quality.as_dict(),
                     "page_count": extracted.page_count,
                     "chunk_count": len(structured_chunks),
+                    **embedding_metadata,
+                    "embedding_fallback_used": embedding_fallback,
                 }
             )
             document.status = (
@@ -161,6 +181,8 @@ async def process_ingestion_job(job_id: UUID, request_id: str | None = None) -> 
                 "status": document.status.upper(),
                 "extraction_quality": quality.status.value,
                 "chunking_strategy": "structure-aware-v3",
+                **embedding_metadata,
+                "embedding_fallback_used": embedding_fallback,
                 **pipeline_versions,
             }
             await session.commit()
@@ -206,3 +228,14 @@ def _safe_error_category(exc: Exception) -> str:
     if isinstance(exc, (ValueError, UnicodeError)):
         return "MALFORMED_OR_UNSUPPORTED_CONTENT"
     return "INTERNAL_PROCESSING_ERROR"
+
+
+def _semantic_chunk_text(*, title: str, content: str, metadata: dict) -> str:
+    """Build safe retrieval context from the chunk and structural labels only."""
+    labels = [
+        title[:255],
+        str(metadata.get("heading") or "")[:500],
+        str(metadata.get("section") or "")[:500],
+        content,
+    ]
+    return "\n".join(value for value in labels if value)

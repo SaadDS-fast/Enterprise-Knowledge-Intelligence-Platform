@@ -1,0 +1,1274 @@
+{
+  "benchmark_version": "phase2-blind-holdout-v2",
+  "category_counts": {
+    "ambiguous": 8,
+    "date": 8,
+    "definition": 8,
+    "direct_fact": 8,
+    "hard_negative": 8,
+    "knowledge_absence": 8,
+    "list": 8,
+    "monetary_limit": 8,
+    "multi_evidence": 8,
+    "name_role": 8,
+    "numbered_question": 8,
+    "paraphrased_fact": 8,
+    "policy_rule": 8,
+    "tenant_isolation": 8,
+    "topic_identification": 8
+  },
+  "documents": [
+    {
+      "content": "Field Meal Ceiling: PKR 6,400 per calendar day.",
+      "id": "mobility",
+      "tenant": "tenant-a",
+      "title": "Regional Mobility Standard"
+    },
+    {
+      "content": "Caregiver Leave: 12 paid working days annually.",
+      "id": "wellbeing",
+      "tenant": "tenant-a",
+      "title": "Wellbeing Leave Standard"
+    },
+    {
+      "content": "Equipment Authorization: The treasury controller approves requests above PKR 720,000.",
+      "id": "treasury",
+      "tenant": "tenant-a",
+      "title": "Treasury Controls"
+    },
+    {
+      "content": "Tender Rule: Four written bids are mandatory above PKR 240,000.",
+      "id": "sourcing",
+      "tenant": "tenant-a",
+      "title": "Strategic Sourcing Rules"
+    },
+    {
+      "content": "Bijection Definition: A bijection is both one-to-one and onto.",
+      "id": "algebra",
+      "tenant": "tenant-a",
+      "title": "Algebra Reference"
+    },
+    {
+      "content": "Exercise 11: A cart has position x(t). Derive its acceleration.",
+      "id": "mechanics",
+      "tenant": "tenant-a",
+      "title": "Mechanics Exercises"
+    },
+    {
+      "content": "Exercise 18: A polymer rod shortens under compressive force. Determine its strain.",
+      "id": "elasticity",
+      "tenant": "tenant-a",
+      "title": "Elasticity Exercises"
+    },
+    {
+      "content": "Go-live Date: 17 September 2027.\nProgram Owner: Nadia Rahman.",
+      "id": "milestones",
+      "tenant": "tenant-a",
+      "title": "Orion Delivery Charter"
+    },
+    {
+      "content": "Incident Steps: isolate the host; preserve logs; notify the security lead.",
+      "id": "security",
+      "tenant": "tenant-a",
+      "title": "Security Response Guide"
+    },
+    {
+      "content": "Reviewers: Amina Shah, Bilal Khan, and Chen Wu.",
+      "id": "quality",
+      "tenant": "tenant-a",
+      "title": "Quality Review Matrix"
+    },
+    {
+      "content": "Medical Limit: PKR 85,000.\nDental Limit: PKR 30,000.",
+      "id": "benefits",
+      "tenant": "tenant-a",
+      "title": "Benefits Summary"
+    },
+    {
+      "content": "Department Manager: The service manager approves weekly rosters.",
+      "id": "roles",
+      "tenant": "tenant-a",
+      "title": "Department Roles"
+    },
+    {
+      "content": "The relocation team moves carts and polymer containers.",
+      "id": "motion-distractor",
+      "tenant": "tenant-a",
+      "title": "Warehouse Move"
+    },
+    {
+      "content": "Annual Budget: PKR 14,000,000.",
+      "id": "budget-distractor",
+      "tenant": "tenant-a",
+      "title": "Planning Budget"
+    },
+    {
+      "content": "Field meals are limited to PKR 99,000 daily.",
+      "id": "tenant-b",
+      "tenant": "tenant-b",
+      "title": "Tenant B Mobility"
+    }
+  ],
+  "frozen_calibration": {
+    "lexical_weight": 0.45,
+    "reranker_blend_weight": 0.25,
+    "reranker_min_margin": 0.08,
+    "return_k": 8,
+    "semantic_weight": 0.55,
+    "top_n": 20
+  },
+  "queries": [
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-0",
+      "query": "What is the field meal ceiling?",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-1",
+      "query": "State the daily field meal amount.",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-2",
+      "query": "Give the PKR field-food limit.",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-3",
+      "query": "How much is allowed for meals each calendar day?",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-4",
+      "query": "Find the regional meal ceiling.",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-5",
+      "query": "What daily food expense is permitted?",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-6",
+      "query": "Which amount covers field meals?",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "direct_fact",
+      "id": "direct_fact-7",
+      "query": "Report the official meal limit.",
+      "recovery": false,
+      "relevant": [
+        "mobility"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-0",
+      "query": "How much paid time is available for caring duties?",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-1",
+      "query": "State the yearly caregiver entitlement.",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-2",
+      "query": "How many working days cover family care?",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-3",
+      "query": "Give the annual care leave allowance.",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-4",
+      "query": "What paid absence supports caregivers?",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-5",
+      "query": "Find the caregiver time-off limit.",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-6",
+      "query": "How many days may a caregiver take?",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "paraphrased_fact",
+      "id": "paraphrased_fact-7",
+      "query": "Identify the yearly paid care benefit.",
+      "recovery": true,
+      "relevant": [
+        "wellbeing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-0",
+      "query": "Define a bijection.",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-1",
+      "query": "Which mapping is one-to-one and onto?",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-2",
+      "query": "What does bijection mean?",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-3",
+      "query": "Give the algebraic bijection definition.",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-4",
+      "query": "Identify the mapping with both properties.",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-5",
+      "query": "Which relation is injective and surjective?",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-6",
+      "query": "State the exact bijection rule.",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "definition",
+      "id": "definition-7",
+      "query": "Find the definition combining one-to-one with onto.",
+      "recovery": true,
+      "relevant": [
+        "algebra"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-0",
+      "query": "When are four written bids mandatory?",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-1",
+      "query": "State the tender rule.",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-2",
+      "query": "What sourcing rule applies above PKR 240,000?",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-3",
+      "query": "How many bids are required for a large purchase?",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-4",
+      "query": "Find the written-bid threshold.",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-5",
+      "query": "When must sourcing collect four offers?",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-6",
+      "query": "Give the strategic tender requirement.",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "policy_rule",
+      "id": "policy_rule-7",
+      "query": "Which amount triggers four bids?",
+      "recovery": false,
+      "relevant": [
+        "sourcing"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-0",
+      "query": "When is Orion scheduled to go live?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-1",
+      "query": "State the Orion go-live date.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-2",
+      "query": "What date launches the Orion delivery?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-3",
+      "query": "Give the program milestone date.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-4",
+      "query": "When does the charter schedule launch?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-5",
+      "query": "Find Orion's September milestone.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-6",
+      "query": "Which date is listed for go-live?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "date",
+      "id": "date-7",
+      "query": "Report the exact Orion launch date.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-0",
+      "query": "What is the medical benefit limit?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-1",
+      "query": "State the PKR medical ceiling.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-2",
+      "query": "How much medical coverage is available?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-3",
+      "query": "Give the healthcare reimbursement limit.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-4",
+      "query": "Find the medical allowance amount.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-5",
+      "query": "What sum covers medical claims?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-6",
+      "query": "Which limit is PKR 85,000?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "monetary_limit",
+      "id": "monetary_limit-7",
+      "query": "Report the medical cap.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-0",
+      "query": "Who owns the Orion program?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-1",
+      "query": "Name the Orion program owner.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-2",
+      "query": "Which person is responsible for Orion?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-3",
+      "query": "State the owner in the delivery charter.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-4",
+      "query": "Who leads the Orion delivery?",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-5",
+      "query": "Find the named program owner.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-6",
+      "query": "Identify Orion's accountable person.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "name_role",
+      "id": "name_role-7",
+      "query": "Give the owner's full name.",
+      "recovery": false,
+      "relevant": [
+        "milestones"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-0",
+      "query": "Find Exercise 11.",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-1",
+      "query": "Which exercise derives acceleration from x(t)?",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-2",
+      "query": "Locate the cart-position problem.",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-3",
+      "query": "What numbered mechanics item asks for acceleration?",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-4",
+      "query": "Identify the x(t) exercise.",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-5",
+      "query": "Which question concerns a cart's acceleration?",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-6",
+      "query": "Find the position-to-acceleration problem.",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "numbered_question",
+      "id": "numbered_question-7",
+      "query": "Report the mechanics exercise number.",
+      "recovery": true,
+      "relevant": [
+        "mechanics"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-0",
+      "query": "Which exercise concerns compression of a material?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-1",
+      "query": "Identify the polymer strain problem.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-2",
+      "query": "What topic is Exercise 18 about?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-3",
+      "query": "Find the elasticity question under force.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-4",
+      "query": "Which item studies a shortening rod?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-5",
+      "query": "Locate the compressive deformation exercise.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-6",
+      "query": "What question concerns strain rather than cart motion?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "topic_identification",
+      "id": "topic_identification-7",
+      "query": "Identify the polymer-force topic.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-0",
+      "query": "List the quality reviewers.",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-1",
+      "query": "Who are all review-matrix members?",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-2",
+      "query": "Give the reviewer names.",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-3",
+      "query": "Enumerate the quality reviewers.",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-4",
+      "query": "Which people perform quality review?",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-5",
+      "query": "State every named reviewer.",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-6",
+      "query": "Who appears in the reviewer list?",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "list",
+      "id": "list-7",
+      "query": "Return the three quality-review names.",
+      "recovery": false,
+      "relevant": [
+        "quality"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-0",
+      "query": "Give both medical and dental limits.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-1",
+      "query": "What are the two benefit ceilings?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-2",
+      "query": "State medical as well as dental coverage.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-3",
+      "query": "List both healthcare benefit amounts.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-4",
+      "query": "How do medical and dental caps compare?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-5",
+      "query": "Return each benefit limit.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-6",
+      "query": "What amounts cover medical and dental claims?",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "multi_evidence",
+      "id": "multi_evidence-7",
+      "query": "Give the paired benefit values.",
+      "recovery": false,
+      "relevant": [
+        "benefits"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-0",
+      "query": "Which problem concerns strain under compressive force?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-1",
+      "query": "Find material shortening, not warehouse movement.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-2",
+      "query": "Which exercise deforms a polymer rather than moving a cart?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-3",
+      "query": "Identify compression instead of position change.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-4",
+      "query": "Find the applied-force strain calculation.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-5",
+      "query": "Which item is about elasticity, not relocation?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-6",
+      "query": "Locate polymer deformation under load.",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": false,
+      "category": "hard_negative",
+      "id": "hard_negative-7",
+      "query": "What question studies material strain?",
+      "recovery": true,
+      "relevant": [
+        "elasticity"
+      ]
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-0",
+      "query": "What was annual revenue?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-1",
+      "query": "State net sales turnover.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-2",
+      "query": "What profit was recorded?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-3",
+      "query": "Give the tax liability.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-4",
+      "query": "Who chairs the board?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-5",
+      "query": "Where is the London branch?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-6",
+      "query": "What dividend was declared?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "knowledge_absence",
+      "id": "absence-7",
+      "query": "How many customers are active?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-0",
+      "query": "status",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-1",
+      "query": "policy",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-2",
+      "query": "Orion",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-3",
+      "query": "limit",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-4",
+      "query": "owner",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-5",
+      "query": "date",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-6",
+      "query": "exercise",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "ambiguous",
+      "id": "ambiguous-7",
+      "query": "benefit",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-0",
+      "query": "What is Tenant B's field meal limit?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-1",
+      "query": "State Tenant B daily meals.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-2",
+      "query": "How much does Tenant B allow for food?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-3",
+      "query": "Give the other tenant's meal ceiling.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-4",
+      "query": "Find Tenant B mobility expenses.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-5",
+      "query": "What is the PKR 99,000 meal rule?",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-6",
+      "query": "Report Tenant B field food.",
+      "recovery": false,
+      "relevant": []
+    },
+    {
+      "absence": true,
+      "category": "tenant_isolation",
+      "id": "isolation-7",
+      "query": "Which tenant permits 99,000 daily?",
+      "recovery": false,
+      "relevant": []
+    }
+  ]
+}

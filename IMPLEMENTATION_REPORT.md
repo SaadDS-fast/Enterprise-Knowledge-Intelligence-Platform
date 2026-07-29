@@ -198,3 +198,84 @@ Runtime probes passed:
 - Coverage remains uneven in scaffolded agent/cache/security modules.
 - Agentic mode remains disabled by default and should not be enabled globally until future phases add deeper operator review, dashboards, and production rollout controls.
 - Arbitrary browsing, unrestricted external APIs, admin UI, and AWS deployment are intentionally not included in this phase.
+
+## Phase 2 — Semantic Retrieval and Reranking (2026-07-28)
+
+- Added typed, lazy, CPU-only sentence embedding and cross-encoder providers with
+  allowlisted aliases, bounded inputs/batches/candidates, normalized vectors, timeout,
+  retry, readiness, deterministic tests, and safe fallback.
+- Upgraded indexing to `2.0`. Clean chunks embed safe title, heading, and section
+  context, and record provider, alias, dimension, embedding/index versions, and time.
+- Added authorized idempotent `POST /documents/{id}/reindex` and obsolete-vector
+  identification.
+- Calibrated the shared Search, Agent, Evaluation, and Research retriever with
+  latest-version and selected-document scope, quality controls, duplicate suppression,
+  safe diagnostics, and collapsible frontend labels.
+- Added Recall@1/3/5, MRR, and nDCG@5 primitives without replacing historical metrics.
+- No generative model, Ollama inference, AWS integration, remote inference endpoint, or
+  controlled-agent replacement was introduced.
+
+Live model validation is `PARTIAL`: neither the optional package nor a provisioned model
+cache existed, and no download was attempted. Tests used the deterministic
+384-dimensional provider (`deterministic-hash-v1`).
+
+### Live completion
+
+Operators explicitly provisioned the two fixed allowlist identifiers into a cache
+outside the repository. Normal inference is now cache-only for both providers, including
+development, and embedding calls have the same bounded timeout/fallback behavior as
+reranking. Optional dependency ranges were advanced to patched, reproducible major
+versions (`sentence-transformers>=5.2,<6`, `transformers>=5.5,<6`).
+
+The live validation added safe benchmark, fallback, and re-index harnesses plus gated
+live Chromium coverage. Obsolete-vector recommendations now compare the full configured
+provider/model/dimension/version identity. A real browser run also found and fixed
+horizontal overflow in the main grid and long diagnosis labels.
+
+The implementation is operationally complete but quality status remains partial:
+semantic fusion recovered one Recall@5 miss; the uncalibrated raw cross-encoder harmed
+top-rank quality on the materials query, and the absent-revenue case did not abstain.
+No thresholds were changed to conceal those outcomes.
+
+## Phase 2 calibration implementation
+
+The shared retriever now classifies deterministic query intent, emits safe reranking
+policy diagnostics, and uses bounded blended reranking. Typed sufficiency decisions are
+`SUFFICIENT_DIRECT`, `SUFFICIENT_COMPOSITE`, `RETRIEVAL_RETRY_REQUIRED`,
+`RETRIEVAL_FAILURE_UNRESOLVED`, `KNOWLEDGE_ABSENT`, `AMBIGUOUS_QUERY`, and
+`LOW_QUALITY_SOURCE`.
+
+Numeric fact extraction preserves terminology: revenue cannot be supported by budget,
+nor allowance by an unrelated amount. Answer citations select the matched supporting
+span and identify the supported claim instead of returning five chunk prefixes.
+Search remains the shared service consumed by controlled Agent, Evaluation, and
+Research.
+
+## Acceptance isolation
+
+Backend authentication fixtures now register a unique organization, workspace, user,
+and token per test instead of sharing a session workspace. This exposed and fixed a
+real date-conflict bug: `launch` is now recognized alongside `launched`.
+
+Chromium uploads use a run-scoped filename and exact document lookup. The acceptance
+Compose override publishes non-conflicting ports under a dedicated project; project
+names scope all database, cache, and object-storage volumes so cleanup can delete only
+acceptance data.
+# Phase 2B terminology-sensitive retrieval
+
+Added reusable typed concept families for numerical attributes, scientific
+concepts, allowance types, approval processes, roles, mathematical objects,
+date types, and policy state. Candidate scoring rewards complete concept and
+heading coverage, penalizes missing or contradictory sibling concepts, accounts
+for extraction quality and superseded metadata, and exposes safe diagnostics.
+Evidence sufficiency and citation fact selection now exclude contradictory
+sources while preserving original source indexes and document authorization.
+
+# Phase 2B agentic E2E closure
+
+Added safe frontend/backend runtime identities and a strict Playwright
+preflight. The isolated runner selects explicit default, agentic, or Phase 2B
+profiles; rejects occupied alternate ports; builds current source; provisions
+run-unique Compose services and volumes; verifies commit, compatibility,
+readiness, and flags; runs Playwright and Alembic; and always removes disposable
+state. No retrieval or product behavior required modification.

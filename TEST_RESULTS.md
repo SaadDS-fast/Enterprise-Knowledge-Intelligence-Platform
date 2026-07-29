@@ -105,3 +105,114 @@ Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 - Host-side API and browser validation required sandbox escalation to reach Docker-published localhost ports.
 - Agentic frontend Docker runtime validation passed through PostgreSQL/Redis/MinIO/Celery with feature flags enabled for the probe.
 - Next.js was upgraded to `16.2.11`; `npm audit --omit=dev` now reports 0 vulnerabilities.
+
+## Phase 2 Test Results — 2026-07-28
+
+- Backend: 157 collected; 153 passed and 4 skipped. The opt-in live model checks were
+  skipped because no operator-provisioned model was available.
+- Coverage: 76%.
+- Frontend: 10 files, 28 tests passed.
+- Playwright default: 1 passed, 4 gated skipped.
+- Playwright deterministic agentic profile: 5 passed.
+- Backend, frontend, ingestion, evaluation, and report-worker images built; all affected
+  services were healthy after restart.
+- Alembic upgrade and drift check passed.
+- Live local model: unavailable, not downloaded, result `PARTIAL`.
+
+## Phase 2 live-model test results — 2026-07-28
+
+The opt-in live tests passed cache-only with network-offline flags. The 14-document,
+9-query safe corpus produced:
+
+| Mode | Recall@1/3/5 | MRR | nDCG@5 | Avg / p50 / p95 ms |
+|---|---|---:|---:|---:|
+| Lexical | .9375 / .9375 / .9375 | 1.0000 | .9516 | .196 / .187 / .291 |
+| Deterministic hybrid | .9375 / .9375 / 1.0000 | 1.0000 | .9813 | .289 / .288 / .312 |
+| Live semantic hybrid | .9375 / .9375 / 1.0000 | 1.0000 | .9813 | 7.743 / 7.530 / 9.439 |
+| Live semantic + reranker | .8125 / 1.0000 / 1.0000 | .9375 | .9539 | 17.621 / 16.817 / 21.100 |
+
+Every mode measured citation precision .8000, citation recall .8889, answer support
+.8750, unsupported-claim rate .2222, recovery 1.0000, tenant isolation 1.0000, and
+knowledge-absence accuracy .0000. Raw safe results are in
+`docs/evaluation/phase2-live-results.json`; re-index and failure matrices are adjacent.
+
+Regression totals: backend 155 passed/4 skipped with 76% coverage; frontend 28/28;
+Bandit zero findings; pip-audit no known vulnerabilities; npm production audit zero.
+Docker builds, health, Alembic upgrade and drift check passed. A first Chromium launch
+was denied by the macOS sandbox and passed on the permitted retry.
+
+## Phase 2 calibration tests
+
+- Benchmark: 60 development queries and 40 untouched holdout queries.
+- Backend: 158 passed, 4 expected skips; 77% coverage.
+- Frontend: 28 passed; lint had zero errors/one existing warning; typecheck and build
+  passed.
+- Ruff, compileall, Bandit, pip-audit and npm production audit passed.
+- New deterministic coverage includes intent classification, revenue/budget hard
+  negative, low-quality rejection and incomplete composite rejection.
+- Safe aggregate output: `docs/evaluation/phase2-calibration-results.json`.
+
+## Blind acceptance closure
+
+- Pre-registered blind fixture: 120 queries, 15 categories × 8.
+- Fixture checksum:
+  `16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807`.
+- Execution count: exactly 1.
+- Denominators: 120 total, 96 positive retrieval, 8 absence, 8 isolation, 8 hard
+  negative; recovery metric evaluated all 96 positives, of which 40 were marked
+  recovery.
+- Backend: 158 passed, 4 gated; coverage 76%.
+- Frontend: 28 passed; lint/typecheck/build passed.
+- Playwright isolated default: 1 passed/5 gated. Isolated agent profile:
+  5 passed/1 gated.
+- Docker isolated build/up, Alembic upgrade/check, Bandit, pip-audit and npm audit
+  passed. The isolated project and volumes were deleted.
+# Phase 2B retrieval quality
+
+The 127-query development set compared all-MiniLM-L6-v2/L6 against
+BGE-small-en-v1.5/L6. Both produced hard-negative Recall@1 1.0000 and overall
+Recall@1 0.9346; BGE had higher steady-state latency and peak RSS, so the
+predeclared selection policy retained the current pair. The 160-query blind
+result is recorded in `docs/evaluation/phase2b-blind-holdout-v1-results.json`.
+
+Regression closure: backend 165 passed/4 environment-gated skipped with 77%
+coverage; Ruff, formatting, compileall, Bandit, and pip-audit passed. Frontend
+lint had one pre-existing Fast Refresh warning and no errors; typecheck, 28
+Vitest tests, production build, and npm audit passed. The isolated 15-case
+Chromium acceptance passed, as did the real-stack runtime Playwright test
+against the disposable Docker project. A broad agentic-flag run against an
+older process on ports 3000/8000 was not a valid isolated run (feature-build
+mismatch and stale retrieval data); the relevant agent workspace test passed,
+while three accessibility cases and the runtime case failed in that mismatched
+environment. Docker builds, service health, Alembic upgrade/check, and
+disposable-volume cleanup passed.
+
+# Phase 2B agentic Playwright closure
+
+The prior four failures were diagnosed as follows:
+
+| Tests | Expected | Historical actual | URLs/process | Evidence-based classification |
+| --- | --- | --- | --- | --- |
+| responsive desktop/tablet/mobile | agent form visible with controlled agent flag enabled | `agent-form` absent | default `http://localhost:3000`; frontend was an older developer process compiled with the public agent flag off; mocked backend routes were not reached for the initial assertion | frontend feature/build mismatch |
+| runtime registration/search/isolation | the run-scoped Atlas document supports the compound answer | insufficient-evidence response | default frontend `http://localhost:3000`, API `http://localhost:8000/api/v1`; normal developer stack, not the disposable ports | unidentified backend/runtime mismatch; no stale-document claim is made |
+
+The historical processes exposed no build identity, so their Git commit was
+not safely derivable. The test fixtures themselves used timestamp-scoped
+organizations, workspaces, users, and filenames with fresh browser storage.
+
+Final isolated results:
+
+- default profile: 1 passed, 6 intentional feature-gated skips
+- agentic profile: 5 passed, 2 intentional semantic/Phase-2B skips
+- responsive agentic checks: 3/3 passed within the agentic profile
+- Phase 2B 15-case Chromium profile: 1 passed
+- production Next.js build against the isolated backend: passed in every
+  profile
+
+The preflight verified commit `c5b6e68dc247528274dfbe1b8f12c30b3d0dafde`,
+compatibility `ekip-e2e-v1`, intended alternate URLs, backend readiness, and
+matching feature flags before test execution. The blind benchmark was not
+executed or changed. Final backend regression: 166 passed, 4 environment-gated
+skips, 77% coverage; Ruff, format, compileall, Bandit, and dependency audits
+passed. Frontend lint had no errors and one existing Fast Refresh warning;
+typecheck, 29 Vitest tests, production build, and dependency audit passed.

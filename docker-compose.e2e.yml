@@ -1,0 +1,54 @@
+services:
+  postgres:
+    ports: !override
+      - "${E2E_POSTGRES_PORT}:5432"
+  redis:
+    ports: !override
+      - "${E2E_REDIS_PORT}:6379"
+  minio:
+    ports: !override
+      - "${E2E_MINIO_PORT}:9000"
+      - "${E2E_MINIO_CONSOLE_PORT}:9001"
+  backend:
+    build:
+      args:
+        BUILD_COMMIT: "${E2E_BUILD_COMMIT}"
+        RUNTIME_COMPATIBILITY_ID: "${E2E_COMPATIBILITY_ID}"
+    ports: !override
+      - "${E2E_BACKEND_PORT}:8000"
+    environment: &e2e-backend
+      APP_ENV: testing
+      BUILD_COMMIT: "${E2E_BUILD_COMMIT}"
+      RUNTIME_COMPATIBILITY_ID: "${E2E_COMPATIBILITY_ID}"
+      CORS_ORIGINS: "http://127.0.0.1:${E2E_FRONTEND_PORT}"
+      AGENTIC_RAG_ENABLED: "${E2E_AGENTIC_RAG_ENABLED}"
+      AGENT_RESEARCH_ENABLED: "${E2E_AGENT_RESEARCH_ENABLED}"
+      AGENT_EXTERNAL_APIS_ENABLED: "false"
+      AGENT_WEB_SEARCH_ENABLED: "false"
+      SEMANTIC_EMBEDDINGS_ENABLED: "false"
+      RERANKER_ENABLED: "false"
+      LOCAL_LLM_BACKEND: extractive
+  ingestion-worker:
+    environment: *e2e-backend
+  evaluation-worker:
+    environment: *e2e-backend
+  report-worker:
+    environment: *e2e-backend
+  frontend:
+    ports: !override
+      - "${E2E_FRONTEND_PORT}:3000"
+    build:
+      args:
+        NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:${E2E_BACKEND_PORT}/api/v1"
+        NEXT_PUBLIC_AGENTIC_RAG_ENABLED: "${E2E_AGENTIC_RAG_ENABLED}"
+        NEXT_PUBLIC_AGENTIC_RESEARCH_ENABLED: "${E2E_AGENT_RESEARCH_ENABLED}"
+        NEXT_PUBLIC_AGENT_EXTERNAL_SOURCES_ENABLED: "false"
+        NEXT_PUBLIC_BUILD_COMMIT: "${E2E_BUILD_COMMIT}"
+        NEXT_PUBLIC_RUNTIME_COMPATIBILITY_ID: "${E2E_COMPATIBILITY_ID}"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:${E2E_BACKEND_PORT}/api/v1"
+      NEXT_PUBLIC_AGENTIC_RAG_ENABLED: "${E2E_AGENTIC_RAG_ENABLED}"
+      NEXT_PUBLIC_AGENTIC_RESEARCH_ENABLED: "${E2E_AGENT_RESEARCH_ENABLED}"
+      NEXT_PUBLIC_AGENT_EXTERNAL_SOURCES_ENABLED: "false"
+      NEXT_PUBLIC_BUILD_COMMIT: "${E2E_BUILD_COMMIT}"
+      NEXT_PUBLIC_RUNTIME_COMPATIBILITY_ID: "${E2E_COMPATIBILITY_ID}"

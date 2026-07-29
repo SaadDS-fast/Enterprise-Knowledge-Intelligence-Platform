@@ -33,7 +33,9 @@ from app.rag.evidence_diagnosis import (
     merge_evidence,
     reformulate_query,
 )
+from app.rag.evidence_sufficiency import assess_sufficiency
 from app.rag.hybrid_retriever import retrieve
+from app.rag.query_intent import classify_query_intent
 from app.rag.query_rewrite import rewrite_query
 from app.rag.topic_lists import (
     discover_topic_items,
@@ -62,6 +64,7 @@ async def search_and_answer(
             400,
         )
     active_scope = await _resolve_document_scope(session, workspace_id, query, document_ids)
+    query_intent = classify_query_intent(query)
     effective_document_ids = [item["document_id"] for item in active_scope] or document_ids
     rewritten = rewrite_query(query)
     retrieval_started = time.perf_counter()
@@ -119,6 +122,28 @@ async def search_and_answer(
         KNOWLEDGE_ABSENCE.inc()
     elif diagnosis.status is DiagnosisStatus.PARTIAL_EVIDENCE:
         PARTIAL_EVIDENCE.inc()
+    diagnosis_payload = {
+        **diagnosis.as_dict(),
+        **_retrieval_metadata(final_evidence),
+        "retrieval_recovery_used": retry_performed,
+    }
+    sufficiency = assess_sufficiency(
+        intent=query_intent,
+        support=support,
+        candidate_count=len(final_evidence),
+        retry_performed=retry_performed,
+        low_quality=bool(final_evidence)
+        and all(
+            item.metadata.get("extraction_quality") == "low_quality" for item in final_evidence
+        ),
+    )
+    diagnosis_payload.update(
+        {
+            "query_intent": query_intent.value,
+            "sufficiency_decision": sufficiency.decision.value,
+            "sufficiency_reason": sufficiency.reason,
+        }
+    )
 
     if is_topic_list_query(query):
         topic_items = discover_topic_items(final_evidence)
@@ -132,7 +157,7 @@ async def search_and_answer(
                 abstained=False,
                 request_id=request_id,
                 retrieval_diagnosis={
-                    **diagnosis.as_dict(),
+                    **diagnosis_payload,
                     "status": DiagnosisStatus.SUFFICIENT_EVIDENCE.value,
                     "reason_code": "TOPIC_LIST_SUPPORTED",
                 },
@@ -159,7 +184,7 @@ async def search_and_answer(
             abstained=True,
             request_id=request_id,
             retrieval_diagnosis={
-                **diagnosis.as_dict(),
+                **diagnosis_payload,
                 "status": status,
                 "reason_code": "LOW_CONFIDENCE_TOPIC_INFERENCE",
             },
@@ -182,7 +207,7 @@ async def search_and_answer(
         DiagnosisStatus.RETRIEVAL_FAILURE_UNRESOLVED,
     }
     if support.status is SupportStatus.SUPPORTED:
-        should_abstain = False
+        should_abstain = not sufficiency.sufficient
     if support.status is SupportStatus.CONFLICT:
         should_abstain = True
     if should_abstain:
@@ -193,7 +218,7 @@ async def search_and_answer(
             sufficient_evidence=final_sufficient,
             abstained=True,
             request_id=request_id,
-            retrieval_diagnosis=diagnosis.as_dict(),
+            retrieval_diagnosis=diagnosis_payload,
             outcome=(
                 "CONFLICTING_EVIDENCE"
                 if support.status is SupportStatus.CONFLICT
@@ -202,7 +227,7 @@ async def search_and_answer(
             answer_value=support.answer_value,
             support_status=support.status.value,
             confidence_category="none",
-            citations=_citations(final_evidence)
+            citations=_citations(final_evidence, support)
             if support.status is SupportStatus.CONFLICT
             else [],
             conflicts=_conflicts_from_support(support),
@@ -223,12 +248,12 @@ async def search_and_answer(
         sufficient_evidence=True,
         abstained=False,
         request_id=request_id,
-        retrieval_diagnosis=diagnosis.as_dict(),
+        retrieval_diagnosis=diagnosis_payload,
         outcome="ANSWER_SUPPORTED",
         answer_value=support.answer_value,
         support_status=support.status.value,
         confidence_category="high" if support.answer_value else "medium",
-        citations=_citations(final_evidence),
+        citations=_citations(final_evidence, support),
         conflicts=[],
         abstention_reason=None,
         active_document_scope=_scope_payload(active_scope),
@@ -249,18 +274,75 @@ def _evidence_items(evidence: list) -> list[EvidenceItem]:
     ]
 
 
-def _citations(evidence: list) -> list[dict]:
+def _retrieval_metadata(evidence: list) -> dict:
+    if not evidence:
+        return {
+            "retrieval_mode": "no_candidates",
+            "lexical_used": True,
+            "semantic_used": False,
+            "reranker_used": False,
+            "fallback_used": False,
+            "candidate_count": 0,
+            "final_evidence_count": 0,
+            "retrieval_duration_ms": 0.0,
+            "embedding_version": None,
+            "reranker_version": None,
+            "selected_document_scope": False,
+        }
+    metadata = evidence[0].metadata or {}
+    keys = {
+        "retrieval_mode",
+        "lexical_used",
+        "semantic_used",
+        "reranker_used",
+        "fallback_used",
+        "candidate_count",
+        "final_evidence_count",
+        "retrieval_duration_ms",
+        "embedding_version",
+        "reranker_version",
+        "selected_document_scope",
+        "query_intent",
+        "reranker_policy",
+        "reranker_applied",
+        "reranker_skipped",
+        "reranker_low_margin_fallback",
+        "fused_rank_preserved",
+        "blended_reranking_used",
+    }
+    return {key: metadata.get(key) for key in keys}
+
+
+def _citations(evidence: list, support=None) -> list[dict]:
+    facts = list(support.facts) if support else []
+    selected = (
+        [
+            (fact.source_index, evidence[fact.source_index], fact)
+            for fact in facts
+            if fact.source_index < len(evidence)
+        ]
+        if facts
+        else [(0, evidence[0], None)]
+        if evidence
+        else []
+    )
     return [
         {
-            "index": index,
+            "index": citation_index,
             "chunk_id": str(item.chunk_id),
             "document_id": str(item.document_id),
             "document_title": item.document_title,
-            "excerpt": item.content[:500],
+            "excerpt": fact.matched_text if fact else _focused_excerpt(item.content),
             "section": (item.metadata or {}).get("section"),
+            "supports_claim": support.answer_value if support else None,
         }
-        for index, item in enumerate(evidence[:5], 1)
+        for citation_index, (_, item, fact) in enumerate(selected, 1)
     ]
+
+
+def _focused_excerpt(content: str) -> str:
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", content)]
+    return next((sentence[:500] for sentence in sentences if sentence), "")
 
 
 def _topic_citations(topic_items: list) -> list[dict]:

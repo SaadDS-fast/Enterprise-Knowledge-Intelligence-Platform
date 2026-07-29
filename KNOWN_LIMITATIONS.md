@@ -59,3 +59,72 @@ Image-only/scanned PDFs are detected and marked `REQUIRES_OCR`; this phase inten
 not include a heavyweight OCR engine. Such documents are not indexed and cannot be answered
 from until an authorized OCR-capable future pipeline reprocesses them. See
 `docs/implementation/document-extraction-chunking-v3.md`.
+
+## Phase 2 limitations
+
+- Live semantic quality and cross-encoder performance were not measured because no
+  operator-provisioned package/model cache was present. Ranked comparison metrics remain
+  N/A instead of an unverified improvement claim.
+- The pgvector schema is fixed at 384 dimensions. Only compatible aliases are allowlisted;
+  another dimension requires a schema/index migration and complete re-index.
+- Models are optional and disabled by default. Operators must provision weights outside
+  Git, enable aliases, restart affected services, and re-index documents.
+- Candidate text is currently loaded after strict SQL scope and then scored in-process.
+  A future scale phase should push approximate lexical/vector candidate generation into
+  PostgreSQL.
+- Live model load time and memory remain unmeasured. The deterministic fallback probe is
+  not representative of sentence-transformer resource use.
+- Next is evidence/conflict calibration; Ollama is a later separate phase and was not
+  used here.
+
+### Live findings
+
+- Live measurements supersede the earlier “unmeasured” note: embedding cold load plus
+  corpus batch was 4611.192 ms, reranker cold load plus four candidates was 152.546 ms,
+  and benchmark peak RSS was approximately 559.812 MiB on the validation host.
+- The raw `ms-marco-minilm-l-6-v2` cross-encoder reduced Recall@1 to .8125 and MRR to
+  .9375 versus .9375/1.0000 for live semantic fusion. It confused the composite-wire
+  deformation query with a physics displacement item. Production enablement needs
+  domain calibration or a guarded blending policy.
+- Knowledge-absence accuracy was 0 on the one absent-revenue query in every mode.
+  Evidence sufficiency/abstention thresholds require calibration on a larger absence
+  set before quality can be declared complete.
+- The corpus is intentionally small (14 documents, 9 queries); the latency and memory
+  figures are validation-host observations, not capacity guarantees.
+
+## Calibration holdout limitations
+
+- The expanded 40-query holdout reached Recall@5 `.9688` rather than `.98` and answer
+  support `.9375` rather than `.95`; Phase 2 therefore remains partial.
+- One terminology-light materials prompt and one terminology-light physics prompt still
+  miss rank one. Future work should add development examples and deterministic
+  question-number/title anchors, then evaluate on a new holdout rather than retuning the
+  consumed set.
+- The synthetic benchmark contains 12 documents and 100 queries. It is broader than the
+  live smoke corpus but is not a substitute for an approved domain-specific evaluation.
+
+## Blind acceptance blocker
+
+The new 120-query blind holdout failed final quality acceptance without calibration
+changes: Recall@1 `.8854`, nDCG@5 `.9384`, citation precision `.8854`, and answer support
+`.8854` remain below targets. Recall@5 was `.9792`, narrowly below `.98`. Only 6/8
+elasticity hard negatives ranked first. The fixture is consumed and must not be used for
+tuning; further work requires development-only changes followed by another newly
+pre-registered holdout.
+# Phase 2B limitations
+
+The consumed Phase 2 benchmark retained only aggregate stage results, so
+per-query attribution among retrieval, reranking, sufficiency, citation
+selection, and answer mapping is not recoverable without an impermissible
+rerun. The safe aggregate taxonomy records two top-five candidate misses and
+nine additional top-one misses. The larger L12 reranker was allowlisted but its
+operator-cache provisioning did not complete; no comparison claim is made for
+it. Synthetic results do not replace evaluation on an organization's own
+terminology and documents.
+
+The original broad-agentic failure run predated runtime identity endpoints, so
+the exact Git commits of the unidentified processes on ports 3000/8000 cannot
+be reconstructed. Their behavior proves the frontend feature mismatch, and the
+same runtime test passes against current isolated source, but it would be
+incorrect to assign an unverified historical commit or claim stale documents
+were present.

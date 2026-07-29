@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from app.core.config import settings
+from app.rag.concept_constraints import assess_concept_constraints
 
 STOPWORDS = {
     "a",
@@ -90,7 +91,15 @@ ATTRIBUTE_SYNONYMS: dict[RequestedAttribute, set[str]] = {
     RequestedAttribute.TOPIC: {"topic", "about", "covered", "covers", "subject"},
     RequestedAttribute.DEFINITION: {"definition", "define", "meaning", "what"},
     RequestedAttribute.OWNER: {"owner", "owns", "owned", "responsible", "accountable"},
-    RequestedAttribute.DATE: {"when", "date", "launched", "started", "began", "deadline"},
+    RequestedAttribute.DATE: {
+        "when",
+        "date",
+        "launch",
+        "launched",
+        "started",
+        "began",
+        "deadline",
+    },
     RequestedAttribute.NUMERIC: {"budget", "cost", "amount", "revenue", "allowance", "number"},
     RequestedAttribute.STATUS: {"status", "state", "approved", "enabled", "disabled"},
     RequestedAttribute.LOCATION: {"where", "location", "office", "region"},
@@ -114,7 +123,7 @@ def requested_attribute(query: str) -> RequestedAttribute:
         return RequestedAttribute.TOPIC
     if terms & {"owner", "owns", "owned", "responsible", "accountable"}:
         return RequestedAttribute.OWNER
-    if terms & {"when", "date", "launched", "started", "began", "deadline"}:
+    if terms & {"when", "date", "launch", "launched", "started", "began", "deadline"}:
         return RequestedAttribute.DATE
     if terms & {"budget", "cost", "amount", "revenue", "allowance"}:
         return RequestedAttribute.NUMERIC
@@ -137,12 +146,21 @@ def assess_evidence_support(
 ) -> SupportAssessment:
     attribute = requested_attribute(query)
     direct_facts = extract_facts(query, contents, attribute)
+    concept_assessments = [assess_concept_constraints(query, content) for content in contents]
+    eligible_indexes = {
+        index for index, assessment in enumerate(concept_assessments) if assessment.eligible_support
+    }
+    direct_facts = [fact for fact in direct_facts if fact.source_index in eligible_indexes]
     query_terms = key_terms(query)
-    evidence_terms = key_terms(" ".join(contents[:3]))
+    evidence_terms = key_terms(
+        " ".join(content for index, content in enumerate(contents[:3]) if index in eligible_indexes)
+    )
     coverage = len(query_terms & evidence_terms) / max(1, len(query_terms))
     max_score = max(scores, default=0.0)
     support_score = max(0.0, min(1.0, 0.55 * max_score + 0.35 * coverage))
     reasons: list[str] = []
+    if concept_assessments and not eligible_indexes:
+        reasons.append("contradictory_concept")
     if max_score >= settings.evidence_min_score:
         reasons.append("retrieval_score")
     if coverage >= 0.34:
@@ -169,6 +187,8 @@ def assess_evidence_support(
     globally_sufficient = max_score >= settings.evidence_min_score and coverage >= (
         0.75 if compound_query else 0.34
     )
+    if attribute is RequestedAttribute.NUMERIC and not direct_facts:
+        globally_sufficient = False
     directly_supported = bool(direct_facts) and support_score >= 0.72 and not compound_query
     if globally_sufficient or directly_supported:
         return SupportAssessment(
@@ -219,11 +239,25 @@ def extract_facts(
     )
     for index, content in enumerate(contents):
         for match in pair_re.finditer(content):
+            if not _numeric_label_matches_query(query, attribute, match.group(1)):
+                continue
             value = normalize_answer_value(match.group("value"))
             if _valid_fact_value(value):
                 facts.append(ExtractedFact(attribute, value, index, match.group(0).strip()))
         facts.extend(_sentence_facts(content, index, attribute))
     return _dedupe_facts(facts)
+
+
+def _numeric_label_matches_query(
+    query: str, attribute: RequestedAttribute, matched_label: str
+) -> bool:
+    if attribute is not RequestedAttribute.NUMERIC:
+        return True
+    query_terms = key_terms(query)
+    label_terms = key_terms(matched_label)
+    sensitive = {"revenue", "budget", "allowance", "cost", "amount"}
+    requested = query_terms & sensitive
+    return not requested or bool(requested & label_terms)
 
 
 def synthesize_direct_answer(query: str, assessment: SupportAssessment) -> str | None:

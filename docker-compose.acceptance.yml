@@ -1,0 +1,24 @@
+services:
+  postgres:
+    ports: !override
+      - "15432:5432"
+  redis:
+    ports: !override
+      - "16379:6379"
+  minio:
+    ports: !override
+      - "19000:9000"
+      - "19001:9001"
+  backend:
+    ports: !override
+      - "18000:8000"
+    environment:
+      CORS_ORIGINS: http://127.0.0.1:13000,http://localhost:13000
+  frontend:
+    ports: !override
+      - "13000:3000"
+    build:
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:18000/api/v1
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:18000/api/v1

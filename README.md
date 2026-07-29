@@ -414,3 +414,16 @@ See [PROJECT_TREE.txt](PROJECT_TREE.txt) for the generated repository tree.
 MIT License. See [LICENSE](LICENSE).
 
 Author: repository owner / portfolio maintainer. Update this line with your preferred public name, portfolio URL, and contact link before sharing widely.
+# Phase 2 semantic retrieval
+
+The shared Search, controlled Agent, Evaluation, and Research retrieval path supports
+operator-provisioned local CPU sentence embeddings, calibrated BM25/semantic fusion,
+and an optional local cross-encoder reranker. Both model features are disabled by
+default; unavailable models fall back safely without changing workspace or selected
+document scope. Existing documents require the authorized idempotent re-index action
+to receive indexing version `2.0` vector provenance.
+
+See [semantic retrieval architecture](docs/architecture/semantic-retrieval-and-reranking.md),
+[local model deployment](docs/deployment/local-embedding-models.md),
+[retrieval evaluation](docs/evaluation/retrieval-quality.md), and
+[local model security](docs/security/local-model-security.md).
