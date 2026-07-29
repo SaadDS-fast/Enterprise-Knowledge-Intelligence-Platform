@@ -59,3 +59,12 @@ Acceptance environments use independently scoped tenants/workspaces and a dedica
 Compose project. Test isolation is part of retrieval correctness: stale authorized
 documents can distort rankings without violating SQL tenant predicates, so fixed test
 identities and fuzzy document lookup are prohibited.
+# Typed concept constraints
+
+Phase 2B adds a deterministic layer between weighted fusion and blended
+reranking. It detects typed concepts requested by the query, measures complete
+candidate coverage, rewards heading agreement, penalizes explicit sibling
+concepts only when the requested concept is missing, and applies current versus
+superseded metadata. This protects lexical/structural anchors without requiring
+exact wording and leaves the frozen 0.45/0.55 fusion, 0.25 blend, 0.08 margin,
+top-20 and return-8 settings unchanged.

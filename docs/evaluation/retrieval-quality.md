@@ -72,3 +72,17 @@ Metrics use 96 positive retrieval queries. Absence and isolation each use 8 case
 scored 1.0. Citation precision/recall and support are `.8854/.9688/.8854`;
 unsupported claims are zero. Results fail final acceptance and the fixture is now
 consumed.
+# Phase 2B hard-negative evaluation
+
+The consumed 120-query fixture was checksum-verified and inspected only; it was
+not executed or tuned. Its safe aggregate taxonomy is in
+`phase2b-consumed-benchmark-taxonomy.json`.
+
+Development used 127 new queries. The current and BGE-small candidate pairs
+tied on quality; the current `all-minilm-l6-v2` plus
+`ms-marco-minilm-l-6-v2` pair was retained because it used less peak memory and
+had lower steady-state latency. After that decision, a separate 160-query blind
+fixture was registered with SHA-256
+`47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`
+and executed exactly once. See its pre-registration and result JSON files for
+category counts, explicit denominators, load time, RSS, latency, and metrics.

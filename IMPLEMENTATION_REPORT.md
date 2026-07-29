@@ -261,3 +261,12 @@ Chromium uploads use a run-scoped filename and exact document lookup. The accept
 Compose override publishes non-conflicting ports under a dedicated project; project
 names scope all database, cache, and object-storage volumes so cleanup can delete only
 acceptance data.
+# Phase 2B terminology-sensitive retrieval
+
+Added reusable typed concept families for numerical attributes, scientific
+concepts, allowance types, approval processes, roles, mathematical objects,
+date types, and policy state. Candidate scoring rewards complete concept and
+heading coverage, penalizes missing or contradictory sibling concepts, accounts
+for extraction quality and superseded metadata, and exposes safe diagnostics.
+Evidence sufficiency and citation fact selection now exclude contradictory
+sources while preserving original source indexes and document authorization.

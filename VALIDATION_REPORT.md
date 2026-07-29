@@ -253,3 +253,19 @@ feature-enabled Chromium passed 5 with 1 live gate. The full backend suite passe
 158/158 with 4 expected skips and 76% coverage. Docker builds, Alembic upgrade/check,
 Bandit, pip-audit, and npm audit passed. Disposable containers, network, and volumes
 were removed after validation.
+# Phase 2B hard-negative remediation (2026-07-29)
+
+Status: PASS on the one-time 160-query blind holdout. The frozen current model
+pair achieved Recall@1 0.9250, Recall@3/5 1.0000, MRR 0.9893, nDCG@5 0.9921,
+citation precision 0.9786, citation recall and answer support 1.0000,
+unsupported claims 0, knowledge absence/recovery/tenant isolation 1.0000, and
+hard-negative Recall@1 1.0000. Denominators were 160 total, 140 positive, 20
+hard-negative, 15 absence/isolation, 5 ambiguous, and 5 selected-document.
+Fixture SHA-256: `47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`.
+It was executed exactly once.
+
+The isolated Chromium acceptance exercised all 15 requested outcomes and
+passed. The Docker acceptance used project `ekip_phase2b`, so PostgreSQL,
+Redis, MinIO, documents, tenant/workspace state, and its network were
+independent of normal services; all project containers, volumes, and the
+network were removed after validation.

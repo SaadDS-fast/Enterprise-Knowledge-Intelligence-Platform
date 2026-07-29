@@ -1,0 +1,41 @@
+{
+  "artifact_sha256": "16dc10caf8b9608d60abf84f13e6c783d94fbf50bf208d4483840003dbb4a807",
+  "inspection_only": true,
+  "rerun_performed": false,
+  "limitations": [
+    "The preserved result contains aggregate metrics and hard-negative ranks, not per-query stage rankings.",
+    "Per-query lexical, semantic, fused, reranker, entity, heading, and citation diagnostics cannot be reconstructed safely.",
+    "Counts below are non-overlapping aggregate layer bounds and must not be represented as new acceptance results."
+  ],
+  "aggregate_failure_layers": {
+    "A_correct_chunk_absent_from_top_5": 2,
+    "B_correct_chunk_present_in_top_5_but_not_ranked_first": 9,
+    "C_correct_chunk_first_but_sufficiency_rejected": "not derivable",
+    "D_correct_answer_wrong_citation": "not derivable",
+    "E_correct_citation_answer_mapping_failed": "not derivable",
+    "positive_retrieval_denominator": 96,
+    "hard_negative_rank_one_failures": 2,
+    "hard_negative_denominator": 8
+  },
+  "taxonomy": [
+    "domain-term confusion",
+    "related-but-wrong policy",
+    "wrong entity or role",
+    "wrong numerical attribute",
+    "question versus definition confusion",
+    "related scientific concept",
+    "insufficient structural weighting",
+    "reranker over-promotion",
+    "duplicate evidence crowding",
+    "multi-evidence coverage failure",
+    "correct retrieval but wrong citation selection"
+  ],
+  "baseline": {
+    "lexical_weight": 0.45,
+    "semantic_weight": 0.55,
+    "reranker_blend_weight": 0.25,
+    "reranker_min_margin": 0.08,
+    "top_n": 20,
+    "return_k": 8
+  }
+}
