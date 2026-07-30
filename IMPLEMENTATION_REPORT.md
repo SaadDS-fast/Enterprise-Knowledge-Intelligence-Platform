@@ -279,3 +279,17 @@ profiles; rejects occupied alternate ports; builds current source; provisions
 run-unique Compose services and volumes; verifies commit, compatibility,
 readiness, and flags; runs Playwright and Alembic; and always removes disposable
 state. No retrieval or product behavior required modification.
+
+# Pre-Ollama response-state consistency
+
+Added a shared typed response state and centralized fail-safe invariant validator
+for Search, Controlled Agent, Evaluation, and Research. Deterministic claim
+normalization distinguishes equivalent wording from material value, date, role,
+policy, version, definition, and scope conflicts. Current metadata resolves
+superseded policy evidence. API compatibility fields are derived from the
+canonical state, and the frontend renders one primary status with claim-linked
+citations and explicit conflict sides.
+
+No retrieval calibration, embedding/reranker model, consumed benchmark, external
+API, Ollama integration, generative model, LangChain, LangGraph, or AWS behavior
+changed.

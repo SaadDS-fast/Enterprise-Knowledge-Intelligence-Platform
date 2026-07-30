@@ -282,3 +282,15 @@ No genuine product regression reproduced.
 The 160-query fixture was not rerun or modified. Its SHA-256 remains
 `47d8e06e4377941ff4e1408f120a7c269ce8c9c15d63ab90cbd65dec5933c54c`;
 models, calibration, thresholds, and recorded metrics remain frozen.
+
+# Pre-Ollama response-state validation
+
+The deterministic invariant and normalization matrix passes. It covers supported
+facts, equivalent wording, currency/unit equivalence, true value and role
+conflicts, current-versus-superseded resolution, revenue/budget separation,
+knowledge absence, retrieval failure, composite completeness, selected scope,
+fallback consistency, and cancelled-answer rejection. Existing Search, Agent,
+Evaluation, Research, authorization, isolation, injection, SSRF, parser, CSP, and
+model-allowlist regressions provide system-level evidence.
+
+Consumed Phase 2 and Phase 2B blind benchmarks were neither executed nor modified.

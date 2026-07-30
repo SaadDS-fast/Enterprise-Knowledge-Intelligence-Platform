@@ -4,10 +4,15 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.agents.enums import AgentIntent, AgentRunStatus, AgentStateName
 from app.models.schemas import EvidenceItem
+from app.rag.response_state import (
+    CanonicalResponseState,
+    legacy_fields,
+    response_state_from_legacy,
+)
 
 
 class AgentQueryRequest(BaseModel):
@@ -154,6 +159,35 @@ class AgentQueryResponse(BaseModel):
     evidence_ranking: dict[str, Any] = Field(default_factory=dict)
     evidence_deduplication: list[dict[str, Any]] = Field(default_factory=list)
     context_budget: dict[str, Any] = Field(default_factory=dict)
+    response_state: CanonicalResponseState | None = None
+
+    @model_validator(mode="after")
+    def enforce_canonical_response_state(self) -> AgentQueryResponse:
+        state = self.response_state or response_state_from_legacy(
+            answer=self.answer,
+            outcome=self.outcome,
+            citations=self.citations,
+            claims=self.claims,
+            conflicts=self.conflicts,
+            confidence_category=self.confidence_category,
+            retrieval_diagnosis=self.retrieval_diagnosis,
+            fallback_used=self.fallback_used,
+            status=str(self.status),
+        )
+        compatible = legacy_fields(state)
+        self.response_state = state
+        self.answer = compatible["answer"]
+        self.outcome = compatible["outcome"]
+        self.abstained = compatible["abstained"]
+        self.confidence_category = compatible["confidence_category"]
+        if state.primary_state not in {
+            "SUPPORTED",
+            "SUPPORTED_COMPOSITE",
+            "CONFLICTING_EVIDENCE",
+        }:
+            self.citations = []
+            self.claims = []
+        return self
 
 
 class AgentFeatureDisabledResponse(BaseModel):

@@ -128,3 +128,16 @@ be reconstructed. Their behavior proves the frontend feature mismatch, and the
 same runtime test passes against current isolated source, but it would be
 incorrect to assign an unverified historical commit or claim stale documents
 were present.
+
+# Response-state limitations
+
+Claim normalization is deterministic and intentionally bounded. Unrecognized
+domain phrasing can remain insufficient rather than being guessed, and complex
+definition or scope contradictions may need domain-specific normalizers.
+Composite support is limited by components extracted from focused citation spans.
+Confidence bands are explainable categories, not calibrated probabilities.
+
+The compatibility API still exposes legacy outcome fields, but they are derived
+from the canonical state and cannot override it. Removal requires a versioned API
+migration. Grounded natural-language generation remains a future Ollama phase and
+is not included here.

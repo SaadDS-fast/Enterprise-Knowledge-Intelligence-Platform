@@ -3,7 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
+
+from app.rag.response_state import (
+    CanonicalResponseState,
+    legacy_fields,
+    response_state_from_legacy,
+)
 
 
 class ORMModel(BaseModel):
@@ -150,6 +156,39 @@ class SearchResponse(BaseModel):
     abstention_reason: str | None = None
     topic_items: list[dict] = Field(default_factory=list)
     active_document_scope: list[dict] = Field(default_factory=list)
+    response_state: CanonicalResponseState | None = None
+
+    @model_validator(mode="after")
+    def enforce_canonical_response_state(self) -> SearchResponse:
+        state = self.response_state or response_state_from_legacy(
+            answer=self.answer,
+            outcome=self.outcome,
+            citations=self.citations,
+            conflicts=self.conflicts,
+            confidence_category=self.confidence_category,
+            retrieval_diagnosis=self.retrieval_diagnosis,
+            selected_document_ids=[
+                str(item["document_id"])
+                for item in self.active_document_scope
+                if item.get("document_id")
+            ],
+        )
+        compatible = legacy_fields(state)
+        self.response_state = state
+        self.answer = compatible["answer"]
+        self.outcome = compatible["outcome"]
+        self.abstained = compatible["abstained"]
+        self.sufficient_evidence = compatible["sufficient_evidence"]
+        self.confidence_category = compatible["confidence_category"]
+        if state.primary_state not in {"SUPPORTED", "SUPPORTED_COMPOSITE"}:
+            self.answer_value = None
+        if state.primary_state not in {
+            "SUPPORTED",
+            "SUPPORTED_COMPOSITE",
+            "CONFLICTING_EVIDENCE",
+        }:
+            self.citations = []
+        return self
 
 
 class ResearchRequest(BaseModel):

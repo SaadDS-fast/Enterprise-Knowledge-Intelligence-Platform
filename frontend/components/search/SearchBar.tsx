@@ -21,10 +21,17 @@ const diagnosisCopy: Record<string, string> = {
 const outcomeCopy: Record<string, string> = {
   ANSWER_SUPPORTED: "Answer supported",
   ANSWER_PARTIALLY_SUPPORTED: "Partially supported",
-  CONFLICTING_EVIDENCE: "Conflicting evidence",
-  INSUFFICIENT_EVIDENCE: "Insufficient evidence",
-  KNOWLEDGE_ABSENT: "Knowledge absent",
   CLARIFICATION_REQUIRED: "Clarification required",
+  SUPPORTED: "Answer supported",
+  SUPPORTED_COMPOSITE: "Answer supported by multiple sources",
+  CONFLICTING_EVIDENCE: "Sources contain conflicting information",
+  KNOWLEDGE_ABSENT: "Information not found in selected documents",
+  RETRIEVAL_FAILURE: "Retrieval could not be completed",
+  AMBIGUOUS_QUERY: "Query needs clarification",
+  LOW_QUALITY_SOURCE: "Source quality is insufficient",
+  INSUFFICIENT_EVIDENCE: "Insufficient evidence",
+  PROCESSING_FAILED: "Response could not be completed",
+  CANCELLED: "Request cancelled",
 };
 
 export default function SearchBar() {
@@ -71,7 +78,10 @@ export default function SearchBar() {
   }
 
   const diagnosis = result?.retrieval_diagnosis;
-  const outcome = result?.outcome ?? (result?.abstained ? "INSUFFICIENT_EVIDENCE" : "ANSWER_SUPPORTED");
+  const outcome =
+    result?.response_state?.primary_state ??
+    result?.outcome ??
+    (result?.abstained ? "INSUFFICIENT_EVIDENCE" : "SUPPORTED");
   const activeScope = useMemo(
     () =>
       result?.active_document_scope?.length
@@ -134,8 +144,22 @@ export default function SearchBar() {
           <div className="diagnosis" aria-label="Answer outcome" data-testid="search-outcome">
             <strong>{outcomeCopy[outcome] ?? outcome}</strong>
             <span>
-              Support status: {result.support_status ?? (result.sufficient_evidence ? "SUPPORTED" : "ABSENT")} ·
-              Confidence: {result.confidence_category ?? "none"}
+              Evidence:{" "}
+              {(
+                result.response_state?.evidence_decision ??
+                result.support_status ??
+                (result.sufficient_evidence ? "SUPPORTED" : "ABSENT")
+              )
+                .toLowerCase()
+                .replaceAll("_", " ")}{" "}
+              · Confidence:{" "}
+              {(
+                result.response_state?.confidence.final ??
+                result.confidence_category ??
+                "none"
+              )
+                .toLowerCase()
+                .replaceAll("_", " ")}
             </span>
           </div>
           {diagnosis ? (
@@ -209,6 +233,32 @@ export default function SearchBar() {
                   <article className="evidence" key={`${conflict.summary ?? "conflict"}-${index}`}>
                     <strong>{conflict.summary ?? "Conflict detected"}</strong>
                     <p>{conflict.values?.join(" / ")}</p>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : null}
+          {result.response_state?.conflict.sides.length ? (
+            <>
+              <h2>Conflict sides</h2>
+              <div className="evidence-list" data-testid="search-conflict-sides">
+                {result.response_state.conflict.sides.map((side) => (
+                  <article className="evidence warning-card" key={side.claim_id}>
+                    <strong>{side.text}</strong>
+                    <small>Citations: {side.citation_ids.join(", ")}</small>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : null}
+          {result.response_state?.claims.length ? (
+            <>
+              <h2>Claim support</h2>
+              <div className="evidence-list" data-testid="search-claim-support">
+                {result.response_state.claims.map((claim) => (
+                  <article className="evidence" key={claim.claim_id}>
+                    <strong>{claim.text}</strong>
+                    <small>Citations: {claim.citation_ids.join(", ")}</small>
                   </article>
                 ))}
               </div>

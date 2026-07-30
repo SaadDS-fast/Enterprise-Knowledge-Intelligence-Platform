@@ -32,6 +32,11 @@ from app.rag.evidence import (
     synthesize_direct_answer,
 )
 from app.rag.evidence_diagnosis import DiagnosisStatus
+from app.rag.response_state import (
+    ConflictCategory,
+    classify_claim_conflict,
+    normalize_claim,
+)
 from app.rag.topic_lists import (
     discover_topic_items,
     has_practice_questions,
@@ -435,28 +440,6 @@ def verify_claims(
 
 def detect_conflicts(evidence: list[UnifiedEvidence], *, query: str = "") -> list[Conflict]:
     conflicts: list[Conflict] = []
-    assessment = assess_evidence_support(
-        [item.retrieval_score or 0.0 for item in evidence],
-        query,
-        [item.excerpt for item in evidence],
-    )
-    if assessment.status is SupportStatus.CONFLICT:
-        evidence_ids = [
-            evidence[fact.source_index].evidence_id
-            for fact in assessment.facts
-            if fact.source_index < len(evidence)
-        ]
-        conflict = Conflict(
-            status=ConflictStatus.CONFIRMED_CONFLICT,
-            conflict_type=assessment.attribute.value,
-            evidence_ids=list(dict.fromkeys(evidence_ids)),
-            summary=(
-                f"Conflicting values for {assessment.attribute.value}: "
-                f"{', '.join(assessment.conflict_values)}."
-            ),
-        )
-        AGENT_CONFLICTS_DETECTED.labels(outcome=conflict.status.value).inc()
-        return [conflict]
     for item in evidence:
         if query and not _query_comparable(query, item):
             continue
@@ -468,7 +451,10 @@ def detect_conflicts(evidence: list[UnifiedEvidence], *, query: str = "") -> lis
                 status=status,
                 conflict_type=conflict_type,
                 evidence_ids=[item.evidence_id],
-                summary=f"{item.citation_label} contains conflicting {conflict_type}.",
+                summary=(
+                    f"{item.citation_label} contains a material "
+                    f"{conflict_type.replace('_', ' ')} conflict."
+                ),
             )
         )
         AGENT_CONFLICTS_DETECTED.labels(outcome=status.value).inc()
@@ -478,22 +464,53 @@ def detect_conflicts(evidence: list[UnifiedEvidence], *, query: str = "") -> lis
                 not _query_comparable(query, left) or not _query_comparable(query, right)
             ):
                 continue
-            if not _comparable(left, right):
-                continue
-            status, conflict_type = _conflict_between(left.excerpt, right.excerpt)
-            if status == ConflictStatus.NO_CONFLICT:
+            normalized_left = normalize_claim(
+                left.excerpt,
+                claim_id=left.evidence_id,
+                citation_ids=[left.evidence_id],
+                metadata=left.metadata,
+            )
+            normalized_right = normalize_claim(
+                right.excerpt,
+                claim_id=right.evidence_id,
+                citation_ids=[right.evidence_id],
+                metadata=right.metadata,
+            )
+            result = classify_claim_conflict(normalized_left, normalized_right)
+            if (
+                result.category == ConflictCategory.NO_CONFLICT
+                and normalized_left.attribute is None
+                and normalized_right.attribute is None
+            ):
+                legacy_status, legacy_type = _conflict_between(left.excerpt, right.excerpt)
+                if legacy_status != ConflictStatus.NO_CONFLICT:
+                    category = {
+                        "date": ConflictCategory.DATE_CONFLICT,
+                        "numeric_value": ConflictCategory.VALUE_CONFLICT,
+                        "owner_entity": ConflictCategory.ROLE_CONFLICT,
+                        "opposing_status": ConflictCategory.POLICY_RULE_CONFLICT,
+                        "negation": ConflictCategory.POLICY_RULE_CONFLICT,
+                    }.get(legacy_type, ConflictCategory.DEFINITION_CONFLICT)
+                    result = result.model_copy(
+                        update={
+                            "category": category,
+                            "unresolved": True,
+                            "material": True,
+                        }
+                    )
+            if result.category == ConflictCategory.NO_CONFLICT or not result.unresolved:
                 continue
             conflict = Conflict(
-                status=status,
-                conflict_type=conflict_type,
+                status=ConflictStatus.CONFIRMED_CONFLICT,
+                conflict_type=result.category.value,
                 evidence_ids=[left.evidence_id, right.evidence_id],
                 summary=(
                     f"{left.citation_label} and {right.citation_label} contain "
-                    f"{conflict_type.replace('_', ' ')} differences."
+                    f"a material {result.category.value.replace('_', ' ').lower()}."
                 ),
             )
             conflicts.append(conflict)
-            AGENT_CONFLICTS_DETECTED.labels(outcome=status.value).inc()
+            AGENT_CONFLICTS_DETECTED.labels(outcome=conflict.status.value).inc()
     return conflicts
 
 

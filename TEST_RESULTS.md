@@ -216,3 +216,18 @@ executed or changed. Final backend regression: 166 passed, 4 environment-gated
 skips, 77% coverage; Ruff, format, compileall, Bandit, and dependency audits
 passed. Frontend lint had no errors and one existing Fast Refresh warning;
 typecheck, 29 Vitest tests, production build, and dependency audit passed.
+
+# Pre-Ollama response-state results
+
+- Canonical invariant/claim-normalization matrix: 12 passed.
+- Focused Agent, evidence, diagnosis, Evaluation, and Research tests: passed.
+- Full backend: 178 passed, 4 environment-gated skips, 78% coverage.
+- Frontend typecheck: passed.
+- Frontend Vitest: 29 passed.
+- Frontend lint: no errors; one existing Fast Refresh warning.
+- Isolated Chromium: default 1 passed/6 gated skips; agentic 5 passed/2
+  gated skips; response-state profile 1 passed across 18 states.
+- Docker builds and Compose config passed; Alembic upgrade/check reported no
+  pending operations in every disposable profile.
+- Full-stack results are recorded in the final acceptance report for
+  `fix(rag): enforce response and conflict consistency`.
