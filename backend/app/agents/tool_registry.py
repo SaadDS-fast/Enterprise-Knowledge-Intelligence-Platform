@@ -333,6 +333,13 @@ async def _answer_synthesizer_handler(
         has_external and diagnosis_status != DiagnosisStatus.CONFLICTING_EVIDENCE.value
     )
     retrieved = [_to_retrieved(item) for item in data.evidence]
+    generation_metadata: dict[str, Any] = {
+        "generation_provider": "extractive",
+        "generation_used": False,
+        "generation_fallback_used": False,
+        "generation_verification": "not_applicable",
+    }
+    generated_citations: list[dict[str, Any]] = []
     if should_abstain:
         answer = abstention_message(data.query)
         abstained = True
@@ -348,6 +355,17 @@ async def _answer_synthesizer_handler(
             GenerationRequest(question=data.query, evidence=retrieved)
         )
         answer = append_citations(result.text, retrieved)
+        generated_citations = list(result.citations)
+        generation_metadata = {
+            "generation_provider": result.provider,
+            "generation_model": result.model,
+            "generation_used": result.used,
+            "generation_fallback_used": result.fallback_used,
+            "generation_duration_ms": result.duration_ms,
+            "generation_verification": result.verification,
+            "structured_output_valid": result.structured_output_valid,
+            "claim_verification_passed": result.claim_verification_passed,
+        }
         abstained = False
     return AgentToolResult(
         tool="answer_synthesizer",
@@ -357,9 +375,10 @@ async def _answer_synthesizer_handler(
         external_sources=data.external_sources,
         answer=answer,
         sufficient_evidence=data.sufficient_evidence,
-        citations=_citations(data.evidence) + _external_citations(data.external_sources),
+        citations=(generated_citations or _citations(data.evidence))
+        + _external_citations(data.external_sources),
         abstained=abstained,
-        metadata={"retrieval_diagnosis": data.diagnosis},
+        metadata={"retrieval_diagnosis": data.diagnosis, **generation_metadata},
     )
 
 

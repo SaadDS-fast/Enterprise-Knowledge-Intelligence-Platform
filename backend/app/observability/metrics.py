@@ -16,6 +16,26 @@ PARTIAL_EVIDENCE = Counter("ekip_partial_evidence_total", "Searches with partial
 ABSTENTIONS = Counter("ekip_abstentions_total", "Searches that abstained")
 RETRIEVAL_LATENCY = Histogram("ekip_retrieval_duration_seconds", "Retrieval duration")
 DIAGNOSIS_LATENCY = Histogram("ekip_diagnosis_duration_seconds", "Evidence diagnosis duration")
+GENERATION_REQUESTS = Counter(
+    "ekip_generation_requests_total", "Grounded generation requests", ["provider"]
+)
+GENERATION_SUCCESSES = Counter(
+    "ekip_generation_successes_total", "Verified grounded generations", ["provider"]
+)
+GENERATION_VERIFICATION_FAILURES = Counter(
+    "ekip_generation_verification_failures_total",
+    "Grounded generation verification failures",
+    ["category"],
+)
+GENERATION_FALLBACKS = Counter(
+    "ekip_generation_fallbacks_total", "Safe generation fallbacks", ["category"]
+)
+GENERATION_TIMEOUTS = Counter(
+    "ekip_generation_timeouts_total", "Grounded generation timeouts", ["provider"]
+)
+GENERATION_DURATION = Histogram(
+    "ekip_generation_duration_seconds", "Grounded generation duration", ["provider", "outcome"]
+)
 INGESTION_SUBMITTED = Counter("ekip_ingestion_jobs_submitted_total", "Ingestion jobs submitted")
 INGESTION_COMPLETED = Counter("ekip_ingestion_jobs_completed_total", "Ingestion jobs completed")
 INGESTION_FAILED = Counter("ekip_ingestion_jobs_failed_total", "Ingestion jobs failed")

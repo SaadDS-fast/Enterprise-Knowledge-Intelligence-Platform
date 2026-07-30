@@ -435,3 +435,10 @@ See [semantic retrieval architecture](docs/architecture/semantic-retrieval-and-r
 [local model deployment](docs/deployment/local-embedding-models.md),
 [retrieval evaluation](docs/evaluation/retrieval-quality.md), and
 [local model security](docs/security/local-model-security.md).
+# Optional verified local generation
+
+Grounded answer generation can optionally use an operator-provisioned Ollama model, but is
+disabled by default. The model is a candidate synthesizer only: canonical response state,
+authorization, conflict handling, verification, and citations remain deterministic.
+See [architecture](docs/architecture/ollama-grounded-generation.md) and
+[local deployment](docs/deployment/local-ollama.md).

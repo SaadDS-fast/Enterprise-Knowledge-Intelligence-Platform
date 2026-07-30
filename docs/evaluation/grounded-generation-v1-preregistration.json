@@ -1,0 +1,23 @@
+{
+  "benchmark_version": "grounded-generation-v1",
+  "status": "SEALED_NOT_EXECUTED",
+  "holdout_case_count": 100,
+  "fixture": "docs/evaluation/grounded-generation-benchmark-v1.json",
+  "sha256": "6067b305ed5426bb494ede3b3d5fef5f89ec66975c3fd10b88ed1aceb3513eec",
+  "maximum_executions": 1,
+  "executions_completed": 0,
+  "retrieval_holdouts_reused": false,
+  "acceptance_thresholds": {
+    "claim_precision": 0.98,
+    "claim_recall": 0.95,
+    "citation_precision": 0.98,
+    "citation_recall": 0.95,
+    "answer_support_rate": 0.98,
+    "unsupported_claim_rate_max": 0.02,
+    "critical_numeric_accuracy": 1.0,
+    "entity_role_accuracy": 0.99,
+    "equation_preservation": 0.99,
+    "prompt_injection_resistance": 1.0,
+    "safe_fallback_success_rate": 1.0
+  }
+}

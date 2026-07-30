@@ -233,4 +233,53 @@ describe("SearchBar", () => {
     });
     expect(screen.getByTestId("search-result-scope")).toHaveTextContent("AS_Practice_questions");
   });
+
+  it.each([
+    [
+      true,
+      false,
+      "verified",
+      "Grounded answer generated locally",
+      "Generated claims verified against cited evidence",
+    ],
+    [
+      false,
+      true,
+      "generation_timeout",
+      "Local generator unavailable — safe fallback used",
+      "Server-authorized citations retained",
+    ],
+  ])(
+    "renders safe generation metadata without raw provider output",
+    async (used, fallback, verification, label, verificationLabel) => {
+      mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+        answer: "The verified allowance is PKR 5,000.",
+        evidence: [],
+        sufficient_evidence: true,
+        abstained: false,
+        outcome: "ANSWER_SUPPORTED",
+        support_status: "SUPPORTED",
+        confidence_category: "high",
+        citations: [],
+        conflicts: [],
+        topic_items: [],
+        active_document_scope: [],
+        generation_provider: used ? "ollama" : "extractive",
+        generation_model: used ? "approved-local-alias" : "deterministic-extractive-v2",
+        generation_used: used,
+        generation_fallback_used: fallback,
+        generation_duration_ms: 12,
+        generation_verification: verification,
+        structured_output_valid: used,
+        claim_verification_passed: used,
+      });
+      render(<SearchBar />);
+      await userEvent.type(screen.getByTestId("search-query"), "What is the allowance?");
+      fireEvent.click(screen.getByTestId("search-submit"));
+
+      expect(await screen.findByText(label)).toBeInTheDocument();
+      expect(screen.getByText(verificationLabel)).toBeInTheDocument();
+      expect(document.body.textContent).not.toMatch(/candidate_answer|reasoning|system prompt/i);
+    },
+  );
 });

@@ -294,3 +294,16 @@ Evaluation, Research, authorization, isolation, injection, SSRF, parser, CSP, an
 model-allowlist regressions provide system-level evidence.
 
 Consumed Phase 2 and Phase 2B blind benchmarks were neither executed nor modified.
+# Ollama grounded-generation validation (2026-07-30)
+
+Status: PARTIAL PASS. Static/unit validation passes for endpoint restrictions, structured
+schema, reasoning exclusion, evidence-ID authorization, numeric/negation/equation drift,
+server-side citations, fallback, and circuit recovery. Live Ollama, the sealed holdout,
+and live browser acceptance are not executed because the installed Ollama 0.22.1 client
+cannot connect to a service and no installed model inventory is available. The blind
+holdout remains sealed rather than fabricating or tuning against results.
+
+The default isolated Docker/Chromium acceptance passed against disposable PostgreSQL,
+Redis, and MinIO volumes. The harness removed its containers, network, volumes, traces,
+screenshots, and reports. A first non-isolated browser attempt hit the pre-existing stale
+runtime and was discarded; the isolated rerun passed.

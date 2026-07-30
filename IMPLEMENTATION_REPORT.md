@@ -293,3 +293,12 @@ citations and explicit conflict sides.
 No retrieval calibration, embedding/reranker model, consumed benchmark, external
 API, Ollama integration, generative model, LangChain, LangGraph, or AWS behavior
 changed.
+# Verified Ollama grounded generation (2026-07-30)
+
+Added a disabled-by-default `extractive`/`ollama` provider boundary. Ollama returns only a
+strict candidate; deterministic eligibility, canonical response state, confidence,
+conflict classification, scope, and citation construction remain server-owned. The
+implementation includes private endpoint and model allowlists, DNS revalidation,
+bounded evidence packets, prompt-injection marking, schema repair (one retry), critical
+fact and claim verification, safe fallback, circuit breaking, safe metrics, API metadata,
+and accessible Search status.

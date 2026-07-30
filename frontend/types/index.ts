@@ -96,6 +96,14 @@ export type SearchResult = {
   topic_items?: TopicItem[];
   active_document_scope?: SearchScopeItem[];
   response_state: CanonicalResponseState;
+  generation_provider: "extractive" | "ollama" | string;
+  generation_model: string;
+  generation_used: boolean;
+  generation_fallback_used: boolean;
+  generation_duration_ms: number;
+  generation_verification: string;
+  structured_output_valid: boolean;
+  claim_verification_passed: boolean;
 };
 
 export type PrimaryResponseState =

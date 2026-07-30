@@ -141,3 +141,10 @@ The compatibility API still exposes legacy outcome fields, but they are derived
 from the canonical state and cannot override it. Removal requires a versioned API
 migration. Grounded natural-language generation remains a future Ollama phase and
 is not included here.
+# Ollama grounded-generation limitations
+
+Live generation requires an operator-started Ollama service and explicitly provisioned,
+allowlisted model. This repository never downloads a model. The deterministic verifier is
+intentionally conservative and may fall back on valid paraphrases when lexical support is
+unclear. Live latency, memory, generation quality, and the one-run blind holdout remain
+unmeasured until the local runtime dependency is available.

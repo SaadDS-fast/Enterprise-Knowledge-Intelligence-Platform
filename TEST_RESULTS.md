@@ -231,3 +231,13 @@ typecheck, 29 Vitest tests, production build, and dependency audit passed.
   pending operations in every disposable profile.
 - Full-stack results are recorded in the final acceptance report for
   `fix(rag): enforce response and conflict consistency`.
+# Ollama grounded-generation tests (2026-07-30)
+
+The dedicated backend suite contains 20 passing cases covering disabled defaults, SSRF
+and model allowlists, prompt injection, schema strictness/no reasoning, hallucinated
+evidence IDs, numeric/entity/negation/equation checks, server citation reconstruction,
+safe extractive fallback, and circuit recovery. Full backend: 200 passed, 4 gated skips,
+78% coverage. Frontend: 31 passed; lint (one pre-existing warning), typecheck, and build
+passed. Isolated Chromium: 1 applicable passed, 6 feature-gated skipped. Docker images
+built and Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no
+known vulnerabilities.
