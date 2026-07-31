@@ -215,15 +215,33 @@ def validate_response_state(state: CanonicalResponseState) -> list[str]:
 def safe_response_state(**values: Any) -> CanonicalResponseState:
     try:
         return CanonicalResponseState(**values)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError) as exc:
         return CanonicalResponseState(
             primary_state=PrimaryResponseState.PROCESSING_FAILED,
             evidence_decision=EvidenceDecision.UNAVAILABLE,
             confidence=ConfidenceComponents(),
             retrieval=RetrievalState(failure_category="response_invariant_violation"),
             user_message="The response could not be completed safely.",
-            diagnostics={"reason_code": "response_invariant_violation"},
+            diagnostics={
+                "reason_code": "response_invariant_violation",
+                "invariant_category": _safe_invariant_category(str(exc)),
+            },
         )
+
+
+def _safe_invariant_category(message: str) -> str:
+    categories = {
+        "supported response requires an answer": "missing_answer",
+        "supported response requires a claim": "missing_claim",
+        "supported response requires sufficient evidence": "evidence_state_mismatch",
+        "every supported claim must map to a returned citation": "citation_mapping",
+        "composite response requires multiple supported components": "composite_components",
+        "citation falls outside selected-document scope": "citation_scope",
+    }
+    return next(
+        (category for marker, category in categories.items() if marker in message),
+        "invalid_state",
+    )
 
 
 def response_state_from_legacy(

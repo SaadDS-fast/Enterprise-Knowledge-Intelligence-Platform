@@ -27,7 +27,11 @@ services:
       AGENT_WEB_SEARCH_ENABLED: "false"
       SEMANTIC_EMBEDDINGS_ENABLED: "false"
       RERANKER_ENABLED: "false"
-      LOCAL_LLM_BACKEND: extractive
+      LOCAL_LLM_BACKEND: "${E2E_LOCAL_LLM_BACKEND:-extractive}"
+      OLLAMA_ENABLED: "${E2E_OLLAMA_ENABLED:-false}"
+      LOCAL_LLM_BASE_URL: "${E2E_LOCAL_LLM_BASE_URL:-http://ollama:11434}"
+      LOCAL_LLM_MODEL: "${E2E_LOCAL_LLM_MODEL:-llama3.2:3b}"
+      OLLAMA_ALLOWED_MODELS: "${E2E_OLLAMA_ALLOWED_MODELS:-llama3.2:3b}"
   ingestion-worker:
     environment: *e2e-backend
   evaluation-worker:

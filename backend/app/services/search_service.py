@@ -25,7 +25,6 @@ from app.rag.evidence import (
     SupportStatus,
     assess_evidence_support,
     evidence_is_sufficient,
-    synthesize_direct_answer,
 )
 from app.rag.evidence_diagnosis import (
     DiagnosisStatus,
@@ -234,14 +233,11 @@ async def search_and_answer(
             abstention_reason=diagnosis.reason_code.value,
             active_document_scope=_scope_payload(active_scope),
         )
-    direct_answer = synthesize_direct_answer(query, support)
-    if direct_answer:
-        answer = direct_answer
-    else:
-        result = await get_llm_gateway().answer(
-            GenerationRequest(question=query, evidence=final_evidence)
-        )
-        answer = result.text
+    result = await get_llm_gateway().answer(
+        GenerationRequest(question=query, evidence=final_evidence)
+    )
+    answer = result.text
+    citations = list(result.citations) if result.used else _citations(final_evidence, support)
     return SearchResponse(
         answer=answer,
         evidence=_evidence_items(final_evidence),
@@ -253,10 +249,18 @@ async def search_and_answer(
         answer_value=support.answer_value,
         support_status=support.status.value,
         confidence_category="high" if support.answer_value else "medium",
-        citations=_citations(final_evidence, support),
+        citations=citations,
         conflicts=[],
         abstention_reason=None,
         active_document_scope=_scope_payload(active_scope),
+        generation_provider=result.provider,
+        generation_model=result.model,
+        generation_used=result.used,
+        generation_fallback_used=result.fallback_used,
+        generation_duration_ms=result.duration_ms,
+        generation_verification=result.verification,
+        structured_output_valid=result.structured_output_valid,
+        claim_verification_passed=result.claim_verification_passed,
     )
 
 

@@ -192,6 +192,30 @@ export default function SearchBar() {
           <p className="muted" data-testid="search-result-scope">
             Result scope: {activeScope}
           </p>
+          <div className="diagnosis" aria-label="Answer generation" data-testid="generation-status">
+            <strong>
+              {result.generation_used
+                ? "Grounded answer generated locally"
+                : result.generation_fallback_used
+                  ? "Local generator unavailable — safe fallback used"
+                  : "Deterministic grounded answer used"}
+            </strong>
+            <span>
+                {result.claim_verification_passed
+                ? "Generated claims verified against cited evidence"
+                : result.generation_used
+                  ? "Generated answer could not be verified"
+                  : "Server-authorized citations retained"}
+            </span>
+            <details>
+              <summary>Technical generation details</summary>
+              <small>
+                Provider: {result.generation_provider ?? "extractive"} · Verification:{" "}
+                {(result.generation_verification ?? "not_applicable").replaceAll("_", " ")} ·
+                Duration: {Math.round(result.generation_duration_ms ?? 0)} ms
+              </small>
+            </details>
+          </div>
           <pre className="answer" data-testid="search-answer">
             {result.answer}
           </pre>

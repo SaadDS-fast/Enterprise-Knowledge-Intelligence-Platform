@@ -18,6 +18,16 @@ class GenerationResult:
     text: str
     provider: str
     model: str
+    used: bool = False
+    fallback_used: bool = False
+    duration_ms: float = 0.0
+    verification: str = "not_applicable"
+    structured_output_valid: bool = False
+    claim_verification_passed: bool = False
+    citations: tuple[dict, ...] = ()
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    load_duration_ms: float | None = None
 
 
 class LLMProvider(ABC):

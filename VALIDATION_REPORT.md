@@ -294,3 +294,68 @@ Evaluation, Research, authorization, isolation, injection, SSRF, parser, CSP, an
 model-allowlist regressions provide system-level evidence.
 
 Consumed Phase 2 and Phase 2B blind benchmarks were neither executed nor modified.
+# Ollama grounded-generation validation (2026-07-30)
+
+Status: PARTIAL PASS. Static/unit validation passes for endpoint restrictions, structured
+schema, reasoning exclusion, evidence-ID authorization, numeric/negation/equation drift,
+server-side citations, fallback, and circuit recovery. Live Ollama, the sealed holdout,
+and live browser acceptance are not executed because the installed Ollama 0.22.1 client
+cannot connect to a service and no installed model inventory is available. The blind
+holdout remains sealed rather than fabricating or tuning against results.
+
+The default isolated Docker/Chromium acceptance passed against disposable PostgreSQL,
+Redis, and MinIO volumes. The harness removed its containers, network, volumes, traces,
+screenshots, and reports. A first non-isolated browser attempt hit the pre-existing stale
+runtime and was discarded; the isolated rerun passed.
+
+## Live Ollama closure — 2026-07-31
+
+Status: PARTIAL PASS. Local Ollama `0.32.1` and `llama3:latest`
+(`365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1`,
+8.0B, Q4_0, context 8192) were ready. The 100-case holdout was executed once.
+Safety, citations, isolation, deterministic states, injection resistance, and fallback
+passed; completeness, claim recall, numeric, entity/role/date, and equation gates failed.
+Docker-to-host Ollama and isolated Chromium passed through `host.docker.internal`.
+An unavailable local port produced sanitized extractive fallback, the circuit opened at
+the configured threshold, and verified live generation recovered after the recovery
+window. Normal persistent Compose services and volumes remained running.
+
+## Grounded generation v2
+
+The new development benchmark passed 120/120 cases. The sealed 140-case holdout
+(`4eb23dcd23e734ee43e155fa077c451a40d195ee2d1bcfd5c198285f8aba1c7d`) was
+executed exactly once and is consumed at `1/1`. It passed 152/152 claims, 144/144
+citations, 140/140 final answers, every typed-fact and isolation category, and 4/4
+claim-completion checks. Of 132 live attempts, 124 returned candidates and all 124
+were schema-valid and verified; eight unavailable/circuit cases used complete safe
+fallback. Average/p50/p95 latency was 4177.93/3627.47/8879.99 ms with 21,894 input
+and 13,944 output tokens.
+
+Live isolated Chromium is a PARTIAL PASS. Monetary, currency, frequency,
+percentage, role, effective/published date, and subsequent safe rendering checks
+executed through the current Docker build. Search's canonical integration rejected
+the exact equation fail-closed, and a correct negation answer lacked a validated UI
+citation; a later owner/date multi-claim case was classified as insufficient evidence
+before generation. These integration gaps were not used to retune or rerun the
+consumed holdout. Default Chromium passed 1/1 and agentic Chromium passed 5/5.
+
+## Search/browser acceptance closure — 2026-07-31
+
+Status: **PASS**. The quadratic definition was falsely classified as conflicting
+because a coarse multi-chunk negation heuristic interpreted “a is not zero” as a
+contradiction. Typed conflict assessment is now authoritative, preserving
+`ax² + bx + c = 0` and its non-zero condition. Negative obligations are now typed
+before one-term ambiguity handling, so the supported claim retains its authorized
+citation through API serialization and UI rendering. Owner/effective-date requests
+now produce separate typed components; equivalent nested owner facts are deduplicated,
+and complete single-source multi-claim evidence no longer inherits the distinct-source
+rule that remains mandatory for comparisons.
+
+Fresh isolated live-Ollama Chromium passed 1/1, covering seven strict Search cases,
+malformed-candidate fallback, selected-document scope, Tenant B isolation, and
+desktop/tablet/mobile layouts without console errors, raw JSON, internal paths, stale
+documents, or overflow. Default Chromium passed 1 with 7 gated skips; agentic Chromium
+passed 5 with 3 gated skips. Backend passed 215 with 4 environment-gated skips at 78%
+coverage; frontend passed 34/34 tests and its production build. Docker builds and
+Alembic upgrade/check passed in disposable profiles. Both consumed holdouts were
+neither executed nor modified.

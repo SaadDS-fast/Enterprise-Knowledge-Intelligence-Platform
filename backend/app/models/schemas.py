@@ -157,6 +157,14 @@ class SearchResponse(BaseModel):
     topic_items: list[dict] = Field(default_factory=list)
     active_document_scope: list[dict] = Field(default_factory=list)
     response_state: CanonicalResponseState | None = None
+    generation_provider: str = "extractive"
+    generation_model: str = "deterministic-extractive-v2"
+    generation_used: bool = False
+    generation_fallback_used: bool = False
+    generation_duration_ms: float = Field(default=0.0, ge=0.0)
+    generation_verification: str = "not_applicable"
+    structured_output_valid: bool = False
+    claim_verification_passed: bool = False
 
     @model_validator(mode="after")
     def enforce_canonical_response_state(self) -> SearchResponse:

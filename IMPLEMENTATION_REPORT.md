@@ -293,3 +293,42 @@ citations and explicit conflict sides.
 No retrieval calibration, embedding/reranker model, consumed benchmark, external
 API, Ollama integration, generative model, LangChain, LangGraph, or AWS behavior
 changed.
+
+## Search/browser acceptance fixes
+
+Equation-bearing definitions no longer trigger the old coarse negation conflict
+heuristic; typed facts and typed conflict assessment decide support. Obligation queries
+are recognized explicitly, with `must not` and related forms extracted as immutable
+facts and mapped to focused evidence. Multi-component owner/effective-date questions
+produce separate required claims, normalize equivalent heading/sentence facts, preserve
+`EFFECTIVE_DATE`, and accept complete evidence from one source. The existing
+distinct-source requirement for true comparisons is unchanged. Canonical failures now
+include only a sanitized invariant category for diagnosis; candidates, raw values, and
+reasoning remain excluded.
+# Verified Ollama grounded generation (2026-07-30)
+
+Added a disabled-by-default `extractive`/`ollama` provider boundary. Ollama returns only a
+strict candidate; deterministic eligibility, canonical response state, confidence,
+conflict classification, scope, and citation construction remain server-owned. The
+implementation includes private endpoint and model allowlists, DNS revalidation,
+bounded evidence packets, prompt-injection marking, schema repair (one retry), critical
+fact and claim verification, safe fallback, circuit breaking, safe metrics, API metadata,
+and accessible Search status.
+
+Live validation reproduced an Ollama grammar-parser incompatibility with constrained
+Pydantic JSON Schema. The wire schema now contains structural JSON grammar only, while
+the unchanged strict Pydantic model performs bounds, pattern, and extra-field rejection
+after parsing. No Python Ollama package is used; the provider uses the existing HTTPX
+dependency.
+
+## Grounded answer-quality remediation
+
+Generation v2 creates required components and typed facts before Ollama is called.
+Money retains canonical value, currency, unit, frequency, and limit type; names,
+roles, typed dates, equations, obligations, negation, and applicability remain
+request-scoped immutable facts. Ollama may order approved component IDs, but the
+server rebuilds claim/evidence mappings and renders authoritative component text.
+Missing components are completed deterministically; unsupported IDs still fail in the
+strict verifier. Versions are `grounded-prompt-v1.2`, `grounded-candidate-v2`,
+`grounded-verifier-v1.2`, `answer-plan-v1`, `fact-registry-v1`, and
+`authorized-evidence-v1.1`.

@@ -435,3 +435,21 @@ See [semantic retrieval architecture](docs/architecture/semantic-retrieval-and-r
 [local model deployment](docs/deployment/local-embedding-models.md),
 [retrieval evaluation](docs/evaluation/retrieval-quality.md), and
 [local model security](docs/security/local-model-security.md).
+# Optional verified local generation
+
+Grounded answer generation can optionally use an operator-provisioned Ollama model, but is
+disabled by default. The model is a candidate synthesizer only: canonical response state,
+authorization, conflict handling, verification, and citations remain deterministic.
+See [architecture](docs/architecture/ollama-grounded-generation.md) and
+[local deployment](docs/deployment/local-ollama.md).
+
+Live validation used local Ollama `0.32.1` with operator-provisioned
+`llama3:latest` (`365c0bd3c000…b5d8ad1`, 8.0B, Q4_0). The sealed benchmark
+completed once with a PARTIAL PASS; see the grounded-generation quality report.
+
+Grounded-generation v2 closes that quality gap with a server-owned answer plan,
+typed critical-fact registry, immutable fact-ID rendering, bounded structural repair,
+and deterministic missing-claim completion. The new 120-case development set passed,
+then the independently sealed 140-case holdout (`4eb23dcd…c7d`) ran once (`1/1`) with
+100% support, completeness, critical-fact accuracy, citation accuracy, and safe
+fallback. Ollama remains disabled by default.

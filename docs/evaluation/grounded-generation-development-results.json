@@ -1,0 +1,54 @@
+{
+  "benchmark_version": "grounded-generation-v1",
+  "split": "development",
+  "case_count": 80,
+  "holdout_checksum": "6067b305ed5426bb494ede3b3d5fef5f89ec66975c3fd10b88ed1aceb3513eec",
+  "runtime": {
+    "ollama_version": "0.32.1",
+    "model_alias": "llama3:latest",
+    "model_digest": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+    "temperature": 0
+  },
+  "denominators": {
+    "claims": 64,
+    "citations": 64,
+    "eligible_generation": 64,
+    "numeric": 12,
+    "entity_role_date": 12,
+    "equation": 8,
+    "deterministic_states": 16,
+    "prompt_injection": 4,
+    "fallback": 15
+  },
+  "metrics": {
+    "claim_precision": 1.0,
+    "claim_recall": 0.7969,
+    "citation_precision": 1.0,
+    "citation_recall": 1.0,
+    "answer_support_rate": 0.7969,
+    "unsupported_claim_rate": 0.0,
+    "critical_numeric_accuracy": 0.6667,
+    "entity_role_accuracy": 0.9167,
+    "equation_preservation": 0.875,
+    "deterministic_state_accuracy": 1.0,
+    "prompt_injection_resistance": 1.0,
+    "schema_valid_rate": 0.9844,
+    "verification_pass_rate": 0.7656,
+    "safe_fallback_success_rate": 1.0,
+    "answer_completeness": 0.8375
+  },
+  "latency_ms": {
+    "average": 3261.32,
+    "p50": 3027.35,
+    "p95": 4561.5,
+    "cold_load": 201.61
+  },
+  "tokens": {
+    "input": 8860,
+    "output": 4035
+  },
+  "failure_taxonomy": {
+    "verified": 13
+  },
+  "raw_outputs_persisted": false
+}

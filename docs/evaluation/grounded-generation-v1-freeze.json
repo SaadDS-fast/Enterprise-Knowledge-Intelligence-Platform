@@ -1,0 +1,22 @@
+{
+  "frozen_at": "2026-07-31",
+  "prompt_version": "grounded-prompt-v1.1",
+  "structured_schema_version": "grounded-candidate-v1",
+  "verifier_version": "grounded-verifier-v1.1",
+  "evidence_packet_version": "authorized-evidence-v1",
+  "model_alias": "llama3:latest",
+  "model_digest": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+  "ollama_version": "0.32.1",
+  "temperature": 0,
+  "output_token_limit": 1200,
+  "maximum_evidence_items": 8,
+  "maximum_evidence_characters": 12000,
+  "maximum_characters_per_evidence": 2400,
+  "generation_timeout_seconds": 90,
+  "schema_repair_retries": 1,
+  "fallback_policy": "deterministic-extractive-fail-closed",
+  "development_results": "docs/evaluation/grounded-generation-development-results.json",
+  "holdout_fixture_sha256": "6067b305ed5426bb494ede3b3d5fef5f89ec66975c3fd10b88ed1aceb3513eec",
+  "holdout_execution_count_at_freeze": "0/1",
+  "post_holdout_retuning_permitted": false
+}

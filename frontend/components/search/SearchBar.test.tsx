@@ -233,4 +233,135 @@ describe("SearchBar", () => {
     });
     expect(screen.getByTestId("search-result-scope")).toHaveTextContent("AS_Practice_questions");
   });
+
+  it.each([
+    [
+      true,
+      false,
+      "verified",
+      "Grounded answer generated locally",
+      "Generated claims verified against cited evidence",
+    ],
+    [
+      false,
+      true,
+      "generation_timeout",
+      "Local generator unavailable — safe fallback used",
+      "Server-authorized citations retained",
+    ],
+  ])(
+    "renders safe generation metadata without raw provider output",
+    async (used, fallback, verification, label, verificationLabel) => {
+      mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+        answer: "The verified allowance is PKR 5,000.",
+        evidence: [],
+        sufficient_evidence: true,
+        abstained: false,
+        outcome: "ANSWER_SUPPORTED",
+        support_status: "SUPPORTED",
+        confidence_category: "high",
+        citations: [],
+        conflicts: [],
+        topic_items: [],
+        active_document_scope: [],
+        generation_provider: used ? "ollama" : "extractive",
+        generation_model: used ? "approved-local-alias" : "deterministic-extractive-v2",
+        generation_used: used,
+        generation_fallback_used: fallback,
+        generation_duration_ms: 12,
+        generation_verification: verification,
+        structured_output_valid: used,
+        claim_verification_passed: used,
+      });
+      render(<SearchBar />);
+      await userEvent.type(screen.getByTestId("search-query"), "What is the allowance?");
+      fireEvent.click(screen.getByTestId("search-submit"));
+
+      expect(await screen.findByText(label)).toBeInTheDocument();
+      expect(screen.getByText(verificationLabel)).toBeInTheDocument();
+      expect(document.body.textContent).not.toMatch(/candidate_answer|reasoning|system prompt/i);
+    },
+  );
+
+  it.each([
+    [
+      "equation",
+      "A quadratic equation has the form ax² + bx + c = 0, where a is not zero.",
+      "Quadratic Equations",
+    ],
+    [
+      "negation",
+      "Employees must not exceed the approved travel limit.",
+      "Travel Policy",
+    ],
+    [
+      "owner/date",
+      "The policy owner is Ayesha Khan. The policy is effective from 1 February 2026.",
+      "Policy Details",
+    ],
+  ])("renders supported %s answers with visible claim citations", async (_, answer, title) => {
+    mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+      answer,
+      evidence: [],
+      sufficient_evidence: true,
+      abstained: false,
+      outcome: "ANSWER_SUPPORTED",
+      support_status: "SUPPORTED",
+      confidence_category: "high",
+      citations: [
+        {
+          chunk_id: "chunk-closure",
+          document_id: "doc-closure",
+          document_title: title,
+          excerpt: answer,
+        },
+      ],
+      conflicts: [],
+      topic_items: [],
+      active_document_scope: [],
+      response_state: {
+        primary_state: title === "Policy Details" ? "SUPPORTED_COMPOSITE" : "SUPPORTED",
+        answer,
+        claims: [
+          { claim_id: "claim-1", text: answer, citation_ids: ["chunk-closure"] },
+          ...(title === "Policy Details"
+            ? [{ claim_id: "claim-2", text: "1 February 2026", citation_ids: ["chunk-closure"] }]
+            : []),
+        ],
+        citation_ids: ["chunk-closure"],
+        citation_document_ids: { "chunk-closure": "doc-closure" },
+        evidence_decision: "SUFFICIENT",
+        conflict: { category: "NO_CONFLICT", unresolved: false, material: false, sides: [] },
+        confidence: {
+          retrieval: "HIGH",
+          evidence_support: "HIGH",
+          conflict: "NOT_APPLICABLE",
+          final: "HIGH",
+        },
+        retrieval: {
+          mode: "lexical",
+          semantic_applied: false,
+          reranker_applied: false,
+          lexical_fallback_used: false,
+          recovery_attempted: false,
+          recovery_succeeded: false,
+          failure_category: null,
+        },
+        scope: { selected_document_scope: false, authorized_document_ids: [] },
+        diagnostics: {},
+        user_message: answer,
+      },
+    });
+
+    render(<SearchBar />);
+    await userEvent.type(screen.getByTestId("search-query"), "Show supported answer");
+    fireEvent.click(screen.getByTestId("search-submit"));
+
+    expect(await screen.findByTestId("search-answer")).toHaveTextContent(answer);
+    expect(screen.getByTestId("search-citations")).toHaveTextContent(title);
+    expect(screen.getByTestId("search-citations")).toHaveTextContent(answer);
+    expect(screen.getByTestId("search-claim-support")).toHaveTextContent("chunk-closure");
+    expect(screen.getByTestId("search-verdict")).not.toHaveTextContent(/insufficient|failed/i);
+    expect(document.body.textContent).not.toMatch(/answer_segments|fact_ids|\/Users\//i);
+  });
 });

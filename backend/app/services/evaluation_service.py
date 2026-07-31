@@ -64,6 +64,10 @@ async def run_evaluation(
                 "primary_state": response_state.primary_state.value,
                 "conflict_status": response_state.conflict.category.value,
                 "response_state": response_state.model_dump(mode="json"),
+                "generation_provider": result.generation_provider,
+                "generation_used": result.generation_used,
+                "generation_fallback_used": result.generation_fallback_used,
+                "generation_verification": result.generation_verification,
             }
         )
     run.metrics_json = {

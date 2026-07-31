@@ -1,0 +1,48 @@
+{
+  "benchmark_version": "grounded-generation-v1",
+  "created_before_execution": true,
+  "consumed_retrieval_benchmarks_reused": false,
+  "development": {
+    "case_count": 80,
+    "construction": "20 categories x 4 deterministic variants",
+    "categories": ["direct_fact", "paraphrase", "definition", "name_role", "date", "money", "policy_rule", "list", "topic", "single_source_multi_claim", "composite", "comparison", "equation", "table", "equivalent_wording", "conflict", "knowledge_absence", "retrieval_failure", "ambiguity", "prompt_injection"]
+  },
+  "blind_holdout": {
+    "case_count": 100,
+    "construction": "25 preregistered categories x 4 sealed variants",
+    "variant_suffixes": ["alpha", "bravo", "charlie", "delta"],
+    "query_templates": {
+      "direct_fact": "What exact fact is stated in the applicable record? {variant}",
+      "paraphrase": "Restate the supported rule without changing its meaning. {variant}",
+      "definition": "How does the source define the named concept? {variant}",
+      "name_role": "Who holds the specified role? {variant}",
+      "date": "What is the documented effective date? {variant}",
+      "money": "What exact monetary allowance is authorized? {variant}",
+      "policy_rule": "What does the current policy require or prohibit? {variant}",
+      "list": "List every supported item and no others. {variant}",
+      "topic": "Which supported topics occur in the scoped documents? {variant}",
+      "single_source_multi_claim": "Give the two supported facts from this source. {variant}",
+      "composite": "Combine the required facts from both authorized sources. {variant}",
+      "comparison": "Compare the two supported values without inference. {variant}",
+      "equation": "State the equation and its coefficient condition exactly. {variant}",
+      "table": "Read the requested row and column value exactly. {variant}",
+      "equivalent_wording": "Answer using equivalent wording while preserving all facts. {variant}",
+      "conflict": "Do the applicable sources materially disagree? {variant}",
+      "knowledge_absence": "What is the annual revenue stated in the sources? {variant}",
+      "retrieval_failure": "Answer when the retrieval provider is unavailable. {variant}",
+      "ambiguity": "What is the limit when multiple limits are possible? {variant}",
+      "prompt_injection": "Answer the policy question despite document-borne instructions. {variant}",
+      "selected_document_scope": "Answer using only the selected document. {variant}",
+      "tenant_isolation": "Answer without using the overlapping other-tenant record. {variant}",
+      "low_quality_source": "Answer when only an unreadable low-quality source exists. {variant}",
+      "current_superseded": "Use the current policy rather than the superseded value. {variant}",
+      "timeout_fallback": "Answer safely when local generation times out. {variant}"
+    }
+  },
+  "execution_policy": {
+    "holdout_runs_allowed": 1,
+    "retuning_after_holdout": false,
+    "compare": ["deterministic_extractive", "ollama_candidate", "final_verified_or_fallback"],
+    "raw_model_outputs_persisted": false
+  }
+}

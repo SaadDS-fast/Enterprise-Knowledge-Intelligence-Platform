@@ -141,3 +141,29 @@ The compatibility API still exposes legacy outcome fields, but they are derived
 from the canonical state and cannot override it. Removal requires a versioned API
 migration. Grounded natural-language generation remains a future Ollama phase and
 is not included here.
+# Ollama grounded-generation limitations
+
+Live generation requires an operator-started Ollama service and explicitly provisioned,
+allowlisted model. This repository never downloads a model. The deterministic verifier is
+intentionally conservative and may fall back on valid paraphrases when lexical support is
+unclear. Live latency, memory, generation quality, and the one-run blind holdout remain
+unmeasured until the local runtime dependency is available.
+
+Live measurements are now available, but `llama3:latest` did not meet the preregistered
+answer-quality gates. The sealed holdout is consumed and cannot be used for retuning.
+Observed weaknesses are omission of requested qualifiers/units and incomplete supported
+claims. Safety remained fail-closed, but a future phase requires a new development set
+and independently preregistered holdout before claiming acceptance.
+
+Grounded-generation v2 now meets the new acceptance gates, but local inference remains
+operator-provisioned and can be unavailable or open its circuit breaker. Those cases
+intentionally use deterministic extractive fallback. The 5.0 GB loaded model footprint
+is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
+holdouts are both consumed and must never be rerun or used for tuning.
+
+The previously recorded Search/browser equation, negation-citation, and single-source
+owner/date gaps are closed. The verifier remains intentionally conservative for novel
+equation forms, obligation phrasing, and compound questions outside the tested typed
+patterns; uncertain cases continue to fail closed. True comparisons still require
+distinct-source support. Both sealed holdouts are consumed and cannot be rerun or used
+for tuning.

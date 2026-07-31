@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Self
+from urllib.parse import urlsplit
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -151,6 +153,20 @@ class Settings(BaseSettings):
     local_llm_backend: LocalLLMBackend = LocalLLMBackend.EXTRACTIVE
     local_llm_base_url: str = "http://localhost:11434"
     local_llm_model: str = "llama3.2:3b"
+    ollama_enabled: bool = False
+    ollama_allowed_models: list[str] = Field(default_factory=lambda: ["llama3.2:3b"])
+    ollama_allowed_hosts: list[str] = Field(
+        default_factory=lambda: ["localhost", "127.0.0.1", "::1", "host.docker.internal", "ollama"]
+    )
+    ollama_connect_timeout_seconds: float = Field(default=3.0, gt=0, le=30)
+    ollama_generation_timeout_seconds: float = Field(default=45.0, gt=0, le=300)
+    ollama_max_retries: int = Field(default=1, ge=0, le=1)
+    ollama_keep_alive: str = "5m"
+    ollama_max_evidence_items: int = Field(default=8, ge=1, le=20)
+    ollama_max_evidence_chars: int = Field(default=12000, ge=500, le=50000)
+    ollama_max_chars_per_evidence: int = Field(default=2400, ge=200, le=10000)
+    ollama_circuit_failure_threshold: int = Field(default=3, ge=1, le=20)
+    ollama_circuit_recovery_seconds: float = Field(default=30.0, gt=0, le=600)
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-4.1-mini"
     azure_openai_api_key: SecretStr | None = None
@@ -275,6 +291,8 @@ class Settings(BaseSettings):
         "allowed_mime_types",
         "agent_research_allowed_formats",
         "evidence_trust_weights",
+        "ollama_allowed_models",
+        "ollama_allowed_hosts",
         mode="before",
     )
     @classmethod
@@ -354,6 +372,21 @@ class Settings(BaseSettings):
             raise ValueError("Phase 2 local inference is restricted to CPU")
         if self.llm_provider is ProviderType.OPENAI and not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY is required")
+        parsed_ollama = urlsplit(self.local_llm_base_url)
+        if parsed_ollama.scheme != "http" or parsed_ollama.username or parsed_ollama.password:
+            raise ValueError("LOCAL_LLM_BASE_URL must be an uncredentialed HTTP URL")
+        if parsed_ollama.path not in {"", "/"} or parsed_ollama.query or parsed_ollama.fragment:
+            raise ValueError("LOCAL_LLM_BASE_URL must not contain a path, query or fragment")
+        host = (parsed_ollama.hostname or "").lower()
+        if host not in {item.lower() for item in self.ollama_allowed_hosts}:
+            try:
+                address = ipaddress.ip_address(host)
+            except ValueError as exc:
+                raise ValueError("LOCAL_LLM_BASE_URL host is not allowlisted") from exc
+            if address.is_link_local or not (address.is_loopback or address.is_private):
+                raise ValueError("LOCAL_LLM_BASE_URL must resolve to a local/private address")
+        if self.local_llm_model not in self.ollama_allowed_models:
+            raise ValueError("LOCAL_LLM_MODEL must be present in OLLAMA_ALLOWED_MODELS")
         if self.is_production:
             secret = self.secret_key.get_secret_value()
             if len(secret) < 32 or secret.startswith("development-") or "replace" in secret.lower():

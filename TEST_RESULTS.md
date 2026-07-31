@@ -231,3 +231,46 @@ typecheck, 29 Vitest tests, production build, and dependency audit passed.
   pending operations in every disposable profile.
 - Full-stack results are recorded in the final acceptance report for
   `fix(rag): enforce response and conflict consistency`.
+# Ollama grounded-generation tests (2026-07-30)
+
+The dedicated backend suite contains 20 passing cases covering disabled defaults, SSRF
+and model allowlists, prompt injection, schema strictness/no reasoning, hallucinated
+evidence IDs, numeric/entity/negation/equation checks, server citation reconstruction,
+safe extractive fallback, and circuit recovery. Full backend: 200 passed, 4 gated skips,
+78% coverage. Frontend: 31 passed; lint (one pre-existing warning), typecheck, and build
+passed. Isolated Chromium: 1 applicable passed, 6 feature-gated skipped. Docker images
+built and Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no
+known vulnerabilities.
+
+Live closure: backend 201 passed / 4 live-gated skipped, coverage 78%; frontend 31
+passed. Live Ollama isolated Chromium passed 1/1 applicable test (6 feature-gated
+skips). Agentic isolated Chromium passed 5 with 2 feature-gated skips. Docker builds and
+Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no known
+vulnerabilities.
+
+Grounded v2 closure: backend 208 passed / 4 live-gated skipped, 78% coverage;
+frontend 31/31 passed, production build and typecheck passed. Bandit and pip-audit
+passed; production `npm audit --omit=dev` reported zero vulnerabilities (the full
+development-tree install reported one high-severity advisory). Docker images built
+and Alembic upgrade/check reported no pending operations.
+
+The isolated live-Ollama Chromium safety regression completes with known allowed
+fail-closed outcomes, but acceptance remains partial: the Search layer rejected the
+equation response and omitted a citation on one correct negation response. Disposable
+Compose projects, networks, PostgreSQL, Redis, MinIO volumes, traces, and screenshots
+are removed by the profile trap.
+
+# Search/browser acceptance closure (2026-07-31)
+
+- Focused backend/API equation, obligation-citation, and owner/date coverage: 30 passed.
+- Full backend: 215 passed, 4 environment-gated skipped; coverage 78%.
+- Compileall, Ruff check/format, and Bandit: passed.
+- Frontend: 34 passed; lint had no errors and one existing Fast Refresh warning;
+  typecheck and production build passed.
+- Default isolated Chromium: 1 passed, 7 feature-gated skipped.
+- Agentic isolated Chromium: 5 passed, 3 feature-gated skipped.
+- Live Ollama isolated Chromium: 1 passed, exercising seven strict answer/citation
+  cases plus fallback, scope, isolation, and responsive acceptance.
+- Alembic upgrade/check: passed with no pending operations in each isolated runtime.
+- pip-audit and production npm audit: no known vulnerabilities.
+- The consumed v1 and 140-case v2 holdouts were not run.
