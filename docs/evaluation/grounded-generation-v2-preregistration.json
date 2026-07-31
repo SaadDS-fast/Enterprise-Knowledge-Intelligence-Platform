@@ -1,0 +1,15 @@
+{
+  "benchmark_version": "grounded-generation-v2",
+  "status": "CONSUMED",
+  "fixture": "docs/evaluation/grounded-generation-v2-benchmark.json",
+  "sha256": "4eb23dcd23e734ee43e155fa077c451a40d195ee2d1bcfd5c198285f8aba1c7d",
+  "generator_sha256": "827006bc757cb1830f6c845fc507d3129968f9862e84984fdd5a86a1a25fe69f",
+  "holdout_case_count": 140,
+  "category_count": 35,
+  "variants_per_category": 4,
+  "expected_claims": "Derived from immutable required components R1..Rn",
+  "expected_fact_ids": "Derived from server fact registry F1..Fn",
+  "expected_evidence_ids": "Request-scoped E1..En",
+  "executions_completed": 1,
+  "maximum_executions": 1
+}

@@ -44,6 +44,7 @@ class RequestedAttribute(StrEnum):
     NUMERIC = "numeric"
     STATUS = "status"
     LOCATION = "location"
+    OBLIGATION = "obligation"
     UNKNOWN = "unknown"
 
 
@@ -94,6 +95,10 @@ ATTRIBUTE_SYNONYMS: dict[RequestedAttribute, set[str]] = {
     RequestedAttribute.DATE: {
         "when",
         "date",
+        "effective",
+        "published",
+        "approved",
+        "expires",
         "launch",
         "launched",
         "started",
@@ -103,16 +108,35 @@ ATTRIBUTE_SYNONYMS: dict[RequestedAttribute, set[str]] = {
     RequestedAttribute.NUMERIC: {"budget", "cost", "amount", "revenue", "allowance", "number"},
     RequestedAttribute.STATUS: {"status", "state", "approved", "enabled", "disabled"},
     RequestedAttribute.LOCATION: {"where", "location", "office", "region"},
+    RequestedAttribute.OBLIGATION: {
+        "prohibited",
+        "forbidden",
+        "required",
+        "requirement",
+        "allowed",
+        "obligation",
+    },
 }
 
 ATTRIBUTE_LABELS: dict[RequestedAttribute, tuple[str, ...]] = {
     RequestedAttribute.TOPIC: ("demo topic", "topic", "subject"),
     RequestedAttribute.DEFINITION: ("definition", "meaning"),
     RequestedAttribute.OWNER: ("owner", "owned by", "responsible", "accountable"),
-    RequestedAttribute.DATE: ("launch date", "date", "deadline", "started", "launched"),
+    RequestedAttribute.DATE: (
+        "effective date",
+        "published date",
+        "approval date",
+        "expiry date",
+        "launch date",
+        "date",
+        "deadline",
+        "started",
+        "launched",
+    ),
     RequestedAttribute.NUMERIC: ("budget", "cost", "revenue", "allowance", "amount"),
     RequestedAttribute.STATUS: ("status", "state"),
     RequestedAttribute.LOCATION: ("location", "region", "office"),
+    RequestedAttribute.OBLIGATION: ("obligation", "requirement", "rule", "prohibition"),
 }
 
 
@@ -123,7 +147,18 @@ def requested_attribute(query: str) -> RequestedAttribute:
         return RequestedAttribute.TOPIC
     if terms & {"owner", "owns", "owned", "responsible", "accountable"}:
         return RequestedAttribute.OWNER
-    if terms & {"when", "date", "launch", "launched", "started", "began", "deadline"}:
+    if terms & {
+        "date",
+        "effective",
+        "published",
+        "approved",
+        "expires",
+        "launch",
+        "launched",
+        "started",
+        "began",
+        "deadline",
+    } or re.search(r"\bwhen\b", normalized):
         return RequestedAttribute.DATE
     if terms & {"budget", "cost", "amount", "revenue", "allowance"}:
         return RequestedAttribute.NUMERIC
@@ -131,6 +166,15 @@ def requested_attribute(query: str) -> RequestedAttribute:
         return RequestedAttribute.STATUS
     if terms & {"where", "location", "region", "office"}:
         return RequestedAttribute.LOCATION
+    if terms & {
+        "prohibited",
+        "forbidden",
+        "required",
+        "requirement",
+        "allowed",
+        "obligation",
+    }:
+        return RequestedAttribute.OBLIGATION
     if "define" in normalized or normalized.startswith("what is "):
         return RequestedAttribute.DEFINITION
     return RequestedAttribute.UNKNOWN
@@ -213,8 +257,9 @@ def assess_evidence_support(
     )
     if len(compound_attributes) > 1:
         supported_attributes = {fact.attribute for fact in direct_facts}
-        globally_sufficient = globally_sufficient and set(compound_attributes).issubset(
-            supported_attributes
+        complete_typed_support = set(compound_attributes).issubset(supported_attributes)
+        globally_sufficient = max_score >= settings.evidence_min_score and (
+            coverage >= 0.75 or complete_typed_support
         )
     if attribute is RequestedAttribute.NUMERIC and not direct_facts:
         globally_sufficient = False
@@ -255,11 +300,14 @@ def assess_evidence_support(
 
 def _requested_attributes(query: str) -> list[RequestedAttribute]:
     terms = key_terms(query)
+    normalized = query.casefold()
     requested: list[RequestedAttribute] = []
     for attribute, synonyms in ATTRIBUTE_SYNONYMS.items():
         if attribute in {RequestedAttribute.UNKNOWN, RequestedAttribute.DEFINITION}:
             continue
-        if terms & synonyms:
+        if terms & synonyms or any(
+            re.search(rf"\b{re.escape(synonym)}\b", normalized) for synonym in synonyms
+        ):
             requested.append(attribute)
     return requested
 
@@ -318,6 +366,8 @@ def synthesize_direct_answer(query: str, assessment: SupportAssessment) -> str |
         return f"The location is {value}."
     if assessment.attribute is RequestedAttribute.DEFINITION:
         return value if value.endswith(".") else f"{value}."
+    if assessment.attribute is RequestedAttribute.OBLIGATION:
+        return value if value.endswith(".") else f"{value}."
     return None
 
 
@@ -341,10 +391,22 @@ def _sentence_facts(content: str, index: int, attribute: RequestedAttribute) -> 
                 r"[a-z]*\s+\d{4}|\d{4}-\d{2}-\d{2}|\d{4})",
                 re.I,
             ),
+            re.compile(
+                r"\b(?:is\s+)?(?:effective from|published on|approved on|expires on)\s+"
+                r"(?P<value>\d{1,2}\s+[A-Za-z]+\s+\d{4}|\d{4}-\d{2}-\d{2})",
+                re.I,
+            ),
         ),
         RequestedAttribute.DEFINITION: (
             re.compile(r"\b(?P<value>A [^.]{10,240}\.)"),
             re.compile(r"\b(?P<value>An [^.]{10,240}\.)"),
+        ),
+        RequestedAttribute.OBLIGATION: (
+            re.compile(
+                r"(?P<value>[^.!?\n]{0,160}\b(?:must not|may not|cannot|must|required to)\b"
+                r"[^.!?\n]{1,160}[.!?]?)",
+                re.I,
+            ),
         ),
     }
     for pattern in patterns.get(attribute, ()):
@@ -362,9 +424,31 @@ def _dedupe_facts(facts: list[ExtractedFact]) -> list[ExtractedFact]:
         key = (fact.attribute, _normalize_fact_key(fact.value))
         if key in seen:
             continue
+        equivalent_index = next(
+            (
+                index
+                for index, existing in enumerate(deduped)
+                if existing.attribute is fact.attribute
+                and _nested_equivalent(existing.value, fact.value)
+            ),
+            None,
+        )
+        if equivalent_index is not None:
+            existing = deduped[equivalent_index]
+            if len(fact.value) < len(existing.value):
+                deduped[equivalent_index] = fact
+            seen.add(key)
+            continue
         seen.add(key)
         deduped.append(fact)
     return deduped
+
+
+def _nested_equivalent(left: str, right: str) -> bool:
+    left_key = _normalize_fact_key(left)
+    right_key = _normalize_fact_key(right)
+    shorter, longer = sorted((left_key, right_key), key=len)
+    return len(shorter) >= 3 and re.search(rf"\b{re.escape(shorter)}\b", longer) is not None
 
 
 def _distinct_fact_values(facts: list[ExtractedFact]) -> list[str]:

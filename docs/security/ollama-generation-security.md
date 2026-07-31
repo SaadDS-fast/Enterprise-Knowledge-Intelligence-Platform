@@ -19,3 +19,12 @@ Live prompt-injection resistance, tenant isolation, selected-document isolation,
 unknown-ID rejection, reasoning exclusion, endpoint/model allowlists, and deterministic
 fallback passed. The benchmark stores aggregate metrics only and contains no raw
 candidates, prompts, document content, credentials, tenant identifiers, or model paths.
+
+V2 further removes model authority over required components and critical wording.
+Only request-scoped component, fact, and evidence mappings survive normalization;
+server-controlled rendering and citations are authoritative. Unknown IDs fail closed
+in the verifier, prompt-injection sentences are excluded from planning, no tools or
+retrieval are exposed to Ollama, redirects remain disabled, DNS/private-endpoint and
+model allowlists remain enforced, and raw candidates remain ephemeral. The sealed v2
+holdout passed prompt injection, selected-document isolation, tenant isolation,
+knowledge absence, retrieval failure, conflict handling, and safe fallback at 1.0000.

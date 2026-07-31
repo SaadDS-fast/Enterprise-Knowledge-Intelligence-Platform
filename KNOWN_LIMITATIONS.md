@@ -154,3 +154,16 @@ answer-quality gates. The sealed holdout is consumed and cannot be used for retu
 Observed weaknesses are omission of requested qualifiers/units and incomplete supported
 claims. Safety remained fail-closed, but a future phase requires a new development set
 and independently preregistered holdout before claiming acceptance.
+
+Grounded-generation v2 now meets the new acceptance gates, but local inference remains
+operator-provisioned and can be unavailable or open its circuit breaker. Those cases
+intentionally use deterministic extractive fallback. The 5.0 GB loaded model footprint
+is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
+holdouts are both consumed and must never be rerun or used for tuning.
+
+The previously recorded Search/browser equation, negation-citation, and single-source
+owner/date gaps are closed. The verifier remains intentionally conservative for novel
+equation forms, obligation phrasing, and compound questions outside the tested typed
+patterns; uncertain cases continue to fail closed. True comparisons still require
+distinct-source support. Both sealed holdouts are consumed and cannot be rerun or used
+for tuning.

@@ -14,14 +14,18 @@ import httpx
 from pydantic import ValidationError
 
 from app.core.config import LocalLLMBackend, settings
+from app.llm.answer_plan import build_answer_plan
 from app.llm.base import GenerationRequest, GenerationResult, LLMProvider
 from app.llm.grounded import (
     INJECTION_PATTERN,
-    GroundedCandidate,
     build_evidence_packet,
-    build_structured_prompt,
-    ollama_candidate_schema,
-    verify_candidate,
+)
+from app.llm.grounded_v2 import (
+    GroundedCandidateV2,
+    build_planned_prompt,
+    candidate_schema_v2,
+    normalize_candidate_payload,
+    verify_and_render,
 )
 from app.observability.metrics import (
     GENERATION_DURATION,
@@ -109,7 +113,10 @@ class LocalProvider(LLMProvider):
         packet = build_evidence_packet(request.evidence)
         if not packet:
             raise ValueError("empty_evidence_packet")
-        prompt = build_structured_prompt(request.question, packet)
+        plan = build_answer_plan(request.question, packet)
+        if not plan.components:
+            raise ValueError("empty_answer_plan")
+        prompt = build_planned_prompt(request.question, packet, plan)
         timeout = httpx.Timeout(
             settings.ollama_generation_timeout_seconds,
             connect=settings.ollama_connect_timeout_seconds,
@@ -117,7 +124,6 @@ class LocalProvider(LLMProvider):
         started = time.perf_counter()
         async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
             await self._ensure_model_installed(client)
-            raw: dict | None = None
             schema_valid = False
             for attempt in range(settings.ollama_max_retries + 1):
                 try:
@@ -132,7 +138,7 @@ class LocalProvider(LLMProvider):
                                 else ""
                             ),
                             "stream": False,
-                            "format": ollama_candidate_schema(),
+                            "format": candidate_schema_v2(),
                             "keep_alive": settings.ollama_keep_alive,
                             "options": {
                                 "temperature": 0,
@@ -148,7 +154,9 @@ class LocalProvider(LLMProvider):
                 raw_text = payload.get("response", "")
                 try:
                     raw = json.loads(raw_text)
-                    candidate = GroundedCandidate.model_validate(raw)
+                    candidate = GroundedCandidateV2.model_validate(
+                        normalize_candidate_payload(raw, plan)
+                    )
                     schema_valid = True
                     break
                 except (json.JSONDecodeError, ValidationError, TypeError):
@@ -156,18 +164,18 @@ class LocalProvider(LLMProvider):
                         return self._verification_failure(
                             "schema_validation_failed", started, schema_valid=False
                         )
-            verification = verify_candidate(candidate, packet, request.question)
+            verification = verify_and_render(candidate, plan, packet)
             if not verification.passed:
                 return self._verification_failure(
                     verification.category, started, schema_valid=schema_valid
                 )
             return GenerationResult(
-                text=candidate.candidate_answer,
+                text=verification.answer,
                 provider="ollama",
                 model=settings.local_llm_model,
                 used=True,
                 duration_ms=(time.perf_counter() - started) * 1000,
-                verification="verified",
+                verification=verification.category,
                 structured_output_valid=True,
                 claim_verification_passed=True,
                 citations=tuple(verification.citations),

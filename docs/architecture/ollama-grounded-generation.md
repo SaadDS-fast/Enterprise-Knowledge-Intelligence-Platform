@@ -22,3 +22,25 @@ The Ollama wire grammar is deliberately simpler than the application schema beca
 Ollama `0.32.1` rejects constrained grammar keywords. Strict validation remains
 post-parse and server-side. Safe token counts and load duration are retained only in
 ephemeral execution results; raw responses and reasoning fields are discarded.
+
+## Answer-plan v1
+
+The server derives `R` required-component IDs and `F` critical-fact IDs from the
+authorized `E` packet before generation. Typed facts preserve original and canonical
+numeric values plus currency, unit, frequency, limit/date type, names, roles,
+equations, obligations, negation, and applicability. Ollama supplies only an
+organizational candidate. Structural normalization maps known components back to the
+server registry, the strict verifier rejects out-of-scope IDs, and deterministic
+rendering inserts every required component with server-built citations. A missing
+component is completed locally; complete extractive fallback remains the terminal
+fail-safe.
+
+## Search integration closure
+
+Definition equations and their conditions are typed before canonical conflict
+resolution. Obligations preserve modality and negation as request-scoped facts. Compound
+owner/date questions create separate required components while permitting one authorized
+source to support both; comparison intent continues to require distinct sources. Claim
+citations are reconstructed from the matched authorized evidence and survive
+deterministic completion and legacy API mapping. A supported citationless claim remains
+an invariant violation and fails closed.
