@@ -58,7 +58,7 @@ def build_answer_plan(question: str, packet: list[EvidencePacketItem]) -> Answer
     for evidence_index, item in enumerate(packet):
         for sentence_index, raw in enumerate(re.split(r"(?<=[.!?])\s+|\n+", item.text)):
             sentence = " ".join(raw.split())
-            if len(sentence) < 8 or INJECTION_PATTERN.search(sentence):
+            if len(sentence) < 8 or sentence.endswith(":") or INJECTION_PATTERN.search(sentence):
                 continue
             sentence_tokens = set(tokenize(sentence))
             overlap = len(question_tokens & sentence_tokens) / max(1, len(question_tokens))
@@ -67,6 +67,11 @@ def build_answer_plan(question: str, packet: list[EvidencePacketItem]) -> Answer
     multi = bool(
         re.search(
             r"(?i)\b(list|compare|comparison|both|all|two|and who|and what|multi|composite)\b",
+            question,
+        )
+        or re.search(
+            r"(?i)\b(?:who|what|when|where|which|how)\b.*\band\b.*"
+            r"\b(?:who|what|when|where|which|how)\b",
             question,
         )
     )

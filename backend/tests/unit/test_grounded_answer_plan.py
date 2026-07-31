@@ -82,6 +82,7 @@ def test_missing_required_claim_is_completed_deterministically():
     assert len(result.missing_components) == 1
     assert "Sana Malik" in result.answer
     assert "12 April 2027" in result.answer
+    assert [citation["citation_label"] for citation in result.citations] == ["E1"]
 
 
 def test_unknown_fact_and_evidence_ids_fail_closed():

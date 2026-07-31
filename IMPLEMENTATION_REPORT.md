@@ -293,6 +293,18 @@ citations and explicit conflict sides.
 No retrieval calibration, embedding/reranker model, consumed benchmark, external
 API, Ollama integration, generative model, LangChain, LangGraph, or AWS behavior
 changed.
+
+## Search/browser acceptance fixes
+
+Equation-bearing definitions no longer trigger the old coarse negation conflict
+heuristic; typed facts and typed conflict assessment decide support. Obligation queries
+are recognized explicitly, with `must not` and related forms extracted as immutable
+facts and mapped to focused evidence. Multi-component owner/effective-date questions
+produce separate required claims, normalize equivalent heading/sentence facts, preserve
+`EFFECTIVE_DATE`, and accept complete evidence from one source. The existing
+distinct-source requirement for true comparisons is unchanged. Canonical failures now
+include only a sanitized invariant category for diagnosis; candidates, raw values, and
+reasoning remain excluded.
 # Verified Ollama grounded generation (2026-07-30)
 
 Added a disabled-by-default `extractive`/`ollama` provider boundary. Ollama returns only a
