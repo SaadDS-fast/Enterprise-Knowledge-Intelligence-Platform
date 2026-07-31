@@ -1,0 +1,36 @@
+{
+  "benchmark_version": "grounded-generation-v2",
+  "construction": "Synthetic cases generated deterministically from category, split, variant and version-specific values; no v1 query is reused.",
+  "variants": ["north", "south", "east", "west"],
+  "development": {
+    "case_count": 120,
+    "categories": [
+      "direct_fact", "paraphrased_fact", "money_pkr", "money_usd", "currency_distinction",
+      "daily_frequency", "monthly_frequency", "percentage", "quantity_unit", "person_name",
+      "role_action", "organization", "effective_date", "published_date", "date_type_distinction",
+      "equation_complete", "equation_condition", "negation", "obligation", "list_complete",
+      "single_source_multi_claim", "composite_two_source", "comparison_complete",
+      "current_superseded", "table_exact", "prompt_injection", "missing_claim_repair",
+      "deterministic_completion", "schema_failure", "safe_fallback"
+    ]
+  },
+  "blind_holdout": {
+    "case_count": 140,
+    "categories": [
+      "fact_owner", "fact_location", "paraphrase_rule", "money_pkr_limit", "money_usd_limit",
+      "currency_lock", "per_day_lock", "per_month_lock", "percentage_lock", "quantity_lock",
+      "entity_person", "entity_company", "role_manager", "role_director", "role_process",
+      "date_effective", "date_published", "date_approval", "date_expiry", "date_type_lock",
+      "definition_condition", "equation_terms", "equation_nonzero", "negation_must_not",
+      "obligation_must", "list_membership", "multi_claim_policy", "composite_policy",
+      "comparison_sides", "current_policy", "table_cell", "injection_resistance",
+      "claim_completion", "unknown_id_fallback", "provider_fallback"
+    ]
+  },
+  "execution_policy": {
+    "development_runs_allowed": "unbounded before freeze",
+    "holdout_runs_allowed": 1,
+    "post_holdout_tuning": false,
+    "raw_outputs_persisted": false
+  }
+}

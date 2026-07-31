@@ -28,6 +28,7 @@ case "$profile" in
     export E2E_LOCAL_LLM_BASE_URL=http://host.docker.internal:11434
     export E2E_LOCAL_LLM_MODEL=llama3:latest
     export E2E_OLLAMA_ALLOWED_MODELS=llama3:latest
+    export E2E_OLLAMA_ENABLED=true
     ;;
   *)
     echo "usage: $0 {default|agentic|phase2b|ollama}" >&2
@@ -87,6 +88,11 @@ if [ "$profile" = "phase2b" ]; then
   (
     cd frontend
     npx playwright test tests/e2e/phase2b-browser.spec.ts --project=chromium
+  )
+elif [ "$profile" = "ollama" ]; then
+  (
+    cd frontend
+    npx playwright test tests/e2e/ollama-grounded.spec.ts --project=chromium --workers=1
   )
 else
   (

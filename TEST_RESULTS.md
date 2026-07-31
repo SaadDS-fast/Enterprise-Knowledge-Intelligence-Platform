@@ -247,3 +247,15 @@ passed. Live Ollama isolated Chromium passed 1/1 applicable test (6 feature-gate
 skips). Agentic isolated Chromium passed 5 with 2 feature-gated skips. Docker builds and
 Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no known
 vulnerabilities.
+
+Grounded v2 closure: backend 208 passed / 4 live-gated skipped, 78% coverage;
+frontend 31/31 passed, production build and typecheck passed. Bandit and pip-audit
+passed; production `npm audit --omit=dev` reported zero vulnerabilities (the full
+development-tree install reported one high-severity advisory). Docker images built
+and Alembic upgrade/check reported no pending operations.
+
+The isolated live-Ollama Chromium safety regression completes with known allowed
+fail-closed outcomes, but acceptance remains partial: the Search layer rejected the
+equation response and omitted a citation on one correct negation response. Disposable
+Compose projects, networks, PostgreSQL, Redis, MinIO volumes, traces, and screenshots
+are removed by the profile trap.

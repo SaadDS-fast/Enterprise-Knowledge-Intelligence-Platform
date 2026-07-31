@@ -319,3 +319,22 @@ Docker-to-host Ollama and isolated Chromium passed through `host.docker.internal
 An unavailable local port produced sanitized extractive fallback, the circuit opened at
 the configured threshold, and verified live generation recovered after the recovery
 window. Normal persistent Compose services and volumes remained running.
+
+## Grounded generation v2
+
+The new development benchmark passed 120/120 cases. The sealed 140-case holdout
+(`4eb23dcd23e734ee43e155fa077c451a40d195ee2d1bcfd5c198285f8aba1c7d`) was
+executed exactly once and is consumed at `1/1`. It passed 152/152 claims, 144/144
+citations, 140/140 final answers, every typed-fact and isolation category, and 4/4
+claim-completion checks. Of 132 live attempts, 124 returned candidates and all 124
+were schema-valid and verified; eight unavailable/circuit cases used complete safe
+fallback. Average/p50/p95 latency was 4177.93/3627.47/8879.99 ms with 21,894 input
+and 13,944 output tokens.
+
+Live isolated Chromium is a PARTIAL PASS. Monetary, currency, frequency,
+percentage, role, effective/published date, and subsequent safe rendering checks
+executed through the current Docker build. Search's canonical integration rejected
+the exact equation fail-closed, and a correct negation answer lacked a validated UI
+citation; a later owner/date multi-claim case was classified as insufficient evidence
+before generation. These integration gaps were not used to retune or rerun the
+consumed holdout. Default Chromium passed 1/1 and agentic Chromium passed 5/5.

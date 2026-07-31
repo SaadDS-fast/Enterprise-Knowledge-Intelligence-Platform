@@ -154,3 +154,16 @@ answer-quality gates. The sealed holdout is consumed and cannot be used for retu
 Observed weaknesses are omission of requested qualifiers/units and incomplete supported
 claims. Safety remained fail-closed, but a future phase requires a new development set
 and independently preregistered holdout before claiming acceptance.
+
+Grounded-generation v2 now meets the new acceptance gates, but local inference remains
+operator-provisioned and can be unavailable or open its circuit breaker. Those cases
+intentionally use deterministic extractive fallback. The 5.0 GB loaded model footprint
+is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
+holdouts are both consumed and must never be rerun or used for tuning.
+
+The live provider preserves equations and citations in the sealed aggregate benchmark,
+but current Search/browser integration can still reject a supported quadratic equation
+at the canonical safety layer and can render a correct negation answer without a
+validated citation. A synthetic owner/date multi-claim request can also be rejected by
+retrieval before generation. All outcomes fail closed; browser acceptance is therefore
+partial.
