@@ -5,7 +5,13 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from app.models.domain import RetrievedEvidence
-from app.rag.evidence import SupportStatus, assess_evidence_support, key_terms
+from app.rag.evidence import (
+    RequestedAttribute,
+    SupportStatus,
+    assess_evidence_support,
+    key_terms,
+    requested_attribute,
+)
 
 
 class DiagnosisStatus(StrEnum):
@@ -67,8 +73,6 @@ SYNONYMS = {
     "covered": "topic subject about",
 }
 
-NEGATION_TERMS = {"not", "never", "no", "denied", "cancelled", "canceled"}
-
 
 def normalize_query(query: str) -> str:
     return re.sub(r"\s+", " ", query).strip().rstrip("?")
@@ -112,7 +116,6 @@ def has_conflicting_signals(query: str, evidence: list[RetrievedEvidence]) -> bo
         return False
     joined = " ".join(contents)
     terms = key_terms(query)
-    has_negation = any(term in key_terms(joined) for term in NEGATION_TERMS)
     years = set(re.findall(r"\b(?:19|20)\d{2}\b", joined))
     numbers = {
         item.replace(",", "")
@@ -120,14 +123,12 @@ def has_conflicting_signals(query: str, evidence: list[RetrievedEvidence]) -> bo
     }
     asks_date = bool(terms & {"launched", "launch", "began", "started", "date", "when"})
     asks_budget = bool(terms & {"budget", "cost", "funding", "allocation"})
-    return (
-        (has_negation and bool(terms & key_terms(joined)))
-        or (asks_date and len(years) > 1)
-        or (asks_budget and len(numbers) > 1)
-    )
+    return (asks_date and len(years) > 1) or (asks_budget and len(numbers) > 1)
 
 
 def is_ambiguous_query(query: str) -> bool:
+    if requested_attribute(query) is RequestedAttribute.OBLIGATION:
+        return False
     terms = key_terms(query)
     return len(terms) <= 1 or normalize_query(query).lower() in {"atlas", "project", "status"}
 

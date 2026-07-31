@@ -34,3 +34,13 @@ server registry, the strict verifier rejects out-of-scope IDs, and deterministic
 rendering inserts every required component with server-built citations. A missing
 component is completed locally; complete extractive fallback remains the terminal
 fail-safe.
+
+## Search integration closure
+
+Definition equations and their conditions are typed before canonical conflict
+resolution. Obligations preserve modality and negation as request-scoped facts. Compound
+owner/date questions create separate required components while permitting one authorized
+source to support both; comparison intent continues to require distinct sources. Claim
+citations are reconstructed from the matched authorized evidence and survive
+deterministic completion and legacy API mapping. A supported citationless claim remains
+an invariant violation and fails closed.

@@ -259,3 +259,18 @@ fail-closed outcomes, but acceptance remains partial: the Search layer rejected 
 equation response and omitted a citation on one correct negation response. Disposable
 Compose projects, networks, PostgreSQL, Redis, MinIO volumes, traces, and screenshots
 are removed by the profile trap.
+
+# Search/browser acceptance closure (2026-07-31)
+
+- Focused backend/API equation, obligation-citation, and owner/date coverage: 30 passed.
+- Full backend: 215 passed, 4 environment-gated skipped; coverage 78%.
+- Compileall, Ruff check/format, and Bandit: passed.
+- Frontend: 34 passed; lint had no errors and one existing Fast Refresh warning;
+  typecheck and production build passed.
+- Default isolated Chromium: 1 passed, 7 feature-gated skipped.
+- Agentic isolated Chromium: 5 passed, 3 feature-gated skipped.
+- Live Ollama isolated Chromium: 1 passed, exercising seven strict answer/citation
+  cases plus fallback, scope, isolation, and responsive acceptance.
+- Alembic upgrade/check: passed with no pending operations in each isolated runtime.
+- pip-audit and production npm audit: no known vulnerabilities.
+- The consumed v1 and 140-case v2 holdouts were not run.

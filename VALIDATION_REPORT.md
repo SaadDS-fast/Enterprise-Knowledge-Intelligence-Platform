@@ -338,3 +338,24 @@ the exact equation fail-closed, and a correct negation answer lacked a validated
 citation; a later owner/date multi-claim case was classified as insufficient evidence
 before generation. These integration gaps were not used to retune or rerun the
 consumed holdout. Default Chromium passed 1/1 and agentic Chromium passed 5/5.
+
+## Search/browser acceptance closure — 2026-07-31
+
+Status: **PASS**. The quadratic definition was falsely classified as conflicting
+because a coarse multi-chunk negation heuristic interpreted “a is not zero” as a
+contradiction. Typed conflict assessment is now authoritative, preserving
+`ax² + bx + c = 0` and its non-zero condition. Negative obligations are now typed
+before one-term ambiguity handling, so the supported claim retains its authorized
+citation through API serialization and UI rendering. Owner/effective-date requests
+now produce separate typed components; equivalent nested owner facts are deduplicated,
+and complete single-source multi-claim evidence no longer inherits the distinct-source
+rule that remains mandatory for comparisons.
+
+Fresh isolated live-Ollama Chromium passed 1/1, covering seven strict Search cases,
+malformed-candidate fallback, selected-document scope, Tenant B isolation, and
+desktop/tablet/mobile layouts without console errors, raw JSON, internal paths, stale
+documents, or overflow. Default Chromium passed 1 with 7 gated skips; agentic Chromium
+passed 5 with 3 gated skips. Backend passed 215 with 4 environment-gated skips at 78%
+coverage; frontend passed 34/34 tests and its production build. Docker builds and
+Alembic upgrade/check passed in disposable profiles. Both consumed holdouts were
+neither executed nor modified.

@@ -19,6 +19,8 @@ class QueryIntent(StrEnum):
 def classify_query_intent(query: str) -> QueryIntent:
     normalized = " ".join(query.lower().split()).strip(" ?")
     terms = set(re.findall(r"[a-z0-9]+", normalized))
+    if terms & {"prohibited", "forbidden", "required", "allowed", "obligation"}:
+        return QueryIntent.FACT
     if len(terms) <= 1 or normalized in {"status", "project", "policy", "atlas"}:
         return QueryIntent.AMBIGUOUS
     if re.search(r"\b(compare|difference|versus|vs)\b", normalized):

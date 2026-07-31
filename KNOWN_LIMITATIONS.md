@@ -161,9 +161,9 @@ intentionally use deterministic extractive fallback. The 5.0 GB loaded model foo
 is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
 holdouts are both consumed and must never be rerun or used for tuning.
 
-The live provider preserves equations and citations in the sealed aggregate benchmark,
-but current Search/browser integration can still reject a supported quadratic equation
-at the canonical safety layer and can render a correct negation answer without a
-validated citation. A synthetic owner/date multi-claim request can also be rejected by
-retrieval before generation. All outcomes fail closed; browser acceptance is therefore
-partial.
+The previously recorded Search/browser equation, negation-citation, and single-source
+owner/date gaps are closed. The verifier remains intentionally conservative for novel
+equation forms, obligation phrasing, and compound questions outside the tested typed
+patterns; uncertain cases continue to fail closed. True comparisons still require
+distinct-source support. Both sealed holdouts are consumed and cannot be rerun or used
+for tuning.

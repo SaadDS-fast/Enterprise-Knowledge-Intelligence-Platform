@@ -451,3 +451,106 @@ def test_evaluation_normalized_value_match(client):
     assert metrics["pass_rate"] == 1
     assert metrics["normalized_answer_match"] == 1
     assert metrics["citation_validity"] == 1
+
+
+def test_supported_quadratic_definition_has_equation_condition_and_citation(client):
+    headers = isolated_headers(client, "equation-browser-closure@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "quadratic-equations.txt",
+                b"Topic: Quadratic Equations\nDefinition:\n"
+                b"A quadratic equation has the form ax\xc2\xb2 + bx + c = 0, "
+                b"where a is not zero.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+    document_id = upload.json()["document"]["id"]
+
+    response = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={"query": "What is a quadratic equation?", "document_ids": [document_id]},
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["response_state"]["primary_state"] == "SUPPORTED", payload["response_state"][
+        "diagnostics"
+    ]
+    assert "ax² + bx + c = 0" in payload["answer"]
+    assert "a is not zero" in payload["answer"]
+    assert payload["citations"][0]["document_id"] == document_id
+    assert "ax² + bx + c = 0" in payload["citations"][0]["excerpt"]
+
+
+def test_supported_negation_serializes_and_displays_claim_citation_data(client):
+    headers = isolated_headers(client, "negation-browser-closure@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "travel-prohibition.txt",
+                b"Employees must not exceed the approved travel limit.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+    document_id = upload.json()["document"]["id"]
+
+    response = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={"query": "What is prohibited?", "document_ids": [document_id]},
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["response_state"]["primary_state"] == "SUPPORTED"
+    assert "must not exceed" in payload["answer"]
+    assert len(payload["citations"]) == 1
+    assert payload["citations"][0]["document_id"] == document_id
+    assert "must not exceed" in payload["citations"][0]["excerpt"]
+    assert payload["response_state"]["claims"][0]["citation_ids"]
+
+
+def test_single_source_owner_effective_date_is_supported_composite(client):
+    headers = isolated_headers(client, "owner-date-browser-closure@example.com")
+    upload = client.post(
+        "/api/v1/documents",
+        headers=headers,
+        files={
+            "file": (
+                "policy-details.txt",
+                b"Policy Owner:\nThe policy owner is Ayesha Khan.\n"
+                b"Effective Date:\nThe policy is effective from 1 February 2026.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 202, upload.text
+    document_id = upload.json()["document"]["id"]
+
+    response = client.post(
+        "/api/v1/search",
+        headers=headers,
+        json={
+            "query": "Who owns the policy and when does it become effective?",
+            "document_ids": [document_id],
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["response_state"]["primary_state"] == "SUPPORTED_COMPOSITE"
+    assert "Ayesha Khan" in payload["answer"]
+    assert "1 February 2026" in payload["answer"]
+    assert len(payload["response_state"]["claims"]) == 2
+    assert all(claim["citation_ids"] for claim in payload["response_state"]["claims"])
+    assert {citation["document_id"] for citation in payload["citations"]} == {document_id}

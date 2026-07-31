@@ -49,3 +49,14 @@ retrieval-failure, repair, completion, and fallback rates were 1.0000; unsupport
 claims were 0.0000. Average/p50/p95 latency was
 4177.93/3627.47/8879.99 ms and token usage was 21,894 input / 13,944 output.
 Ollama reported a 5.0 GB loaded GPU footprint; process peak RSS was not available.
+
+## Post-holdout Search/browser acceptance
+
+No benchmark was rerun and no historical metric changed. Fresh synthetic documents in
+disposable tenants closed three integration-only gaps: quadratic definitions retain the
+equation and non-zero condition; negative obligations retain claim-linked citations; and
+one authorized source can satisfy separate owner and effective-date components. The
+isolated live-Ollama Chromium profile passed its single comprehensive test, including
+seven strict answer/citation cases, malformed-candidate fallback, selected scope, Tenant
+B isolation, and desktop/tablet/mobile rendering. Prompt, schema, verifier, plan,
+registry, evidence-packet, model, and retrieval calibration versions remain frozen.
