@@ -20,3 +20,9 @@ OLLAMA_ALLOWED_MODELS=["llama3.2:3b"]
 
 The endpoint must be uncredentialed HTTP on an allowlisted local/private host. Redirects,
 public/link-local destinations, arbitrary aliases, and runtime pulls are rejected.
+
+Validated runtime: Ollama `0.32.1`, `llama3:latest`, digest
+`365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1`,
+8.0B/Q4_0, context 8192, installed size about 4.7 GB and loaded model size about
+5.0 GB. Docker Desktop connectivity through `host.docker.internal` passed without
+publishing an Ollama container port.

@@ -1,11 +1,11 @@
 {
   "benchmark_version": "grounded-generation-v1",
-  "status": "SEALED_NOT_EXECUTED",
+  "status": "CONSUMED",
   "holdout_case_count": 100,
   "fixture": "docs/evaluation/grounded-generation-benchmark-v1.json",
   "sha256": "6067b305ed5426bb494ede3b3d5fef5f89ec66975c3fd10b88ed1aceb3513eec",
   "maximum_executions": 1,
-  "executions_completed": 0,
+  "executions_completed": 1,
   "retrieval_holdouts_reused": false,
   "acceptance_thresholds": {
     "claim_precision": 0.98,

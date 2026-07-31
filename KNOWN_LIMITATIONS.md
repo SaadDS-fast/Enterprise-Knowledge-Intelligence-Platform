@@ -148,3 +148,9 @@ allowlisted model. This repository never downloads a model. The deterministic ve
 intentionally conservative and may fall back on valid paraphrases when lexical support is
 unclear. Live latency, memory, generation quality, and the one-run blind holdout remain
 unmeasured until the local runtime dependency is available.
+
+Live measurements are now available, but `llama3:latest` did not meet the preregistered
+answer-quality gates. The sealed holdout is consumed and cannot be used for retuning.
+Observed weaknesses are omission of requested qualifiers/units and incomplete supported
+claims. Safety remained fail-closed, but a future phase requires a new development set
+and independently preregistered holdout before claiming acceptance.

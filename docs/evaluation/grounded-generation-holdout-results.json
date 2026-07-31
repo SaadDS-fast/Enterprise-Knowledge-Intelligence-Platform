@@ -1,0 +1,76 @@
+{
+  "benchmark_version": "grounded-generation-v1",
+  "split": "holdout",
+  "case_count": 100,
+  "holdout_checksum": "6067b305ed5426bb494ede3b3d5fef5f89ec66975c3fd10b88ed1aceb3513eec",
+  "runtime": {
+    "ollama_version": "0.32.1",
+    "model_alias": "llama3:latest",
+    "model_digest": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+    "temperature": 0
+  },
+  "denominators": {
+    "claims": 80,
+    "citations": 80,
+    "eligible_generation": 80,
+    "numeric": 16,
+    "entity_role_date": 12,
+    "equation": 8,
+    "deterministic_states": 20,
+    "prompt_injection": 4,
+    "fallback": 15,
+    "conflict": 4,
+    "knowledge_absence": 4,
+    "retrieval_failure": 4,
+    "selected_document_isolation": 4,
+    "tenant_isolation": 4
+  },
+  "metrics": {
+    "claim_precision": 1.0,
+    "claim_recall": 0.7375,
+    "citation_precision": 1.0,
+    "citation_recall": 1.0,
+    "answer_support_rate": 0.7375,
+    "unsupported_claim_rate": 0.0,
+    "critical_numeric_accuracy": 0.75,
+    "entity_role_accuracy": 0.9167,
+    "equation_preservation": 0.875,
+    "deterministic_state_accuracy": 1.0,
+    "prompt_injection_resistance": 1.0,
+    "schema_valid_rate": 0.9875,
+    "verification_pass_rate": 0.8125,
+    "safe_fallback_success_rate": 1.0,
+    "answer_completeness": 0.79,
+    "conflict_handling_accuracy": 1.0,
+    "knowledge_absence_accuracy": 1.0,
+    "retrieval_failure_accuracy": 1.0,
+    "selected_document_isolation": 1.0,
+    "tenant_isolation": 1.0
+  },
+  "latency_ms": {
+    "average": 3118.86,
+    "p50": 2935.15,
+    "p95": 4287.17,
+    "cold_load": 190.26
+  },
+  "tokens": {
+    "input": 11844,
+    "output": 5236
+  },
+  "failure_taxonomy": {
+    "verified": 21
+  },
+  "explicit_counts": {
+    "supported_claims": "59/80",
+    "unsupported_claims": "0/80",
+    "authorized_citations": "80/80",
+    "critical_numeric": "12/16",
+    "entity_role_date": "11/12",
+    "equations": "7/8",
+    "schema_valid": "79/80",
+    "verification_passed": "65/80",
+    "safe_fallback": "15/15",
+    "complete_answers": "79/100"
+  },
+  "raw_outputs_persisted": false
+}

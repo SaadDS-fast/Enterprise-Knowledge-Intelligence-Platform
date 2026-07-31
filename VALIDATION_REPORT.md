@@ -307,3 +307,15 @@ The default isolated Docker/Chromium acceptance passed against disposable Postgr
 Redis, and MinIO volumes. The harness removed its containers, network, volumes, traces,
 screenshots, and reports. A first non-isolated browser attempt hit the pre-existing stale
 runtime and was discarded; the isolated rerun passed.
+
+## Live Ollama closure — 2026-07-31
+
+Status: PARTIAL PASS. Local Ollama `0.32.1` and `llama3:latest`
+(`365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1`,
+8.0B, Q4_0, context 8192) were ready. The 100-case holdout was executed once.
+Safety, citations, isolation, deterministic states, injection resistance, and fallback
+passed; completeness, claim recall, numeric, entity/role/date, and equation gates failed.
+Docker-to-host Ollama and isolated Chromium passed through `host.docker.internal`.
+An unavailable local port produced sanitized extractive fallback, the circuit opened at
+the configured threshold, and verified live generation recovered after the recovery
+window. Normal persistent Compose services and volumes remained running.

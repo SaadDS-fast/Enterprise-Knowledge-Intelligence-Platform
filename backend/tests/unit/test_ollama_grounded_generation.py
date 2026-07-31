@@ -125,6 +125,15 @@ def test_equation_is_preserved() -> None:
     )
 
 
+def test_required_unit_omission_is_rejected() -> None:
+    result = verify_candidate(
+        candidate("The travel allowance is PKR 5,000."),
+        build_evidence_packet([evidence()]),
+        "What exact monetary allowance is authorized?",
+    )
+    assert result.category == "critical_fact_drift"
+
+
 def test_citations_are_rebuilt_from_server_evidence() -> None:
     source = evidence()
     result = verify_candidate(candidate(), build_evidence_packet([source]))

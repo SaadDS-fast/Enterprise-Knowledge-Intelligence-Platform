@@ -25,6 +25,9 @@ class GenerationResult:
     structured_output_valid: bool = False
     claim_verification_passed: bool = False
     citations: tuple[dict, ...] = ()
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    load_duration_ms: float | None = None
 
 
 class LLMProvider(ABC):

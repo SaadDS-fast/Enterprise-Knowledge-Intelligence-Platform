@@ -19,8 +19,18 @@ case "$profile" in
     export E2E_AGENT_RESEARCH_ENABLED=false
     export E2E_PHASE2B_ENABLED=true
     ;;
+  ollama)
+    export E2E_AGENTIC_ENABLED=false
+    export E2E_AGENTIC_RAG_ENABLED=false
+    export E2E_AGENT_RESEARCH_ENABLED=false
+    export E2E_LOCAL_LLM_BACKEND=ollama
+    export E2E_OLLAMA_ENABLED=true
+    export E2E_LOCAL_LLM_BASE_URL=http://host.docker.internal:11434
+    export E2E_LOCAL_LLM_MODEL=llama3:latest
+    export E2E_OLLAMA_ALLOWED_MODELS=llama3:latest
+    ;;
   *)
-    echo "usage: $0 {default|agentic|phase2b}" >&2
+    echo "usage: $0 {default|agentic|phase2b|ollama}" >&2
     exit 2
     ;;
 esac

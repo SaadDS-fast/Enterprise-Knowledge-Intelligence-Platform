@@ -241,3 +241,9 @@ safe extractive fallback, and circuit recovery. Full backend: 200 passed, 4 gate
 passed. Isolated Chromium: 1 applicable passed, 6 feature-gated skipped. Docker images
 built and Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no
 known vulnerabilities.
+
+Live closure: backend 201 passed / 4 live-gated skipped, coverage 78%; frontend 31
+passed. Live Ollama isolated Chromium passed 1/1 applicable test (6 feature-gated
+skips). Agentic isolated Chromium passed 5 with 2 feature-gated skips. Docker builds and
+Alembic upgrade/check passed. Bandit passed; pip-audit and npm audit found no known
+vulnerabilities.

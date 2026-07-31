@@ -302,3 +302,9 @@ implementation includes private endpoint and model allowlists, DNS revalidation,
 bounded evidence packets, prompt-injection marking, schema repair (one retry), critical
 fact and claim verification, safe fallback, circuit breaking, safe metrics, API metadata,
 and accessible Search status.
+
+Live validation reproduced an Ollama grammar-parser incompatibility with constrained
+Pydantic JSON Schema. The wire schema now contains structural JSON grammar only, while
+the unchanged strict Pydantic model performs bounds, pattern, and extra-field rejection
+after parsing. No Python Ollama package is used; the provider uses the existing HTTPX
+dependency.

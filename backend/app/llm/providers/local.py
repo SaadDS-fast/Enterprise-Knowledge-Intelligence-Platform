@@ -16,9 +16,11 @@ from pydantic import ValidationError
 from app.core.config import LocalLLMBackend, settings
 from app.llm.base import GenerationRequest, GenerationResult, LLMProvider
 from app.llm.grounded import (
+    INJECTION_PATTERN,
     GroundedCandidate,
     build_evidence_packet,
     build_structured_prompt,
+    ollama_candidate_schema,
     verify_candidate,
 )
 from app.observability.metrics import (
@@ -130,7 +132,7 @@ class LocalProvider(LLMProvider):
                                 else ""
                             ),
                             "stream": False,
-                            "format": GroundedCandidate.model_json_schema(),
+                            "format": ollama_candidate_schema(),
                             "keep_alive": settings.ollama_keep_alive,
                             "options": {
                                 "temperature": 0,
@@ -154,7 +156,7 @@ class LocalProvider(LLMProvider):
                         return self._verification_failure(
                             "schema_validation_failed", started, schema_valid=False
                         )
-            verification = verify_candidate(candidate, packet)
+            verification = verify_candidate(candidate, packet, request.question)
             if not verification.passed:
                 return self._verification_failure(
                     verification.category, started, schema_valid=schema_valid
@@ -169,6 +171,13 @@ class LocalProvider(LLMProvider):
                 structured_output_valid=True,
                 claim_verification_passed=True,
                 citations=tuple(verification.citations),
+                input_tokens=payload.get("prompt_eval_count"),
+                output_tokens=payload.get("eval_count"),
+                load_duration_ms=(
+                    float(payload["load_duration"]) / 1_000_000
+                    if payload.get("load_duration") is not None
+                    else None
+                ),
             )
 
     async def _ensure_model_installed(self, client: httpx.AsyncClient) -> None:
@@ -201,13 +210,25 @@ class LocalProvider(LLMProvider):
         )
         direct_answer = synthesize_direct_answer(request.question, assessment)
         if direct_answer:
+            if re.search(
+                r"(?i)\b(amount|allowance|limit|monetary|effective|published|equation)\b",
+                request.question,
+            ):
+                for item in request.evidence:
+                    for sentence in re.split(r"(?<=[.!?])\s+|\n+", item.content):
+                        if (
+                            direct_answer.casefold() in sentence.casefold()
+                            and not INJECTION_PATTERN.search(sentence)
+                        ):
+                            direct_answer = sentence.strip()
+                            break
             return GenerationResult(direct_answer, "extractive", "deterministic-extractive-v2")
         query_tokens = set(tokenize(request.question))
         candidates: list[tuple[float, str, int]] = []
         for citation, item in enumerate(request.evidence, 1):
             for sentence in re.split(r"(?<=[.!?])\s+|\n+", item.content):
                 sentence = sentence.strip()
-                if len(sentence) < 20:
+                if len(sentence) < 20 or INJECTION_PATTERN.search(sentence):
                     continue
                 overlap = len(query_tokens & set(tokenize(sentence))) / max(1, len(query_tokens))
                 candidates.append((0.65 * item.score + 0.35 * overlap, sentence, citation))

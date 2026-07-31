@@ -14,3 +14,8 @@ are excluded from logs and metrics.
 Post-generation verification is fail-closed. The application preserves authorization,
 selected-document scope, conflict decisions, canonical primary state, final confidence,
 and server-side citation authority.
+
+Live prompt-injection resistance, tenant isolation, selected-document isolation,
+unknown-ID rejection, reasoning exclusion, endpoint/model allowlists, and deterministic
+fallback passed. The benchmark stores aggregate metrics only and contains no raw
+candidates, prompts, document content, credentials, tenant identifiers, or model paths.

@@ -17,3 +17,8 @@ IDs, unsupported claims, HTML/script output, prompt leakage, numeric/date/unit/e
 drift, and negation drift. Citations are rebuilt from the server's evidence objects.
 Failure, timeout, malformed JSON, an absent model, or an open circuit returns the existing
 deterministic extractive answer without changing canonical state.
+
+The Ollama wire grammar is deliberately simpler than the application schema because
+Ollama `0.32.1` rejects constrained grammar keywords. Strict validation remains
+post-parse and server-side. Safe token counts and load duration are retained only in
+ephemeral execution results; raw responses and reasoning fields are discarded.

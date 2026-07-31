@@ -442,3 +442,7 @@ disabled by default. The model is a candidate synthesizer only: canonical respon
 authorization, conflict handling, verification, and citations remain deterministic.
 See [architecture](docs/architecture/ollama-grounded-generation.md) and
 [local deployment](docs/deployment/local-ollama.md).
+
+Live validation used local Ollama `0.32.1` with operator-provisioned
+`llama3:latest` (`365c0bd3c000…b5d8ad1`, 8.0B, Q4_0). The sealed benchmark
+completed once with a PARTIAL PASS; see the grounded-generation quality report.
