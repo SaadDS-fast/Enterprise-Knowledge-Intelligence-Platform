@@ -1,0 +1,39 @@
+x-production-environment: &production-environment
+  APP_ENV: production
+  DEBUG: "false"
+  SECRET_KEY: "${SECRET_KEY:?SECRET_KEY is required for production}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for production}"
+  MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required for production}"
+  CORS_ORIGINS: "${CORS_ORIGINS:?CORS_ORIGINS is required for production}"
+  TRUSTED_HOSTS: "${TRUSTED_HOSTS:?TRUSTED_HOSTS is required for production}"
+  LOCAL_LLM_BACKEND: extractive
+  OLLAMA_ENABLED: "false"
+  SEMANTIC_EMBEDDINGS_ENABLED: "false"
+  RERANKER_ENABLED: "false"
+  AGENTIC_RAG_ENABLED: "false"
+  AGENT_RESEARCH_ENABLED: "false"
+  AGENT_EXTERNAL_APIS_ENABLED: "false"
+  AGENT_WEB_SEARCH_ENABLED: "false"
+
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for production}"
+    ports: !override []
+  redis:
+    ports: !override []
+  minio:
+    environment:
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required for production}"
+    ports: !override []
+  minio-init:
+    environment:
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required for production}"
+  backend:
+    environment: *production-environment
+  ingestion-worker:
+    environment: *production-environment
+  evaluation-worker:
+    environment: *production-environment
+  report-worker:
+    environment: *production-environment

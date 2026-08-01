@@ -1,0 +1,2603 @@
+{
+  "case_count": 118,
+  "cases": [
+    {
+      "action": "upload each supported file type",
+      "area": "ingestion",
+      "case_id": "ENT-001",
+      "documents": [
+        "AMG-002"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "multi-file upload",
+      "area": "ingestion",
+      "case_id": "ENT-002",
+      "documents": [
+        "AMG-003"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "duplicate upload",
+      "area": "ingestion",
+      "case_id": "ENT-003",
+      "documents": [
+        "AMG-004"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "idempotent retry",
+      "area": "ingestion",
+      "case_id": "ENT-004",
+      "documents": [
+        "AMG-005"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "parsing failure",
+      "area": "ingestion",
+      "case_id": "ENT-005",
+      "documents": [
+        "AMG-006"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "unsupported format",
+      "area": "ingestion",
+      "case_id": "ENT-006",
+      "documents": [
+        "AMG-007"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "corrupted file",
+      "area": "ingestion",
+      "case_id": "ENT-007",
+      "documents": [
+        "AMG-008"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "low-quality extraction",
+      "area": "ingestion",
+      "case_id": "ENT-008",
+      "documents": [
+        "AMG-009"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "safe reprocess",
+      "area": "ingestion",
+      "case_id": "ENT-009",
+      "documents": [
+        "AMG-010"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "structure inspection",
+      "area": "ingestion",
+      "case_id": "ENT-010",
+      "documents": [
+        "AMG-011"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "worker cancellation",
+      "area": "ingestion",
+      "case_id": "ENT-011",
+      "documents": [
+        "AMG-012"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "tenant isolation",
+      "area": "ingestion",
+      "case_id": "ENT-012",
+      "documents": [
+        "AMG-013"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "filename sanitization",
+      "area": "ingestion",
+      "case_id": "ENT-013",
+      "documents": [
+        "AMG-014"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "size bound",
+      "area": "ingestion",
+      "case_id": "ENT-014",
+      "documents": [
+        "AMG-015"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "direct factual question",
+      "area": "search",
+      "case_id": "ENT-015",
+      "documents": [
+        "AMG-016"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "paraphrased question",
+      "area": "search",
+      "case_id": "ENT-016",
+      "documents": [
+        "AMG-017"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "definition",
+      "area": "search",
+      "case_id": "ENT-017",
+      "documents": [
+        "AMG-018"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "equation",
+      "area": "search",
+      "case_id": "ENT-018",
+      "documents": [
+        "AMG-019"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "negation",
+      "area": "search",
+      "case_id": "ENT-019",
+      "documents": [
+        "AMG-020"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "list",
+      "area": "search",
+      "case_id": "ENT-020",
+      "documents": [
+        "AMG-021"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "table value",
+      "area": "search",
+      "case_id": "ENT-021",
+      "documents": [
+        "AMG-022"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "monetary amount",
+      "area": "search",
+      "case_id": "ENT-022",
+      "documents": [
+        "AMG-023"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "unit and frequency",
+      "area": "search",
+      "case_id": "ENT-023",
+      "documents": [
+        "AMG-024"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "person and role",
+      "area": "search",
+      "case_id": "ENT-024",
+      "documents": [
+        "AMG-025"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "published versus effective date",
+      "area": "search",
+      "case_id": "ENT-025",
+      "documents": [
+        "AMG-026"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "single-source multi-claim",
+      "area": "search",
+      "case_id": "ENT-026",
+      "documents": [
+        "AMG-027"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "multi-source composite",
+      "area": "search",
+      "case_id": "ENT-027",
+      "documents": [
+        "AMG-028"
+      ],
+      "expected_canonical_state": "SUPPORTED_COMPOSITE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "comparison",
+      "area": "search",
+      "case_id": "ENT-028",
+      "documents": [
+        "AMG-029"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "current versus superseded",
+      "area": "search",
+      "case_id": "ENT-029",
+      "documents": [
+        "AMG-030"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "true conflict",
+      "area": "search",
+      "case_id": "ENT-030",
+      "documents": [
+        "AMG-031"
+      ],
+      "expected_canonical_state": "CONFLICTING_EVIDENCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "false conflict",
+      "area": "search",
+      "case_id": "ENT-031",
+      "documents": [
+        "AMG-032"
+      ],
+      "expected_canonical_state": "CONFLICTING_EVIDENCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "ambiguity",
+      "area": "search",
+      "case_id": "ENT-032",
+      "documents": [
+        "AMG-033"
+      ],
+      "expected_canonical_state": "AMBIGUOUS_QUERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "knowledge absence",
+      "area": "search",
+      "case_id": "ENT-033",
+      "documents": [
+        "AMG-034"
+      ],
+      "expected_canonical_state": "KNOWLEDGE_ABSENT",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "retrieval failure",
+      "area": "search",
+      "case_id": "ENT-034",
+      "documents": [
+        "AMG-035"
+      ],
+      "expected_canonical_state": "RETRIEVAL_FAILURE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "low-quality source",
+      "area": "search",
+      "case_id": "ENT-035",
+      "documents": [
+        "AMG-036"
+      ],
+      "expected_canonical_state": "LOW_QUALITY_SOURCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "selected-document scope",
+      "area": "search",
+      "case_id": "ENT-036",
+      "documents": [
+        "AMG-037"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "cross-tenant overlapping content",
+      "area": "search",
+      "case_id": "ENT-037",
+      "documents": [
+        "AMG-038"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "prompt injection",
+      "area": "search",
+      "case_id": "ENT-038",
+      "documents": [
+        "AMG-039"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "provider outage fallback",
+      "area": "search",
+      "case_id": "ENT-039",
+      "documents": [
+        "AMG-040"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "citation authorization",
+      "area": "search",
+      "case_id": "ENT-040",
+      "documents": [
+        "AMG-041"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "valid multi-step workflow",
+      "area": "agent",
+      "case_id": "ENT-041",
+      "documents": [
+        "AMG-042"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "retrieval tool execution",
+      "area": "agent",
+      "case_id": "ENT-042",
+      "documents": [
+        "AMG-043"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "evidence sufficiency",
+      "area": "agent",
+      "case_id": "ENT-043",
+      "documents": [
+        "AMG-044"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "conflict terminal state",
+      "area": "agent",
+      "case_id": "ENT-044",
+      "documents": [
+        "AMG-045"
+      ],
+      "expected_canonical_state": "CONFLICTING_EVIDENCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "absence terminal state",
+      "area": "agent",
+      "case_id": "ENT-045",
+      "documents": [
+        "AMG-046"
+      ],
+      "expected_canonical_state": "KNOWLEDGE_ABSENT",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "cancellation",
+      "area": "agent",
+      "case_id": "ENT-046",
+      "documents": [
+        "AMG-047"
+      ],
+      "expected_canonical_state": "CANCELLED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "tool failure",
+      "area": "agent",
+      "case_id": "ENT-047",
+      "documents": [
+        "AMG-048"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "timeout",
+      "area": "agent",
+      "case_id": "ENT-048",
+      "documents": [
+        "AMG-049"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "unauthorized tool request",
+      "area": "agent",
+      "case_id": "ENT-049",
+      "documents": [
+        "AMG-050"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "no model-controlled planning",
+      "area": "agent",
+      "case_id": "ENT-050",
+      "documents": [
+        "AMG-051"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "no model-controlled authorization",
+      "area": "agent",
+      "case_id": "ENT-051",
+      "documents": [
+        "AMG-052"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "bounded step count",
+      "area": "agent",
+      "case_id": "ENT-052",
+      "documents": [
+        "AMG-053"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "supported answer",
+      "area": "evaluation",
+      "case_id": "ENT-053",
+      "documents": [
+        "AMG-054"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "composite answer",
+      "area": "evaluation",
+      "case_id": "ENT-054",
+      "documents": [
+        "AMG-055"
+      ],
+      "expected_canonical_state": "SUPPORTED_COMPOSITE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "deterministic fallback",
+      "area": "evaluation",
+      "case_id": "ENT-055",
+      "documents": [
+        "AMG-056"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "rejected candidate exclusion",
+      "area": "evaluation",
+      "case_id": "ENT-056",
+      "documents": [
+        "AMG-057"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "citation accuracy",
+      "area": "evaluation",
+      "case_id": "ENT-057",
+      "documents": [
+        "AMG-058"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "canonical-state consistency",
+      "area": "evaluation",
+      "case_id": "ENT-058",
+      "documents": [
+        "AMG-059"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "safe generation metadata",
+      "area": "evaluation",
+      "case_id": "ENT-059",
+      "documents": [
+        "AMG-060"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "repaired answer",
+      "area": "evaluation",
+      "case_id": "ENT-060",
+      "documents": [
+        "AMG-061"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "claim completion",
+      "area": "evaluation",
+      "case_id": "ENT-061",
+      "documents": [
+        "AMG-062"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "cancelled workflow",
+      "area": "evaluation",
+      "case_id": "ENT-062",
+      "documents": [
+        "AMG-063"
+      ],
+      "expected_canonical_state": "CANCELLED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "multi-document report",
+      "area": "research",
+      "case_id": "ENT-063",
+      "documents": [
+        "AMG-064"
+      ],
+      "expected_canonical_state": "SUPPORTED_COMPOSITE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "claim-linked citations",
+      "area": "research",
+      "case_id": "ENT-064",
+      "documents": [
+        "AMG-065"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "unsupported section omission",
+      "area": "research",
+      "case_id": "ENT-065",
+      "documents": [
+        "AMG-066"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "conflict section",
+      "area": "research",
+      "case_id": "ENT-066",
+      "documents": [
+        "AMG-067"
+      ],
+      "expected_canonical_state": "CONFLICTING_EVIDENCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "source-quality warning",
+      "area": "research",
+      "case_id": "ENT-067",
+      "documents": [
+        "AMG-068"
+      ],
+      "expected_canonical_state": "LOW_QUALITY_SOURCE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "selected-document restriction",
+      "area": "research",
+      "case_id": "ENT-068",
+      "documents": [
+        "AMG-069"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "cancellation",
+      "area": "research",
+      "case_id": "ENT-069",
+      "documents": [
+        "AMG-070"
+      ],
+      "expected_canonical_state": "CANCELLED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "provider outage",
+      "area": "research",
+      "case_id": "ENT-070",
+      "documents": [
+        "AMG-071"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "no uncited external facts",
+      "area": "research",
+      "case_id": "ENT-071",
+      "documents": [
+        "AMG-072"
+      ],
+      "expected_canonical_state": "SUPPORTED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "absence report",
+      "area": "research",
+      "case_id": "ENT-072",
+      "documents": [
+        "AMG-073"
+      ],
+      "expected_canonical_state": "KNOWLEDGE_ABSENT",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "login",
+      "area": "administration_security",
+      "case_id": "ENT-073",
+      "documents": [
+        "AMG-074"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "invalid credentials",
+      "area": "administration_security",
+      "case_id": "ENT-074",
+      "documents": [
+        "AMG-075"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "token expiration",
+      "area": "administration_security",
+      "case_id": "ENT-075",
+      "documents": [
+        "AMG-076"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "disabled user",
+      "area": "administration_security",
+      "case_id": "ENT-076",
+      "documents": [
+        "AMG-077"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "role enforcement",
+      "area": "administration_security",
+      "case_id": "ENT-077",
+      "documents": [
+        "AMG-078"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "tenant isolation",
+      "area": "administration_security",
+      "case_id": "ENT-078",
+      "documents": [
+        "AMG-079"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "workspace isolation",
+      "area": "administration_security",
+      "case_id": "ENT-079",
+      "documents": [
+        "AMG-080"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "document IDOR",
+      "area": "administration_security",
+      "case_id": "ENT-080",
+      "documents": [
+        "AMG-081"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "citation authorization",
+      "area": "administration_security",
+      "case_id": "ENT-081",
+      "documents": [
+        "AMG-082"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "audit visibility",
+      "area": "administration_security",
+      "case_id": "ENT-082",
+      "documents": [
+        "AMG-083"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "secret redaction",
+      "area": "administration_security",
+      "case_id": "ENT-083",
+      "documents": [
+        "AMG-084"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "safe error response",
+      "area": "administration_security",
+      "case_id": "ENT-084",
+      "documents": [
+        "AMG-085"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "download authorization",
+      "area": "administration_security",
+      "case_id": "ENT-085",
+      "documents": [
+        "AMG-086"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "reprocess authorization",
+      "area": "administration_security",
+      "case_id": "ENT-086",
+      "documents": [
+        "AMG-087"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "delete authorization",
+      "area": "administration_security",
+      "case_id": "ENT-087",
+      "documents": [
+        "AMG-088"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "role downgrade",
+      "area": "administration_security",
+      "case_id": "ENT-088",
+      "documents": [
+        "AMG-089"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "backend restart",
+      "area": "resilience",
+      "case_id": "ENT-089",
+      "documents": [
+        "AMG-090"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "frontend restart",
+      "area": "resilience",
+      "case_id": "ENT-090",
+      "documents": [
+        "AMG-091"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "ingestion-worker restart",
+      "area": "resilience",
+      "case_id": "ENT-091",
+      "documents": [
+        "AMG-092"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "worker termination during extraction",
+      "area": "resilience",
+      "case_id": "ENT-092",
+      "documents": [
+        "AMG-093"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "PostgreSQL temporary unavailability",
+      "area": "resilience",
+      "case_id": "ENT-093",
+      "documents": [
+        "AMG-094"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "Redis temporary unavailability",
+      "area": "resilience",
+      "case_id": "ENT-094",
+      "documents": [
+        "AMG-095"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "MinIO temporary unavailability",
+      "area": "resilience",
+      "case_id": "ENT-095",
+      "documents": [
+        "AMG-096"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "Ollama temporary unavailability",
+      "area": "resilience",
+      "case_id": "ENT-096",
+      "documents": [
+        "AMG-097"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "Ollama timeout",
+      "area": "resilience",
+      "case_id": "ENT-097",
+      "documents": [
+        "AMG-098"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "malformed model response",
+      "area": "resilience",
+      "case_id": "ENT-098",
+      "documents": [
+        "AMG-099"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "invalid evidence ID",
+      "area": "resilience",
+      "case_id": "ENT-099",
+      "documents": [
+        "AMG-100"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "verification failure",
+      "area": "resilience",
+      "case_id": "ENT-100",
+      "documents": [
+        "AMG-001"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "duplicate request",
+      "area": "resilience",
+      "case_id": "ENT-101",
+      "documents": [
+        "AMG-002"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "cancellation",
+      "area": "resilience",
+      "case_id": "ENT-102",
+      "documents": [
+        "AMG-003"
+      ],
+      "expected_canonical_state": "CANCELLED",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "browser refresh",
+      "area": "resilience",
+      "case_id": "ENT-103",
+      "documents": [
+        "AMG-004"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "circuit recovery",
+      "area": "resilience",
+      "case_id": "ENT-104",
+      "documents": [
+        "AMG-005"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "retry exhaustion",
+      "area": "resilience",
+      "case_id": "ENT-105",
+      "documents": [
+        "AMG-006"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "graceful shutdown",
+      "area": "resilience",
+      "case_id": "ENT-106",
+      "documents": [
+        "AMG-007"
+      ],
+      "expected_canonical_state": "SAFE_FAILURE_OR_RECOVERY",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 403,
+      "expected_security_result": "deny",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "restricted user",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "clean database install",
+      "area": "operations",
+      "case_id": "ENT-107",
+      "documents": [
+        "AMG-008"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "migration upgrade and check",
+      "area": "operations",
+      "case_id": "ENT-108",
+      "documents": [
+        "AMG-009"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "database backup",
+      "area": "operations",
+      "case_id": "ENT-109",
+      "documents": [
+        "AMG-010"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "database restore",
+      "area": "operations",
+      "case_id": "ENT-110",
+      "documents": [
+        "AMG-011"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "MinIO private bucket",
+      "area": "operations",
+      "case_id": "ENT-111",
+      "documents": [
+        "AMG-012"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "object integrity",
+      "area": "operations",
+      "case_id": "ENT-112",
+      "documents": [
+        "AMG-013"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "metrics privacy",
+      "area": "operations",
+      "case_id": "ENT-113",
+      "documents": [
+        "AMG-014"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "audit correlation",
+      "area": "operations",
+      "case_id": "ENT-114",
+      "documents": [
+        "AMG-015"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 3"
+    },
+    {
+      "action": "bounded API load",
+      "area": "operations",
+      "case_id": "ENT-115",
+      "documents": [
+        "AMG-016"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 4"
+    },
+    {
+      "action": "bounded Search load",
+      "area": "operations",
+      "case_id": "ENT-116",
+      "documents": [
+        "AMG-017"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant C",
+      "workspace": "Workspace 1"
+    },
+    {
+      "action": "resource soak",
+      "area": "operations",
+      "case_id": "ENT-117",
+      "documents": [
+        "AMG-018"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant A",
+      "workspace": "Workspace 2"
+    },
+    {
+      "action": "safe-default restoration",
+      "area": "operations",
+      "case_id": "ENT-118",
+      "documents": [
+        "AMG-019"
+      ],
+      "expected_canonical_state": "NOT_APPLICABLE",
+      "expected_citations": "authorized_only",
+      "expected_claims": "authorized_and_supported_only",
+      "expected_fallback_category": "safe_or_none",
+      "expected_http_status": 200,
+      "expected_security_result": "allow_with_scope",
+      "feature_flags": {
+        "cloud_llm": false,
+        "external_web": false
+      },
+      "preconditions": "fresh isolated runtime and synthetic corpus",
+      "role": "workspace manager",
+      "tenant": "Tenant B",
+      "workspace": "Workspace 3"
+    }
+  ],
+  "matrix_sha256": "70622ae75b25244f1c538bf1e36e9e1263d91b41815b87bc10f74924d8680aa3",
+  "schema_version": "enterprise-acceptance-v1"
+}

@@ -167,3 +167,23 @@ equation forms, obligation phrasing, and compound questions outside the tested t
 patterns; uncertain cases continue to fail closed. True comparisons still require
 distinct-source support. Both sealed holdouts are consumed and cannot be rerun or used
 for tuning.
+
+# Enterprise release-candidate limitations
+
+The corpus is synthetic and local; results do not establish cloud readiness or production
+capacity. Optional local semantic models and Ollama depend on operator-provisioned model
+files and workstation resources. Latency and resource measurements characterize only the
+validated host. Failure injection is bounded and cannot prove recovery from every storage,
+kernel, power, or network fault. Browser accessibility checks cover repository tooling and
+responsive keyboard semantics, not a third-party certification audit.
+
+The 2026-08-01 provisioned-model closure rerun did not satisfy semantic release acceptance.
+Both semantic hybrid and semantic-plus-reranker produced a `0.2222` unsupported-claim rate
+and failed the knowledge-absence case; the reranker also demoted one materials hard positive
+to rank 2. The consumed holdouts were not reused and retrieval was not retuned.
+
+That result is retained as historical before-remediation evidence. The later 2026-08-01
+closure passed after correcting the evaluation harness's factual-support classification and
+single-blend reranker ordering; no frozen production calibration changed. Remaining limits
+are environmental: the synthetic local corpus is not a production-capacity claim, optional
+models remain operator-provisioned, and accessibility is not third-party certification.

@@ -274,3 +274,62 @@ are removed by the profile trap.
 - Alembic upgrade/check: passed with no pending operations in each isolated runtime.
 - pip-audit and production npm audit: no known vulnerabilities.
 - The consumed v1 and 140-case v2 holdouts were not run.
+
+# Enterprise release hardening (2026-07-31)
+
+- Corpus generator/manifest contract: 100 documents; passed deterministic verification.
+- Acceptance matrix contract: 118 cases; all required fields and unique IDs verified.
+- Enterprise upload: 100 accepted, zero synchronous upload failures.
+- Enterprise ingestion: 100 completed, zero failures/timeouts; average 171.99 ms,
+  p50 269.21 ms, p95 320.10 ms.
+- Extraction: 50 GOOD, 10 ACCEPTABLE, 40 intentionally LOW_QUALITY code/config files.
+- Scoped Search: 30/30 safe canonical responses; average 25.98 ms, p50 24.33 ms,
+  p95 39.28 ms, p99 71.08 ms. The final query-selection refinement awaits a quota-blocked
+  rerun; the recorded distribution was 24 supported and 6 safe insufficient responses.
+- Tenant selection: authorized 200, cross-tenant 404, zero exposures.
+- Enterprise Chromium: 1/1 passed across desktop/tablet/mobile with no console error or
+  horizontal overflow.
+- Two-minute concurrency: 12,930 requests, 8,620/8,620 health 200s, 120 admitted Search
+  200s, 4,190 expected 429s, zero unexpected errors/5xx; overall p95 243.32 ms.
+- Soak: 1,200 seconds, 28,950 requests, 19,300/19,300 health 200s, 1,190 admitted
+  Search 200s, 8,460 expected 429s, zero unexpected errors/5xx; overall p95 25.34 ms.
+- Resource trend: backend 117.4→117.2 MiB; workers stable; PostgreSQL connections 11,
+  Redis clients 35/three blocking workers, queues empty at sampled checkpoints.
+- Backup/restore: counts matched `4,4,100,460`; downgrade/upgrade/check and private MinIO
+  inspection passed.
+- Full backend: 218 passed, 4 environment-gated skipped, 78% coverage; Ruff, format,
+  compileall, and Bandit passed.
+- Frontend: 34 passed; typecheck/build passed; lint had zero errors and one existing warning.
+
+## Closure reruns (2026-08-01)
+
+- Search refinement: 30/30 passed; 24 supported and 6 safe insufficient-evidence states.
+- Default Playwright: 1 passed, 8 accurately gated skips.
+- Agentic/Research/accessibility Playwright: 5 passed, 4 unrelated gated skips.
+- Live Ollama Playwright: 1 passed using the required version, model, and digest.
+- Enterprise operational/browser: recovery probes passed; enterprise Chromium 1 passed.
+- Semantic hybrid: Recall@1 `.9375`, Recall@5 `1.0`, support `.875`, unsupported `.2222`,
+  absence accuracy `0.0`; release acceptance failed.
+- Semantic plus reranker: Recall@1 `.8125`, Recall@5 `1.0`, support `.875`, unsupported
+  `.2222`, absence accuracy `0.0`; release acceptance failed.
+- Backend: 218 passed, 4 environment-gated skipped; coverage 78%; compileall/Ruff passed.
+- Frontend: 34 passed; typecheck/build passed; lint zero errors and one inherited warning.
+- Bandit: zero findings. pip-audit and production npm audit: zero known vulnerabilities.
+- The v1/v2 consumed grounded-generation holdouts were checksum/counter inspected only.
+
+## Final semantic and release closure (2026-08-01)
+
+- Semantic hybrid: 8/8 supported cases complete; 1/1 absence correct; unsupported 0/9;
+  citation precision/recall 1.0000; Recall@1 `.9375`, Recall@5 `1.0000`; selected-document
+  and tenant isolation 1.0000.
+- Semantic plus reranker: 8/8 supported cases complete; 1/1 absence correct; unsupported
+  0/9; citation precision/recall 1.0000; Recall@1 `.9375`, Recall@3/5 `1.0000`; unique
+  materials hard positive rank 1.
+- Focused semantic safety regressions: 16 passed; full backend: 221 passed, 4 gated skips,
+  78% coverage. Compileall, Ruff check/format, Bandit, and pip-audit passed.
+- Frontend: 34 passed; typecheck and production build passed; lint zero errors/one existing
+  warning; production npm audit zero vulnerabilities.
+- Default Chromium: 1 passed/8 gated skips. Agentic/Research/accessibility: 5 passed/4
+  gated skips. Enterprise Chromium: 1 passed. Live Ollama Chromium: 1 passed.
+- Operational correlation and audit coverage passed for all requested actions; prohibited
+  private audit payload terms: 0.

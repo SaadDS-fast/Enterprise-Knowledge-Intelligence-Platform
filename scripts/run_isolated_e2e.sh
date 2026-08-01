@@ -30,8 +30,14 @@ case "$profile" in
     export E2E_OLLAMA_ALLOWED_MODELS=llama3:latest
     export E2E_OLLAMA_ENABLED=true
     ;;
+  enterprise)
+    export E2E_AGENTIC_ENABLED=true
+    export E2E_AGENTIC_RAG_ENABLED=true
+    export E2E_AGENT_RESEARCH_ENABLED=true
+    export E2E_ENTERPRISE_ENABLED=true
+    ;;
   *)
-    echo "usage: $0 {default|agentic|phase2b|ollama}" >&2
+    echo "usage: $0 {default|agentic|phase2b|ollama|enterprise}" >&2
     exit 2
     ;;
 esac
@@ -93,6 +99,35 @@ elif [ "$profile" = "ollama" ]; then
   (
     cd frontend
     npx playwright test tests/e2e/ollama-grounded.spec.ts --project=chromium --workers=1
+  )
+elif [ "$profile" = "enterprise" ]; then
+  runtime_result="$(mktemp -t ekip-enterprise-result.XXXXXX)"
+  python3 scripts/enterprise_acceptance.py \
+    --base-url "$E2E_API_BASE_URL" --upload-workers 4 --output "$runtime_result"
+  cp "$runtime_result" "${E2E_ENTERPRISE_RESULT_PATH:-/tmp/ekip-enterprise-result.json}"
+  rm -f "$runtime_result"
+  python3 scripts/enterprise_load.py --base-url "$E2E_API_BASE_URL" \
+    --duration-seconds "${E2E_ENTERPRISE_LOAD_SECONDS:-120}" \
+    > "${E2E_ENTERPRISE_LOAD_RESULT_PATH:-/tmp/ekip-enterprise-load.json}"
+  if [ "${E2E_ENTERPRISE_SOAK_SECONDS:-0}" -gt 0 ]; then
+    python3 scripts/enterprise_load.py --base-url "$E2E_API_BASE_URL" \
+      --duration-seconds "$E2E_ENTERPRISE_SOAK_SECONDS" --health-clients 2 --search-clients 1 \
+      > "${E2E_ENTERPRISE_SOAK_RESULT_PATH:-/tmp/ekip-enterprise-soak.json}"
+  fi
+  E2E_COMPOSE_FILES="-f docker-compose.yml -f docker-compose.e2e.yml" \
+    scripts/validate_backup_restore.sh \
+    > "${E2E_ENTERPRISE_BACKUP_RESULT_PATH:-/tmp/ekip-enterprise-backup.json}"
+  if [ "${E2E_ENTERPRISE_OPERATIONAL:-false}" = "true" ]; then
+    EKIP_COMPOSE_FILES="-f docker-compose.yml -f docker-compose.e2e.yml" \
+      backend/.venv/bin/python scripts/operational_validation.py --base-url "$E2E_API_BASE_URL" \
+      --output "${E2E_ENTERPRISE_OPERATIONAL_RESULT_PATH:-/tmp/ekip-enterprise-operational.json}"
+    python3 scripts/local_agentic_load.py --base-url "$E2E_API_BASE_URL" \
+      --users 5 --requests-per-user 2 \
+      > "${E2E_ENTERPRISE_AGENT_LOAD_RESULT_PATH:-/tmp/ekip-enterprise-agent-load.json}"
+  fi
+  (
+    cd frontend
+    npx playwright test tests/e2e/enterprise-release.spec.ts --project=chromium --workers=1
   )
 else
   (

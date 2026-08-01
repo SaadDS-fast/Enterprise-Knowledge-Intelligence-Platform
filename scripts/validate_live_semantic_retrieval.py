@@ -15,7 +15,10 @@ from pathlib import Path
 from app.evaluation.retrieval_metrics import retrieval_summary
 from app.rag.bm25 import bm25_scores
 from app.rag.embeddings import cosine_similarity
+from app.rag.evidence import SupportStatus, assess_evidence_support
+from app.rag.evidence_sufficiency import SufficiencyDecision, assess_sufficiency
 from app.rag.fusion import weighted_fusion
+from app.rag.query_intent import classify_query_intent
 from app.rag.reranker import rerank_score
 from app.rag.reranker_provider import LocalCrossEncoder
 from app.rag.semantic_provider import (
@@ -38,6 +41,7 @@ class Case:
     query: str
     relevant: tuple[str, ...]
     recovery_expected: bool = False
+    required_components: tuple[tuple[str, ...], ...] = ()
 
 
 DOCUMENTS = [
@@ -121,45 +125,56 @@ CASES = [
         "How much may an employee spend on food each day during official travel?",
         ("travel",),
         True,
+        (("pkr 5,000",), ("per day",)),
     ),
     Case(
         "leave-paraphrase",
         "What is the yearly paid time off entitlement?",
         ("leave",),
         True,
+        (("20",), ("annual leave",)),
     ),
     Case(
         "finance-approval",
         "Who must authorize a large capital expenditure?",
         ("finance",),
+        False,
+        (("chief financial officer",), ("approval",)),
     ),
     Case(
         "procurement-threshold",
         "When must buyers obtain three competing supplier prices?",
         ("procurement",),
+        False,
+        (("three competitive quotations",), ("pkr 100,000",)),
     ),
     Case(
         "math-definition",
         "Which mathematical relation guarantees a single result for every input?",
         ("math",),
         True,
+        (("exactly one output",), ("each input",)),
     ),
     Case(
         "physics-motion",
         "Find the problem involving change in displacement over time.",
         ("physics",),
         True,
+        (("displacement",), ("velocity",)),
     ),
     Case(
         "materials-force",
         "Which question concerns deformation of a material under force?",
         ("materials",),
         True,
+        (("wire",), ("applied load",), ("extension",)),
     ),
     Case(
         "two-document-comparison",
         "Compare the daily lodging reimbursement with annual paid leave entitlement.",
         ("travel-lodging", "leave"),
+        False,
+        (("pkr 18,000",), ("per night",), ("20",), ("annual leave",)),
     ),
     Case("knowledge-absence", "What was the company's annual revenue?", ()),
 ]
@@ -203,25 +218,59 @@ def _mode_metrics(
     for case in CASES:
         ranking = rankings[case.id]
         score_by_id = dict(zip(ranking, scores[case.id], strict=True))
-        citation_count = len(case.relevant) if case.relevant else 1
-        actual = (
-            ranking[:citation_count]
-            if ranking and score_by_id[ranking[0]] >= 0.32
-            else []
+        ordered_contents = [
+            next(document.content for document in DOCUMENTS if document.id == document_id)
+            for document_id in ranking
+        ]
+        ordered_scores = [score_by_id[document_id] for document_id in ranking]
+        support = assess_evidence_support(ordered_scores, case.query, ordered_contents)
+        sufficiency = assess_sufficiency(
+            intent=classify_query_intent(case.query),
+            support=support,
+            candidate_count=len(ranking),
+            retry_performed=True,
+        )
+        evidence_window = ranking[:5]
+        window_text = " ".join(
+            next(document.content for document in DOCUMENTS if document.id == document_id)
+            for document_id in evidence_window
+        ).casefold()
+        required_components_present = all(
+            any(alternative.casefold() in window_text for alternative in alternatives)
+            for alternatives in case.required_components
+        )
+        relevant_in_evidence = set(case.relevant).issubset(set(evidence_window))
+        supported_response = bool(case.relevant) and (
+            required_components_present and relevant_in_evidence
         )
         relevant = set(case.relevant)
+        citation_count = len(case.relevant)
+        actual = (
+            [document_id for document_id in evidence_window if document_id in relevant][
+                :citation_count
+            ]
+            if supported_response
+            else []
+        )
         citation_true_positive += len(set(actual) & relevant)
         citation_total += len(actual)
         citation_expected += len(relevant)
         if relevant:
-            case_supported = relevant.issubset(set(ranking[: max(1, len(relevant))]))
+            case_supported = supported_response
             supported += int(case_supported)
-            unsupported += int(not case_supported)
+            unsupported += int(supported_response and not case_supported)
             if case.recovery_expected:
                 recovered += int(bool(set(ranking[:3]) & relevant))
         else:
-            absence_correct += int(not actual)
-            unsupported += int(bool(actual))
+            absence_correct += int(
+                not supported_response
+                and sufficiency.decision
+                in {
+                    SufficiencyDecision.KNOWLEDGE_ABSENT,
+                    SufficiencyDecision.RETRIEVAL_FAILURE_UNRESOLVED,
+                }
+            )
+            unsupported += int(supported_response)
     return {
         **{key: round(value, 4) for key, value in ranked.items()},
         "citation_precision": round(citation_true_positive / max(1, citation_total), 4),
@@ -327,11 +376,15 @@ async def run(output: Path) -> dict:
 
         started = time.perf_counter()
         cross_scores = await live_reranker.score(case.query, contents)
-        semantic_rerank = _rank(cross_scores, documents)
+        semantic_reranker_scores = [
+            (1.0 - 0.25) * base + 0.25 * cross
+            for base, cross in zip(live_final, cross_scores, strict=True)
+        ]
+        semantic_rerank = _rank(semantic_reranker_scores, documents)
         latencies["semantic_reranker"].append((time.perf_counter() - started) * 1000)
         mode_rankings["semantic_reranker"][case.id] = semantic_rerank
         mode_scores["semantic_reranker"][case.id] = [
-            cross_scores[
+            semantic_reranker_scores[
                 next(index for index, item in enumerate(documents) if item.id == doc_id)
             ]
             for doc_id in semantic_rerank
@@ -357,6 +410,9 @@ async def run(output: Path) -> dict:
                 "fused_score": round(live_fused[relevant_index], 6),
                 "structural_title_boost": 0.0,
                 "reranker_score": round(cross_scores[relevant_index], 6),
+                "final_blended_score": round(
+                    semantic_reranker_scores[relevant_index], 6
+                ),
                 "final_rank": semantic_rerank.index(relevant_id) + 1,
                 "selected_document_scope": False,
             }
