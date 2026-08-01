@@ -359,3 +359,73 @@ passed 5 with 3 gated skips. Backend passed 215 with 4 environment-gated skips a
 coverage; frontend passed 34/34 tests and its production build. Docker builds and
 Alembic upgrade/check passed in disposable profiles. Both consumed holdouts were
 neither executed nor modified.
+
+# Enterprise end-to-end release hardening (2026-07-31)
+
+Candidate: `v0.3.0-enterprise-rc1` (proposed only). Baseline and rollback commit:
+`736a402`. The versioned corpus contains 100 synthetic documents across ten departments,
+ten supported formats, and three isolated tenants. The explicit acceptance matrix contains
+118 cases. The disposable current-source profile accepted 100/100 uploads, completed
+100 ingestions without a failure, timeout, or stuck record, ran 30/30 canonical Search probes,
+passed authorized/cross-tenant selected-document checks, idempotent reprocess, responsive
+Chromium, current-source Docker builds, and Alembic upgrade/check. Final load, soak,
+regression, operational, and scanner totals are recorded in `TEST_RESULTS.md`.
+
+The grounded-generation v1/v2 benchmarks were not run. Their fixtures, locks, and
+historical results remain immutable. No cloud or AWS readiness is claimed.
+
+Status: **PARTIAL PASS**. The 20-minute soak, concurrency run, backup/restore,
+downgrade/upgrade, MinIO privacy check, and enterprise browser passed. A first operational
+failure-injection run exposed that the validation script omitted the isolated Compose
+override during MinIO recovery; the harness was corrected. The platform execution quota
+then rejected the authoritative rerun and all further privileged Docker/Git operations
+until 2026-08-05 12:43 PKT, so current-source live Ollama/default/agentic reruns and the
+requested commit could not be completed in this session. No product security, isolation,
+data-integrity, or unsupported-claim failure was observed.
+
+## Authoritative closure rerun (2026-08-01)
+
+The quota-blocked profiles were rerun from current source. Final Search passed 30/30
+(24 `SUPPORTED`, 6 safe `INSUFFICIENT_EVIDENCE`), including authorized selected-document
+200 and cross-tenant 404 behavior. Default Playwright passed its enabled scenario with
+eight accurate feature-gated skips. Agentic/Research/accessibility passed five enabled
+scenarios across desktop, tablet, and mobile with four unrelated skips. Live Ollama passed
+against Ollama 0.32.1 and the required `llama3:latest` digest.
+
+The corrected operational probe passed PostgreSQL, Redis, MinIO, backend, ingestion-worker,
+and report-worker interruption/recovery, idempotency, tenant isolation, sanitized failure,
+request-ID presence, and metric-label privacy checks. Enterprise Chromium, backup/restore,
+the reversible migration cycle, and Alembic check passed.
+
+Status remains **PARTIAL PASS** because the freshly rerun provisioned-model semantic and
+semantic-plus-reranker benchmark failed release acceptance: both modes reported unsupported
+claim rate `0.2222` and knowledge-absence accuracy `0.0`; the reranker also placed one
+materials hard positive at rank 2. No retrieval retuning was performed. Per the release
+gate, no hardening commit, push, merge, or tag was created.
+
+## Semantic and release closure — 2026-08-01
+
+Status: **PASS**. The earlier result remains above as historical before-remediation data.
+Primary failure taxonomy was: incorrect evidence-sufficiency interpretation 1, incorrect
+absence classification 1, and reranker ordering/evaluator blend error 1. All other requested
+categories were 0: nearest-neighbour, stale index, model/alias, dimension, normalization,
+scope filter, obsolete version, duplicate dominance, semantic weighting, fusion
+normalization, fixture expectation, hard-negative confusion, and incomplete retrieval.
+
+After the general evaluator corrections, semantic hybrid passed 8/8 positive cases plus
+1/1 absence and semantic-plus-reranker passed the same 9/9 safety cases. Both reported
+unsupported-claim rate 0, absence accuracy 1.0000, citation precision/recall 1.0000,
+Recall@5 1.0000, selected-document isolation 1.0000, and tenant isolation 1.0000. The
+materials hard positive moved from rank 2 to rank 1 under the single frozen blend. Models
+were fully loaded with the required aliases and 384-dimensional embedding; no fallback was
+used. Frozen lexical `.45`, semantic `.55`, reranker `.25`, margin `.08`, top-N `20`, and
+return-K `8` remain unchanged.
+
+The live operational probe covered login success/failure, upload, reprocess, Search,
+selected-document Search, Agent, Research, role denial, cross-tenant denial, and delete.
+Response/audit request-ID correlation passed, actor and workspace scope were present, and
+the private-payload scan found zero prohibited fields. Backend passed 221 tests with 4
+environment-gated skips and 78% coverage. Frontend passed 34 tests, typecheck/build, and
+lint with zero errors and one inherited warning. Default, agentic/accessibility, enterprise,
+and live-Ollama Chromium profiles passed. Docker builds, Alembic, Bandit, pip-audit, and
+npm production audit passed.

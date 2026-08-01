@@ -332,3 +332,36 @@ Missing components are completed deterministically; unsupported IDs still fail i
 strict verifier. Versions are `grounded-prompt-v1.2`, `grounded-candidate-v2`,
 `grounded-verifier-v1.2`, `answer-plan-v1`, `fact-registry-v1`, and
 `authorized-evidence-v1.1`.
+
+# Enterprise release hardening
+
+Added deterministic generators for a 100-document synthetic corpus and 118-case release
+matrix, a current-source disposable enterprise API/browser profile, and bounded load/soak
+tooling. Added release, local-production, backup/restore, monitoring, incident, system,
+and threat-model documentation. No production architecture, authorization boundary,
+retrieval calibration, model, consumed benchmark, cloud inference, or AWS configuration
+changed.
+
+The local-production Compose overlay removes public PostgreSQL, Redis, and MinIO ports,
+requires signing/database/object-store secrets plus explicit CORS/trusted-host values,
+sets production/debug mode explicitly, and disables every optional retrieval, generation,
+agentic, Research, and external-web feature by default.
+
+Closure reruns changed no production retrieval calibration or feature defaults. They
+validated the existing implementation and exposed a semantic-profile acceptance blocker;
+the release therefore remains uncommitted pending separate development-only remediation.
+
+## Semantic and operational release closure (2026-08-01)
+
+The provisioned-model evaluator now separates retrieval relevance from factual answer
+support. Positive fixtures declare required factual anchors, absence cases cannot become
+supported from similarity alone, and the reranker evaluator applies the frozen blend once
+(`0.75 * fused + 0.25 * cross-encoder`) while preserving fused order below the frozen
+minimum margin. Production weights, thresholds, authorization, and canonical response
+state were not changed.
+
+Safe audit events were added for successful and failed authentication, upload/reprocess/
+delete, Search and selected-document Search, Agent, Research, and authorization denials.
+The isolated operational probe demonstrated a single request ID across the API response,
+retrieval operation, and persisted audit record, with actor/workspace scope and without
+document text, query text, credentials, prompts, evidence packets, raw output, or reasoning.

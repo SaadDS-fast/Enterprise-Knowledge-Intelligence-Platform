@@ -30,6 +30,7 @@ from app.models.schemas import (
     UploadResponse,
 )
 from app.repositories.documents import get_document, list_documents
+from app.security.audit import record_audit_event
 from app.security.authorization import can_manage_documents
 from app.services.document_service import (
     create_document_upload,
@@ -62,6 +63,16 @@ async def upload_document(
     description: Annotated[str | None, Form()] = None,
 ) -> UploadResponse:
     if not can_manage_documents(tenant.role):
+        await record_audit_event(
+            session,
+            action="document.upload.denied",
+            resource_type="document",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            request_id=getattr(request.state, "request_id", None),
+            details={"outcome": "permission_denied"},
+        )
+        await session.commit()
         raise ForbiddenError("Document upload requires editor access")
     data = await file.read()
     document, version, job = await create_document_upload(
@@ -80,6 +91,17 @@ async def upload_document(
         background_tasks,
         request_id=getattr(request.state, "request_id", None),
     )
+    await record_audit_event(
+        session,
+        action="document.upload.accepted",
+        resource_type="document",
+        actor_user_id=tenant.user_id,
+        workspace_id=tenant.workspace_id,
+        resource_id=str(document.id),
+        request_id=getattr(request.state, "request_id", None),
+        details={"outcome": "accepted"},
+    )
+    await session.commit()
     return UploadResponse(
         document=DocumentRead.model_validate(document),
         version=DocumentVersionRead.model_validate(version),
@@ -98,9 +120,31 @@ async def reprocess_document(
     idempotency_key: Annotated[str | None, Header(max_length=200)] = None,
 ) -> ReprocessResponse:
     if not can_manage_documents(tenant.role):
+        await record_audit_event(
+            session,
+            action="document.reprocess.denied",
+            resource_type="document",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            resource_id=str(document_id),
+            request_id=getattr(request.state, "request_id", None),
+            details={"outcome": "permission_denied"},
+        )
+        await session.commit()
         raise ForbiddenError("Document reprocessing requires editor access")
     document = await get_document(session, tenant.workspace_id, document_id)
     if not document:
+        await record_audit_event(
+            session,
+            action="document.reprocess.denied",
+            resource_type="document",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            resource_id=str(document_id),
+            request_id=getattr(request.state, "request_id", None),
+            details={"outcome": "not_found_or_cross_tenant"},
+        )
+        await session.commit()
         raise NotFoundError("Document not found")
     job, idempotent = await create_reprocess_job(session, document, idempotency_key=idempotency_key)
     if not idempotent:
@@ -110,6 +154,17 @@ async def reprocess_document(
             background_tasks,
             request_id=getattr(request.state, "request_id", None),
         )
+    await record_audit_event(
+        session,
+        action="document.reprocess.accepted",
+        resource_type="document",
+        actor_user_id=tenant.user_id,
+        workspace_id=tenant.workspace_id,
+        resource_id=str(document.id),
+        request_id=getattr(request.state, "request_id", None),
+        details={"outcome": "idempotent" if idempotent else "accepted"},
+    )
+    await session.commit()
     return ReprocessResponse(
         document_id=document.id,
         job_id=job.id,
@@ -205,7 +260,10 @@ async def document_detail(
 
 @router.delete("/{document_id}", response_model=MessageResponse)
 async def delete_document(
-    document_id: UUID, tenant: Tenant, session: Annotated[AsyncSession, Depends(get_db)]
+    document_id: UUID,
+    request: Request,
+    tenant: Tenant,
+    session: Annotated[AsyncSession, Depends(get_db)],
 ) -> MessageResponse:
     if not can_manage_documents(tenant.role):
         raise ForbiddenError("Document deletion requires editor access")
@@ -213,4 +271,15 @@ async def delete_document(
     if not document:
         raise NotFoundError("Document not found")
     await delete_document_and_objects(session, document)
+    await record_audit_event(
+        session,
+        action="document.delete.completed",
+        resource_type="document",
+        actor_user_id=tenant.user_id,
+        workspace_id=tenant.workspace_id,
+        resource_id=str(document_id),
+        request_id=getattr(request.state, "request_id", None),
+        details={"outcome": "completed"},
+    )
+    await session.commit()
     return MessageResponse(message="Document deleted")

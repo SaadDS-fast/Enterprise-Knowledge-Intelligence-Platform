@@ -1,5 +1,10 @@
 # Enterprise Knowledge Intelligence Platform
 
+Release candidate hardening is documented in
+[`docs/evaluation/enterprise-e2e.md`](docs/evaluation/enterprise-e2e.md). The proposed,
+untagged identifier is `v0.3.0-enterprise-rc1`; validated scope is local Compose and
+operator-provisioned Ollama only, not cloud deployment.
+
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688)
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black)

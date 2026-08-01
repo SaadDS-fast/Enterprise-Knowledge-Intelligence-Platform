@@ -30,6 +30,7 @@ from app.exceptions.base import AppError, ConflictError, ForbiddenError, NotFoun
 from app.exceptions.codes import ErrorCode
 from app.integrations.storage import get_storage
 from app.observability.tracing import safe_span
+from app.security.audit import record_audit_event
 from app.services.research_service import (
     artifact_ref,
     cancel_research_job,
@@ -109,7 +110,28 @@ async def create_research_report(
                 background_tasks=background_tasks,
             )
     except ValueError as exc:
+        await record_audit_event(
+            session,
+            action="research.denied",
+            resource_type="research_job",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            request_id=getattr(request.state, "request_id", None),
+            details={"outcome": "document_scope_denied"},
+        )
+        await session.commit()
         raise ForbiddenError("Document scope is not authorized") from exc
+    await record_audit_event(
+        session,
+        action="research.created",
+        resource_type="research_job",
+        actor_user_id=tenant.user_id,
+        workspace_id=tenant.workspace_id,
+        resource_id=str(job.id),
+        request_id=getattr(request.state, "request_id", None),
+        details={"outcome": "replayed" if replayed else "accepted"},
+    )
+    await session.commit()
     return ResearchCreateResponse(
         job_id=job.id,
         status=job.status,

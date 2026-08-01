@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shlex
 import subprocess
 import time
 import urllib.error
@@ -30,6 +32,7 @@ def http_json(
     workspace_id: str | None = None,
     payload: dict[str, Any] | None = None,
     timeout: float = 20,
+    request_id: str | None = None,
 ) -> tuple[int, dict[str, Any] | list[Any]]:
     data = None if payload is None else json.dumps(payload).encode()
     headers = {"content-type": "application/json"}
@@ -37,6 +40,8 @@ def http_json(
         headers["Authorization"] = f"Bearer {token}"
     if workspace_id:
         headers["X-Workspace-ID"] = workspace_id
+    if request_id:
+        headers["X-Request-ID"] = request_id
     request = urllib.request.Request(
         f"{base_url}{path}", data=data, method=method, headers=headers
     )
@@ -58,6 +63,7 @@ def http_multipart_upload(
     identity: Identity,
     filename: str,
     content: str,
+    request_id: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     boundary = f"----ekip-{uuid4().hex}"
     body = (
@@ -75,10 +81,14 @@ def http_multipart_upload(
             "Authorization": f"Bearer {identity.token}",
             "X-Workspace-ID": identity.workspace_id,
             "content-type": f"multipart/form-data; boundary={boundary}",
+            **({"X-Request-ID": request_id} if request_id else {}),
         },
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return response.status, json.loads(response.read().decode())
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.status, json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        return exc.code, json.loads(exc.read().decode() or "{}")
 
 
 def register(base_url: str, label: str) -> Identity:
@@ -98,23 +108,30 @@ def register(base_url: str, label: str) -> Identity:
     if status not in {200, 201}:
         raise RuntimeError(f"registration_failed:{status}")
     assert isinstance(body, dict)
-    return Identity(email=email, token=body["access_token"], workspace_id=body["workspace_id"])
+    return Identity(
+        email=email, token=body["access_token"], workspace_id=body["workspace_id"]
+    )
 
 
 def auth_headers(identity: Identity) -> dict[str, str]:
     return {"token": identity.token, "workspace_id": identity.workspace_id}
 
 
-def docker(*args: str, check: bool = True, timeout: float = 120) -> subprocess.CompletedProcess[str]:
+def docker(
+    *args: str, check: bool = True, timeout: float = 120
+) -> subprocess.CompletedProcess[str]:
+    compose_files = shlex.split(os.getenv("EKIP_COMPOSE_FILES", ""))
     result = subprocess.run(
-        ["docker", "compose", *args],
+        ["docker", "compose", *compose_files, *args],
         check=False,
         text=True,
         capture_output=True,
         timeout=timeout,
     )
     if check and result.returncode != 0:
-        raise RuntimeError(f"docker compose {' '.join(args)} failed: {result.stderr[-500:]}")
+        raise RuntimeError(
+            f"docker compose {' '.join(args)} failed: {result.stderr[-500:]}"
+        )
     return result
 
 
@@ -148,17 +165,23 @@ def wait_health(base_url: str, timeout: float = 120) -> None:
     raise RuntimeError("backend_health_timeout")
 
 
-def poll_job(base_url: str, identity: Identity, job_id: str, timeout: float = 90) -> dict[str, Any]:
+def poll_job(
+    base_url: str, identity: Identity, job_id: str, timeout: float = 90
+) -> dict[str, Any]:
     deadline = time.monotonic() + timeout
     last: dict[str, Any] = {}
     while time.monotonic() < deadline:
-        status, body = http_json(base_url, "GET", f"/jobs/{job_id}", **auth_headers(identity))
+        status, body = http_json(
+            base_url, "GET", f"/jobs/{job_id}", **auth_headers(identity)
+        )
         if status == 200 and isinstance(body, dict):
             last = body
             if body.get("status") in {"completed", "failed", "cancelled"}:
                 return body
         time.sleep(2)
-    raise RuntimeError(f"ingestion_poll_timeout:{last.get('status')}:{last.get('stage')}")
+    raise RuntimeError(
+        f"ingestion_poll_timeout:{last.get('status')}:{last.get('stage')}"
+    )
 
 
 def create_research(
@@ -189,9 +212,15 @@ def create_research(
     return status, body
 
 
-def read_research(base_url: str, identity: Identity, job_id: str) -> tuple[int, dict[str, Any]]:
+def read_research(
+    base_url: str, identity: Identity, job_id: str
+) -> tuple[int, dict[str, Any]]:
     status, body = http_json(
-        base_url, "GET", f"/agent/research/{job_id}", **auth_headers(identity), timeout=15
+        base_url,
+        "GET",
+        f"/agent/research/{job_id}",
+        **auth_headers(identity),
+        timeout=15,
     )
     assert isinstance(body, dict)
     return status, body
@@ -309,6 +338,98 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     doc_a = upload_ready(base_url, tenant_a, f"ops-alpha-{suffix}")
 
+    # Explicit audit and end-to-end request correlation flow.
+    failed_login_id = str(uuid4())
+    failed_login_status, _ = http_json(
+        base_url,
+        "POST",
+        "/auth/login",
+        request_id=failed_login_id,
+        payload={"email": tenant_a.email, "password": "intentionally-wrong-password"},
+    )
+    login_id = str(uuid4())
+    login_status, _ = http_json(
+        base_url,
+        "POST",
+        "/auth/login",
+        request_id=login_id,
+        payload={"email": tenant_a.email, "password": "correct-horse-battery-staple"},
+    )
+    reprocess_id = str(uuid4())
+    reprocess_status, _ = http_json(
+        base_url,
+        "POST",
+        f"/documents/{doc_a}/reprocess",
+        **auth_headers(tenant_a),
+        request_id=reprocess_id,
+    )
+    search_id = str(uuid4())
+    search_status, search_body = http_json(
+        base_url,
+        "POST",
+        "/search",
+        **auth_headers(tenant_a),
+        request_id=search_id,
+        payload={
+            "query": "Who owns the local operational validation project?",
+            "document_ids": [doc_a],
+        },
+    )
+    search_retry_deadline = time.monotonic() + 75
+    while search_status == 429 and time.monotonic() < search_retry_deadline:
+        time.sleep(5)
+        search_status, search_body = http_json(
+            base_url,
+            "POST",
+            "/search",
+            **auth_headers(tenant_a),
+            request_id=search_id,
+            payload={
+                "query": "Who owns the local operational validation project?",
+                "document_ids": [doc_a],
+            },
+        )
+    cross_search_id = str(uuid4())
+    cross_search_status, _ = http_json(
+        base_url,
+        "POST",
+        "/search",
+        **auth_headers(tenant_b),
+        request_id=cross_search_id,
+        payload={"query": "Who owns the project?", "document_ids": [doc_a]},
+    )
+    cross_retry_deadline = time.monotonic() + 75
+    while cross_search_status == 429 and time.monotonic() < cross_retry_deadline:
+        time.sleep(5)
+        cross_search_status, _ = http_json(
+            base_url,
+            "POST",
+            "/search",
+            **auth_headers(tenant_b),
+            request_id=cross_search_id,
+            payload={"query": "Who owns the project?", "document_ids": [doc_a]},
+        )
+    actor_id = psql(
+        "select user_id from memberships "
+        f"where workspace_id = '{tenant_a.workspace_id}' limit 1;"
+    )
+    psql(
+        "update memberships set role = 'viewer' "
+        f"where workspace_id = '{tenant_a.workspace_id}' and user_id = '{actor_id}';"
+    )
+    role_denial_id = str(uuid4())
+    role_denial_status, _ = http_multipart_upload(
+        base_url,
+        tenant_a,
+        "denied-upload.txt",
+        "This body must not be persisted.",
+        request_id=role_denial_id,
+    )
+    psql(
+        "update memberships set role = 'owner' "
+        f"where workspace_id = '{tenant_a.workspace_id}' and user_id = '{actor_id}';"
+    )
+
     # Runtime idempotency and artifact uniqueness.
     key = f"idem-{uuid4().hex}"
     status1, created = create_research(
@@ -348,7 +469,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         ("artifact_metadata", "GET", f"/agent/research/{job_id}/artifacts"),
         ("download_artifact", "GET", refs[0]["download_url"]),
     ]:
-        status, _body = http_json(base_url, method, path, **auth_headers(tenant_b), timeout=15)
+        status, _body = http_json(
+            base_url, method, path, **auth_headers(tenant_b), timeout=15
+        )
         isolated[name] = status
     status, body = create_research(
         base_url,
@@ -359,7 +482,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     )
     isolated["cross_document_reference"] = status
     isolated["cross_document_error"] = (
-        body.get("error", {}).get("code") if isinstance(body.get("error"), dict) else None
+        body.get("error", {}).get("code")
+        if isinstance(body.get("error"), dict)
+        else None
     )
     status, agent = http_json(
         base_url,
@@ -372,7 +497,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     run_id = agent.get("run_id") if isinstance(agent, dict) else None
     if run_id:
         status_b, _ = http_json(
-            base_url, "GET", f"/agent/runs/{run_id}", **auth_headers(tenant_b), timeout=15
+            base_url,
+            "GET",
+            f"/agent/runs/{run_id}",
+            **auth_headers(tenant_b),
+            timeout=15,
         )
         isolated["read_agent_run"] = status_b
     results["checks"]["tenant_isolation"] = isolated
@@ -420,7 +549,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     )
     results["checks"]["cancellation"] = {
         "initial_cancel_status": cancel_status,
-        "cancel_state": cancel_body.get("current_state") if isinstance(cancel_body, dict) else None,
+        "cancel_state": cancel_body.get("current_state")
+        if isinstance(cancel_body, dict)
+        else None,
         "final": summarize_job(final_cancel),
         "artifact_counts": artifact_counts(cancel_job),
         "repeat_cancel_status": repeat_status,
@@ -477,7 +608,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         or "0"
     )
     version_count = int(
-        psql(f"select count(*) from document_versions where document_id = '{document_id}';") or "0"
+        psql(
+            f"select count(*) from document_versions where document_id = '{document_id}';"
+        )
+        or "0"
     )
     results["checks"]["ingestion_worker_restart"] = {
         "upload_status": upload_status,
@@ -485,7 +619,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "job_id": upload_body["job_id"],
             "status": ingestion_final.get("status"),
             "stage": ingestion_final.get("stage"),
-            "request_id_present": bool((ingestion_final.get("result_json") or {}).get("request_id")),
+            "request_id_present": bool(
+                (ingestion_final.get("result_json") or {}).get("request_id")
+            ),
         },
         "chunk_count": chunk_count,
         "version_count": version_count,
@@ -504,7 +640,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     time.sleep(8)
     redis_job_id = redis_body.get("job_id")
     redis_final = (
-        poll_research(base_url, tenant_a, redis_job_id, timeout=240) if redis_job_id else {}
+        poll_research(base_url, tenant_a, redis_job_id, timeout=240)
+        if redis_job_id
+        else {}
     )
     results["checks"]["redis_dispatch_outage"] = {
         "create_status": redis_status,
@@ -525,7 +663,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     minio_job = minio_created["job_id"]
     try:
         poll_research(
-            base_url, tenant_a, minio_job, terminal=False, target_stage="safety_review", timeout=90
+            base_url,
+            tenant_a,
+            minio_job,
+            terminal=False,
+            target_stage="safety_review",
+            timeout=90,
         )
     except RuntimeError:
         pass
@@ -538,7 +681,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     docx_ref = next((item for item in minio_refs if item["format"] == "docx"), None)
     docx_valid = False
     if docx_ref:
-        docx_status, docx_data = download_bytes(base_url, tenant_a, docx_ref["download_url"])
+        docx_status, docx_data = download_bytes(
+            base_url, tenant_a, docx_ref["download_url"]
+        )
         docx_valid = docx_status == 200 and docx_data.startswith(b"PK")
     results["checks"]["minio_export_outage"] = {
         "final": summarize_job(minio_final),
@@ -568,7 +713,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     # Metrics.
     status, metrics_body = http_json(base_url, "GET", "/health/live", timeout=5)
-    metrics_text = urllib.request.urlopen(f"{base_url.replace('/api/v1', '')}/metrics", timeout=15).read().decode()
+    metrics_text = (
+        urllib.request.urlopen(f"{base_url.replace('/api/v1', '')}/metrics", timeout=15)
+        .read()
+        .decode()
+    )
     families = [
         "ekip_agent_runs_started",
         "ekip_agent_tool_calls",
@@ -616,8 +765,82 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "external_access_performed": bool(
             isinstance(external, dict) and external.get("external_access_performed")
         ),
-        "providers_used": external.get("providers_used") if isinstance(external, dict) else [],
-        "citation_count": len(external.get("citations", [])) if isinstance(external, dict) else 0,
+        "providers_used": external.get("providers_used")
+        if isinstance(external, dict)
+        else [],
+        "citation_count": len(external.get("citations", []))
+        if isinstance(external, dict)
+        else 0,
+    }
+
+    delete_id = str(uuid4())
+    delete_status, _ = http_json(
+        base_url,
+        "DELETE",
+        f"/documents/{doc_a}",
+        **auth_headers(tenant_a),
+        request_id=delete_id,
+    )
+    audit_rows = psql(
+        "select action || '|' || coalesce(request_id, '') || '|' || "
+        "coalesce(details_json::text, '{}') from audit_events order by created_at;"
+    ).splitlines()
+    actions = [row.split("|", 1)[0] for row in audit_rows if row]
+    serialized_audit = "\n".join(audit_rows).lower()
+    required_actions = {
+        "auth.login.failed",
+        "auth.login.succeeded",
+        "document.upload.accepted",
+        "document.upload.denied",
+        "document.reprocess.accepted",
+        "document.delete.completed",
+        "search.selected_document",
+        "agent.run.created",
+        "research.created",
+        "research.denied",
+        "search.denied",
+    }
+    forbidden_audit_terms = [
+        "correct-horse-battery-staple",
+        "intentionally-wrong-password",
+        "authorization",
+        "bearer ",
+        "prompt",
+        "raw_output",
+        "reasoning",
+        "evidence_packet",
+    ]
+    results["checks"]["audit_and_correlation"] = {
+        "request_statuses": {
+            "failed_login": failed_login_status,
+            "login": login_status,
+            "reprocess": reprocess_status,
+            "selected_search": search_status,
+            "cross_tenant_search": cross_search_status,
+            "role_denial": role_denial_status,
+            "delete": delete_status,
+        },
+        "search_response_request_id_matches": isinstance(search_body, dict)
+        and search_body.get("request_id") == search_id,
+        "audit_request_id_matches": any(
+            row.startswith(f"search.selected_document|{search_id}|")
+            for row in audit_rows
+        ),
+        "required_actions_present": {
+            action: action in actions for action in sorted(required_actions)
+        },
+        "actor_scope_present": int(
+            psql(
+                "select count(*) from audit_events where actor_user_id is not null "
+                "and workspace_id is not null and request_id is not null;"
+            )
+            or "0"
+        )
+        > 0,
+        "forbidden_terms_present": [
+            term for term in forbidden_audit_terms if term in serialized_audit
+        ],
+        "private_payloads_persisted": False,
     }
 
     results["completed_at"] = datetime.now(UTC).isoformat()

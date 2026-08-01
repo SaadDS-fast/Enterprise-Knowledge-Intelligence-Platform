@@ -4,7 +4,7 @@ import re
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies.auth import CurrentPrincipal
@@ -15,6 +15,7 @@ from app.exceptions.codes import ErrorCode
 from app.models.schemas import TokenResponse, UserCreate, UserLogin, UserRead
 from app.repositories.users import get_user_by_email
 from app.repositories.workspaces import first_membership
+from app.security.audit import record_audit_event
 from app.security.authentication import create_access_token, hash_password, verify_password
 
 router = APIRouter()
@@ -63,14 +64,34 @@ async def register(
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
-    payload: UserLogin, session: Annotated[AsyncSession, Depends(get_db)]
+    payload: UserLogin,
+    request: Request,
+    session: Annotated[AsyncSession, Depends(get_db)],
 ) -> TokenResponse:
     user = await get_user_by_email(session, str(payload.email))
     if not user or not verify_password(payload.password, user.password_hash):
+        await record_audit_event(
+            session,
+            action="auth.login.failed",
+            resource_type="authentication",
+            request_id=getattr(request.state, "request_id", None),
+            details={"outcome": "authentication_failed"},
+        )
+        await session.commit()
         raise AppError(ErrorCode.AUTHENTICATION_FAILED, "Incorrect email or password", 401)
     membership = await first_membership(session, user.id)
     if not membership:
         raise AppError(ErrorCode.FORBIDDEN, "The account has no workspace membership", 403)
+    await record_audit_event(
+        session,
+        action="auth.login.succeeded",
+        resource_type="authentication",
+        actor_user_id=user.id,
+        workspace_id=membership.workspace_id,
+        request_id=getattr(request.state, "request_id", None),
+        details={"outcome": "authorized"},
+    )
+    await session.commit()
     token = create_access_token(user.id, membership.workspace_id)
     return TokenResponse(
         access_token=token,

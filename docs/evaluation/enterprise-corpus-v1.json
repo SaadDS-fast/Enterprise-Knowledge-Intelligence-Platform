@@ -1,0 +1,2008 @@
+{
+  "classification": "entirely_synthetic_non_private",
+  "document_count": 100,
+  "documents": [
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-001?",
+        "When is AMG-001 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-001-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "14b1fcf1b907f5545cc5bb4a082a6fde04e943af55fe064cc58581ddbc251fb4",
+      "size_bytes": 1128,
+      "synthetic_document_id": "AMG-001",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-002?",
+        "When is AMG-002 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-002-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "07c167c2233a73cce5af2f883d4f2001972d93c03679e0622c7290370d1cb25b",
+      "size_bytes": 1182,
+      "synthetic_document_id": "AMG-002",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-003?",
+        "When is AMG-003 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-003-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "45fb46342f586f5626295fa9ac74cf533e62ccff595baff5b6959965ec69b4a8",
+      "size_bytes": 568,
+      "synthetic_document_id": "AMG-003",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-004?",
+        "When is AMG-004 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-004-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "7eff751ee23058354465df5fcaa6981695ac29b3e53c5b93b3c8947cd46ba40a",
+      "size_bytes": 588,
+      "synthetic_document_id": "AMG-004",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-005?",
+        "When is AMG-005 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-005-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "07f7731d008f2c019a93dd21db814022e5b6b48ed92367c77838534a7421a942",
+      "size_bytes": 716,
+      "synthetic_document_id": "AMG-005",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-006?",
+        "When is AMG-006 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-006-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "9981742fa570d48fc11d3ba2948e4d2706e6aba75dba4ac87d237e9f448dedf9",
+      "size_bytes": 317,
+      "synthetic_document_id": "AMG-006",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-007?",
+        "When is AMG-007 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-007-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "e7a5ef44d0e3347e1614bb3dfa595651d842ce165782bc3a9393013c7042d616",
+      "size_bytes": 596,
+      "synthetic_document_id": "AMG-007",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-008?",
+        "When is AMG-008 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-008-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "faeeed632fe37d3984eaa895ebaf0ec0dde5ad93309c987465747b448ece0fae",
+      "size_bytes": 657,
+      "synthetic_document_id": "AMG-008",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-009?",
+        "When is AMG-009 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-009-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "53399a75fb8a2e81497cdc3d9cd18e9812bf7d47688d345596f18ac595b14963",
+      "size_bytes": 628,
+      "synthetic_document_id": "AMG-009",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-010?",
+        "When is AMG-010 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-010-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "0d1a07333e55e52b74469a2f3be8c59a99a278971bb2c60d79a9a47ff25e8cc6",
+      "size_bytes": 581,
+      "synthetic_document_id": "AMG-010",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-011?",
+        "When is AMG-011 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-011-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "afb32e00920996855536793d656c7afcbca87165894dae85d32770f5e6646c3c",
+      "size_bytes": 1130,
+      "synthetic_document_id": "AMG-011",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-012?",
+        "When is AMG-012 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-012-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "e4e26fb2e52addbfc08450a0e3299c9f10597daf00ea4c5b7468555c8e74763f",
+      "size_bytes": 1183,
+      "synthetic_document_id": "AMG-012",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-013?",
+        "When is AMG-013 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-013-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "6280e7677525ceb565b85a5663aeb68e921a774cccaee5708c21ab8d834e937c",
+      "size_bytes": 570,
+      "synthetic_document_id": "AMG-013",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-014?",
+        "When is AMG-014 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-014-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "1da5da7dc5acca1ab492aabb1722af0c03cee17a46144504bfe63992880e9c79",
+      "size_bytes": 590,
+      "synthetic_document_id": "AMG-014",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-015?",
+        "When is AMG-015 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-015-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "ac61927e9eb6dff36eb8206064147d49a18b1072c0d8fbe043212c7c6ffcd9d7",
+      "size_bytes": 718,
+      "synthetic_document_id": "AMG-015",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-016?",
+        "When is AMG-016 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-016-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "2d01e6ba9513bc9e80d16d35cf625a8e57a1b20ec6708006885335af016d63d4",
+      "size_bytes": 319,
+      "synthetic_document_id": "AMG-016",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-017?",
+        "When is AMG-017 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-017-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "933499eee451612c5883dd924e3c559463f328ebd4c79bbfdc8930b8f6a6b2b2",
+      "size_bytes": 598,
+      "synthetic_document_id": "AMG-017",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-018?",
+        "When is AMG-018 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-018-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "96749d35d804ad62a75174036c457947c4442707389ee574a6c8dd04755b334d",
+      "size_bytes": 662,
+      "synthetic_document_id": "AMG-018",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-019?",
+        "When is AMG-019 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-019-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "1c4facd7bda69948147c0c0b32a2a31f2f30de10ad477e5abbbfc651e409d9ea",
+      "size_bytes": 625,
+      "synthetic_document_id": "AMG-019",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-020?",
+        "When is AMG-020 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-020-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "a2f5072828eb1520b517f949bdc3a8f8c3f1863951266a98043d05b71f809089",
+      "size_bytes": 581,
+      "synthetic_document_id": "AMG-020",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-021?",
+        "When is AMG-021 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-021-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "9edb399fe9eb2966848f15177a18019efe2a1f872e749e9a7586ee71c690ae0c",
+      "size_bytes": 1130,
+      "synthetic_document_id": "AMG-021",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-022?",
+        "When is AMG-022 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-022-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "f44ea30e7b64e11e381549da0d815ebf2af4c25f4e062e06cc2a3bfa6ba4b6c6",
+      "size_bytes": 1183,
+      "synthetic_document_id": "AMG-022",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-023?",
+        "When is AMG-023 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-023-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "24b84ab1b26ea9c94d980906052124eb99f7c1ad25b306ecb6e12f3bb7482f28",
+      "size_bytes": 570,
+      "synthetic_document_id": "AMG-023",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-024?",
+        "When is AMG-024 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-024-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "1b38324091eece1dd92e7f9732e4d22b9228e051a38f85e34e82ddb52382936c",
+      "size_bytes": 590,
+      "synthetic_document_id": "AMG-024",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-025?",
+        "When is AMG-025 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-025-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "2b6609224f04895266e1ad9f19717fdef28a083252e212e5a000ea4423ee1d67",
+      "size_bytes": 718,
+      "synthetic_document_id": "AMG-025",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-026?",
+        "When is AMG-026 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-026-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "3e8e783f5166ba02417f28bb2c43dc056a77a15ec6a0f1f072e4aa34b66f2938",
+      "size_bytes": 319,
+      "synthetic_document_id": "AMG-026",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-027?",
+        "When is AMG-027 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-027-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "0285e9203b38d433746993725993058c20516e923cffc8f8fb6076d34ddef027",
+      "size_bytes": 599,
+      "synthetic_document_id": "AMG-027",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-028?",
+        "When is AMG-028 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-028-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "00ea3d3415ed1bfa422fd271e27a7f2fa7d0b49db70d328d58280221ed7533f5",
+      "size_bytes": 657,
+      "synthetic_document_id": "AMG-028",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-029?",
+        "When is AMG-029 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-029-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "caf860d047261c188564be1f7baee5ed4d8f5b4b505beb7b66b772bfefa4c3d9",
+      "size_bytes": 623,
+      "synthetic_document_id": "AMG-029",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-030?",
+        "When is AMG-030 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-030-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "bb27a8ebc53d42e1e39decb990da1d6a3c7d1b6a378ccc9c6ff93972b8499f23",
+      "size_bytes": 579,
+      "synthetic_document_id": "AMG-030",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-031?",
+        "When is AMG-031 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-031-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "be711b23a5e6ad973c60241e7e62fbcd304e8c687b7f3b381743be835dce4057",
+      "size_bytes": 1128,
+      "synthetic_document_id": "AMG-031",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-032?",
+        "When is AMG-032 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-032-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "5bdbeb9c712f68604a7577b68ab8a144638bd88f3a1225d8060fb3ddc55d39e2",
+      "size_bytes": 1182,
+      "synthetic_document_id": "AMG-032",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-033?",
+        "When is AMG-033 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-033-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "e9cd9324c4270073d9b8b3bbdf9964a9c994a1ded80333822a20000e75c5721e",
+      "size_bytes": 568,
+      "synthetic_document_id": "AMG-033",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-034?",
+        "When is AMG-034 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-034-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "d4b3e4c3fc7910a5588f2870e1bde67c262817a4e78d544214b2fb70d3b32815",
+      "size_bytes": 588,
+      "synthetic_document_id": "AMG-034",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-035?",
+        "When is AMG-035 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-035-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "1527316078e9d2b79d072e0442aceacad9a768aa9e0bef2ac959ff603463d1e6",
+      "size_bytes": 716,
+      "synthetic_document_id": "AMG-035",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-036?",
+        "When is AMG-036 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-036-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "96cbff1d513c3f2aebdf5de80a259ea44ee160c72722286bf2c627e00a89116d",
+      "size_bytes": 322,
+      "synthetic_document_id": "AMG-036",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-037?",
+        "When is AMG-037 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-037-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "b0da18b9b8af96ba56244d70c4d087b957f04a7cb733e8b7c4896474a6a3cc36",
+      "size_bytes": 598,
+      "synthetic_document_id": "AMG-037",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-038?",
+        "When is AMG-038 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-038-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "9875f83869c8ca35c2c823df55fc5c67df5651d2b48c478547331cffbafa448b",
+      "size_bytes": 659,
+      "synthetic_document_id": "AMG-038",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-039?",
+        "When is AMG-039 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-039-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "18f23adb3e898a0ef62f6084dd9c4d3af46cdc08f16a5304e523190cfbf47867",
+      "size_bytes": 625,
+      "synthetic_document_id": "AMG-039",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-040?",
+        "When is AMG-040 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-040-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "7f3c4a66e66d2ff017150f3755d9c1f2ae96b3f87ef37025e60e454e465e866d",
+      "size_bytes": 581,
+      "synthetic_document_id": "AMG-040",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-041?",
+        "When is AMG-041 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-041-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "c94ced78d6d3459ab266e6158669a3162910b3493c32db22b07492a1bb48f4e8",
+      "size_bytes": 1130,
+      "synthetic_document_id": "AMG-041",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-042?",
+        "When is AMG-042 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-042-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "05909621c00a3330cd27032517a4f27bf368bcf837555000f3493081402291ae",
+      "size_bytes": 1184,
+      "synthetic_document_id": "AMG-042",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-043?",
+        "When is AMG-043 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-043-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "579a9869c024fc5d73456c3ffbc5a9d1b18a678f8e1337c2157ae2682e03ed3d",
+      "size_bytes": 570,
+      "synthetic_document_id": "AMG-043",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-044?",
+        "When is AMG-044 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-044-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "4f63a9a2b190dedbf9957a7a88c8994f4d82471cf07f265c10ca0c937c22deb0",
+      "size_bytes": 590,
+      "synthetic_document_id": "AMG-044",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-045?",
+        "When is AMG-045 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-045-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "6dec07352f028b35e270af81fd8422445bd6f73fedfe1d051ffa5ad69c59da5b",
+      "size_bytes": 721,
+      "synthetic_document_id": "AMG-045",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-046?",
+        "When is AMG-046 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-046-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "65968c4926f4c6d54fdfc1cf510bf42ee2147973b46ea309342a826f5f8fec88",
+      "size_bytes": 319,
+      "synthetic_document_id": "AMG-046",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-047?",
+        "When is AMG-047 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-047-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "6f325a7894106c098a90690b75f2ca33b9a26fb04afbc19526dc61d1de25f2ae",
+      "size_bytes": 598,
+      "synthetic_document_id": "AMG-047",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-048?",
+        "When is AMG-048 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-048-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "0e8874e51c214d64f7be754106fb32aac53ee9033bc3c70fc5d250d10899a18b",
+      "size_bytes": 659,
+      "synthetic_document_id": "AMG-048",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-049?",
+        "When is AMG-049 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-049-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "0c4985d4f71e4b1e8d7ea817b7494a0361bc5859e3837cd46597d3a047386c50",
+      "size_bytes": 625,
+      "synthetic_document_id": "AMG-049",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-050?",
+        "When is AMG-050 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-050-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "c9308334311fefcf8e19bd55ce718a87f7d4fc99e4b6eb4d07df7102c74ba5b5",
+      "size_bytes": 581,
+      "synthetic_document_id": "AMG-050",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-051?",
+        "When is AMG-051 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-051-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "31863fea0ffcec65efe82250735366c1a6185fc25f860da775506b1d58b23252",
+      "size_bytes": 1130,
+      "synthetic_document_id": "AMG-051",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-052?",
+        "When is AMG-052 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-052-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "71cc12cf3e5f8b4b70001eb52bf998c08d0183cc215d80212d49cecb2ee53a88",
+      "size_bytes": 1184,
+      "synthetic_document_id": "AMG-052",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-053?",
+        "When is AMG-053 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-053-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "d6efcbbb482aef35711d21132b58b948c348ff3f7eb6048c8f020f89e8d5c8db",
+      "size_bytes": 570,
+      "synthetic_document_id": "AMG-053",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-054?",
+        "When is AMG-054 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-054-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "257d807d9082fd440f5c8f0465381c4f2c7169ed0b31a215c475f073c296081e",
+      "size_bytes": 591,
+      "synthetic_document_id": "AMG-054",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-055?",
+        "When is AMG-055 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-055-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "bd89297452baa91c143c2b7d4d152c2e69ee38b5e0ce17fe0b47a41310ddecea",
+      "size_bytes": 716,
+      "synthetic_document_id": "AMG-055",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-056?",
+        "When is AMG-056 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-056-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "7ceb5b2c44bb81a8da43f36bedafe9d04e3025d97e9496da0f3f33e0bd723c68",
+      "size_bytes": 317,
+      "synthetic_document_id": "AMG-056",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-057?",
+        "When is AMG-057 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-057-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "a40f699a2909d17f0ff395c6d197714f3d4fbd6616de2c4fc8790ab908ec7653",
+      "size_bytes": 596,
+      "synthetic_document_id": "AMG-057",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-058?",
+        "When is AMG-058 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-058-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "e76954695304b202e929dd0b4bd9656d2ac1042631e0eaa3882270d336fdd575",
+      "size_bytes": 657,
+      "synthetic_document_id": "AMG-058",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-059?",
+        "When is AMG-059 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-059-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "272c84ac9b053b3d914728bfd15b5625d22fc11986c412fed5748625d43475a2",
+      "size_bytes": 623,
+      "synthetic_document_id": "AMG-059",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-060?",
+        "When is AMG-060 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-060-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "047fb0e67f28fed2f14579c0e1a084ed69cfe1677c20e2eebaf927eb764ef407",
+      "size_bytes": 579,
+      "synthetic_document_id": "AMG-060",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-061?",
+        "When is AMG-061 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-061-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "17c17f0ce2c4ead06c39d739f6760064b80d65b50ec7440108bb2cfd0afa731a",
+      "size_bytes": 1128,
+      "synthetic_document_id": "AMG-061",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-062?",
+        "When is AMG-062 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-062-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "9e1671f43f42f50e63016f462af818e1acf46f292efb2ed7b36e1966314408cf",
+      "size_bytes": 1183,
+      "synthetic_document_id": "AMG-062",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-063?",
+        "When is AMG-063 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-063-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "2f48a79b34427df47e5db14c75f279e54097f927713d12354376a259bddefe11",
+      "size_bytes": 573,
+      "synthetic_document_id": "AMG-063",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-064?",
+        "When is AMG-064 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-064-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "8a72652cf850ee8f1c7decd4355b6ac666b6b300ad494f6ece61829e3c3f3ea5",
+      "size_bytes": 590,
+      "synthetic_document_id": "AMG-064",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-065?",
+        "When is AMG-065 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-065-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "212cd6876b880cab7cd0c4cbe07d971e58f87126324fa53bfe86fda46e8ff7e4",
+      "size_bytes": 718,
+      "synthetic_document_id": "AMG-065",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-066?",
+        "When is AMG-066 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-066-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "a4419f29028726cc32326b5d88df5666cf770ad689b3a4f6d726b9479bc165ca",
+      "size_bytes": 319,
+      "synthetic_document_id": "AMG-066",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-067?",
+        "When is AMG-067 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-067-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "ff650f773756bce668655d079d3710315ba13930dbf7fac6a5b86dcd65beabd1",
+      "size_bytes": 598,
+      "synthetic_document_id": "AMG-067",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-068?",
+        "When is AMG-068 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-068-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "40fd0710884a083fc505b2c0f8285d5c83d07199d1a4ab7cba689a3741507a07",
+      "size_bytes": 659,
+      "synthetic_document_id": "AMG-068",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-069?",
+        "When is AMG-069 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-069-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "17819a711a8b17f7a7c6dc51871e81bfe5ea29158efb5e5f25d40c0bd52692e3",
+      "size_bytes": 625,
+      "synthetic_document_id": "AMG-069",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-070?",
+        "When is AMG-070 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-070-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "123603e5013e304a6fce3a9ee9d8ea558f9e5c53d6323a1918bbea9f0d8ab08c",
+      "size_bytes": 581,
+      "synthetic_document_id": "AMG-070",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-071?",
+        "When is AMG-071 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-071-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "8063cfe0ecb259be88add12ee9064a3fb0965b9833c211d0d49646f84f78d5c6",
+      "size_bytes": 1130,
+      "synthetic_document_id": "AMG-071",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-072?",
+        "When is AMG-072 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-072-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "6639dddcc34d33d01087ea59d6b118468c8ac40625c47dc47d8b273c112624eb",
+      "size_bytes": 1186,
+      "synthetic_document_id": "AMG-072",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-073?",
+        "When is AMG-073 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-073-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "355fc802a01538b47b706dbc483f04effddbeecab049811b44fee6702dac7390",
+      "size_bytes": 571,
+      "synthetic_document_id": "AMG-073",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-074?",
+        "When is AMG-074 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-074-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "ee0044aaa68b39e8911e0fa5580be5b011f6b4fa8ff1057fcfdf9318fcdc84ff",
+      "size_bytes": 591,
+      "synthetic_document_id": "AMG-074",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-075?",
+        "When is AMG-075 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-075-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "c1c438379401ae51421411a43cd5f3b86160439a3b1f7af52ca374305e579be9",
+      "size_bytes": 719,
+      "synthetic_document_id": "AMG-075",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-076?",
+        "When is AMG-076 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-076-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "cf34c38d90b967d907b045a1fba113f84e6ef9fc79c576f340f3f3a250116054",
+      "size_bytes": 320,
+      "synthetic_document_id": "AMG-076",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-077?",
+        "When is AMG-077 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-077-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "d41a04ac155e294e5ec878bdf3241da0aa3ddb41a02f9cd824c7ef9e6dcbb796",
+      "size_bytes": 599,
+      "synthetic_document_id": "AMG-077",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-078?",
+        "When is AMG-078 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-078-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "e14189018e1aecbb78244f3496dfa4efdf235d82ad4c0c8914c2089fc4beb530",
+      "size_bytes": 660,
+      "synthetic_document_id": "AMG-078",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-079?",
+        "When is AMG-079 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-079-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "0e7c5474c790395397f53b985c8f929b76239fd5055be23666a08130d4a90cb4",
+      "size_bytes": 626,
+      "synthetic_document_id": "AMG-079",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-080?",
+        "When is AMG-080 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-080-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "b3aa051a4d024b2f9338313eb88cde30408d18f398c74f0f6f19bebc655de957",
+      "size_bytes": 582,
+      "synthetic_document_id": "AMG-080",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-081?",
+        "When is AMG-081 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-081-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "7672466197ddc12020da861b06f142ab2783d36aff343370b52b42e618d1cc69",
+      "size_bytes": 1132,
+      "synthetic_document_id": "AMG-081",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-082?",
+        "When is AMG-082 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-082-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "895bfc565dd19420235f7a0aafca9a35087af64a6e54393749c2a2012ef941c1",
+      "size_bytes": 1184,
+      "synthetic_document_id": "AMG-082",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-083?",
+        "When is AMG-083 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-083-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "868714d2634923f01add3a97adb43cb2f814741c02b7919a66717f262d06cd74",
+      "size_bytes": 569,
+      "synthetic_document_id": "AMG-083",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-084?",
+        "When is AMG-084 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-084-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "7565c4a6522e37e1acb4932017c5f86264b332658696e6921c5eff6d902a0fdf",
+      "size_bytes": 589,
+      "synthetic_document_id": "AMG-084",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-085?",
+        "When is AMG-085 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-085-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "2526079dba94b9d0436d00130bde271cdb07099d1d4cbf49797ae30b1e50af1a",
+      "size_bytes": 717,
+      "synthetic_document_id": "AMG-085",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-086?",
+        "When is AMG-086 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-086-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "39eca4c9d1235aa1f274541cf04855086aaf7e8be24dfaca0c566ef810b80b7f",
+      "size_bytes": 318,
+      "synthetic_document_id": "AMG-086",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-087?",
+        "When is AMG-087 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-087-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "441bf2528eeeb0e9d63632b92a4a2a16bf563ec147d4b22d21e210954f671185",
+      "size_bytes": 597,
+      "synthetic_document_id": "AMG-087",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-088?",
+        "When is AMG-088 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-088-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "448247bbcaf2e0802cf74772c4e370701ef443826e8fd98929e06545f5576982",
+      "size_bytes": 658,
+      "synthetic_document_id": "AMG-088",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-089?",
+        "When is AMG-089 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-089-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "47df7219bb12c54f1a205dec51430ec764631514e72b181f98b4d9d9f2ded444",
+      "size_bytes": 624,
+      "synthetic_document_id": "AMG-089",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-090?",
+        "When is AMG-090 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-090-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "a265a5a8e44c7f2f2bed7ea2bec285b541ed32975238539cc2e0bd56df48e734",
+      "size_bytes": 585,
+      "synthetic_document_id": "AMG-090",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Executive Governance Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Finance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-091?",
+        "When is AMG-091 effective?"
+      ],
+      "file_type": "pdf",
+      "filename": "amg-091-finance.pdf",
+      "mime_type": "application/pdf",
+      "sha256": "7eee598ee9a3b553360a0242b372052617d38e66f181b066d74e94deed18dde9",
+      "size_bytes": 1131,
+      "synthetic_document_id": "AMG-091",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Finance Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Human Resources",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-092?",
+        "When is AMG-092 effective?"
+      ],
+      "file_type": "docx",
+      "filename": "amg-092-human-resources.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "d92b0b65195fa7b5c4e323f6abbf2fa854e20cba53d17b442565856bd43637a5",
+      "size_bytes": 1184,
+      "synthetic_document_id": "AMG-092",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Human Resources Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Procurement",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-093?",
+        "When is AMG-093 effective?"
+      ],
+      "file_type": "txt",
+      "filename": "amg-093-procurement.txt",
+      "mime_type": "text/plain",
+      "sha256": "645db0418d0580c346b6b186a52af071d67f2107ff515cbc60ab9253e3878307",
+      "size_bytes": 571,
+      "synthetic_document_id": "AMG-093",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Procurement Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Legal and Compliance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-094?",
+        "When is AMG-094 effective?"
+      ],
+      "file_type": "md",
+      "filename": "amg-094-legal-and-compliance.md",
+      "mime_type": "text/markdown",
+      "sha256": "ca64cef396e70da0094fead038cf2b076a5a3c680edc2fcf6bbc67ab6f203fe4",
+      "size_bytes": 591,
+      "synthetic_document_id": "AMG-094",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Legal and Compliance Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "IT and Information Security",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-095?",
+        "When is AMG-095 effective?"
+      ],
+      "file_type": "html",
+      "filename": "amg-095-it-and-information-security.html",
+      "mime_type": "text/html",
+      "sha256": "6f6624ecf22a8c0ea9b8e873d97395aac89916128fb678d758c1ff44150af335",
+      "size_bytes": 719,
+      "synthetic_document_id": "AMG-095",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "IT and Information Security Workspace"
+    },
+    {
+      "authority_level": "procedure",
+      "department": "Operations",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "acceptable",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-096?",
+        "When is AMG-096 effective?"
+      ],
+      "file_type": "csv",
+      "filename": "amg-096-operations.csv",
+      "mime_type": "text/csv",
+      "sha256": "ba094ee6f918a8e027857440a4b3f9082f5cdc971c427143e1a764190c9efc12",
+      "size_bytes": 320,
+      "synthetic_document_id": "AMG-096",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Operations Workspace"
+    },
+    {
+      "authority_level": "contract",
+      "department": "Sales",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-097?",
+        "When is AMG-097 effective?"
+      ],
+      "file_type": "py",
+      "filename": "amg-097-sales.py",
+      "mime_type": "text/x-python",
+      "sha256": "364e11ef99ecca0d6bc045f63c9d99d605b90ff7da41e59392dc5f79601daa46",
+      "size_bytes": 599,
+      "synthetic_document_id": "AMG-097",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Sales Workspace"
+    },
+    {
+      "authority_level": "runbook",
+      "department": "Project Management",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "apparent_non_conflict",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-098?",
+        "When is AMG-098 effective?"
+      ],
+      "file_type": "js",
+      "filename": "amg-098-project-management.js",
+      "mime_type": "application/javascript",
+      "sha256": "61e10723dade8f593b77179757e120277d0a04ae49ae5994dcfc791881f9e1fa",
+      "size_bytes": 660,
+      "synthetic_document_id": "AMG-098",
+      "tenant": "Tenant B",
+      "version": "3.0",
+      "workspace": "Project Management Workspace"
+    },
+    {
+      "authority_level": "memo",
+      "department": "Facilities",
+      "effective_status": "superseded",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-099?",
+        "When is AMG-099 effective?"
+      ],
+      "file_type": "ts",
+      "filename": "amg-099-facilities.ts",
+      "mime_type": "application/javascript",
+      "sha256": "60440ea98a1d71eb6c4153b5e5b8fe7d932781826695f2b022a5bf426103e622",
+      "size_bytes": 629,
+      "synthetic_document_id": "AMG-099",
+      "tenant": "Tenant C",
+      "version": "1.0",
+      "workspace": "Facilities Workspace"
+    },
+    {
+      "authority_level": "approved_policy",
+      "department": "Executive Governance",
+      "effective_status": "current",
+      "expected_conflict_or_absence": "none",
+      "expected_extraction_quality": "low_quality",
+      "expected_relevant_questions": [
+        "Who owns controlled document AMG-100?",
+        "When is AMG-100 effective?"
+      ],
+      "file_type": "java",
+      "filename": "amg-100-executive-governance.java",
+      "mime_type": "text/plain",
+      "sha256": "74454153cb3c83102adabe2727c0f1797b35dba7b9c0988986074e779590e267",
+      "size_bytes": 582,
+      "synthetic_document_id": "AMG-100",
+      "tenant": "Tenant A",
+      "version": "2.0",
+      "workspace": "Executive Governance Workspace"
+    }
+  ],
+  "manifest_sha256": "9d3379e09369f6ded46a6d4afe624ad035361e8a15d44956d0f901fde80d138e",
+  "schema_version": "enterprise-corpus-v1"
+}
