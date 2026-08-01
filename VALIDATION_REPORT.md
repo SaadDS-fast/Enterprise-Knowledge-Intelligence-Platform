@@ -429,3 +429,33 @@ environment-gated skips and 78% coverage. Frontend passed 34 tests, typecheck/bu
 lint with zero errors and one inherited warning. Default, agentic/accessibility, enterprise,
 and live-Ollama Chromium profiles passed. Docker builds, Alembic, Bandit, pip-audit, and
 npm production audit passed.
+
+## Thesis-isolated grounding assurance (2026-08-01)
+
+Status: **PARTIAL PASS**. The architecture audit found legacy post-insufficiency retrieval
+and technical UI exposure. The working changes enforce one Search/Agent document retrieval
+pass, set the compatible Agent retry budget to zero, use a neutral refusal, and remove
+technical retrieval details from Search UI presentation.
+
+The new 300-document fictional corpus and 1,350-case registry were frozen as 450 development
+and 900 blind cases. The blind holdout checksum is
+`d090a6e007de9c385ca0b5563e716f5382bb1e5e09051ad46cdd66baa3d50f5a` and execution is
+consumed at 1/1. A frozen split-order defect put zero answer/conflict cases in the blind
+partition. Its 900 refusal cases passed, but claim/citation/conflict metrics are vacuous.
+The mandatory gate is therefore not satisfied; the holdout was not altered or rerun and no
+commit was created.
+
+## Grounding Assurance v2 closure (2026-08-01)
+
+Status: **PASS**. V1 remains unchanged and refusal-only at checksum
+`d090a6e007de9c385ca0b5563e716f5382bb1e5e09051ad46cdd66baa3d50f5a`, execution 1/1.
+Independent v2 passed group-stratified preflight and its single blind execution at checksum
+`4515b533b96cfc907aeb08721ff05df21654d211466116ad59c43638565f32aa`.
+
+V2 blind results were 360/360 supported decisions, 405/405 neutral refusals, and 135/135
+conflict disclosures. All mandatory accuracy/integrity rates were 1.0000 and every leakage,
+unsupported, adaptive, reformulation, and Top-K-change count was zero. Threshold `0.72` was
+unchanged. Backend passed 225 tests with 4 environment-gated skips and 79% coverage. Default
+Chromium passed 1/1; Agent/Research/accessibility passed 5/5; live Ollama passed 1/1; live
+lexical/semantic/reranker checks passed. Docker builds and Alembic checks passed in isolated
+profiles. Bandit, pip-audit, and npm production audit passed.

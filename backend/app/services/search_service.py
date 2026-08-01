@@ -17,8 +17,6 @@ from app.observability.metrics import (
     KNOWLEDGE_ABSENCE,
     PARTIAL_EVIDENCE,
     RETRIEVAL_LATENCY,
-    RETRIEVAL_RECOVERIES,
-    RETRIEVAL_RETRIES,
 )
 from app.rag.abstention import abstention_message
 from app.rag.evidence import (
@@ -29,8 +27,6 @@ from app.rag.evidence import (
 from app.rag.evidence_diagnosis import (
     DiagnosisStatus,
     diagnose_evidence,
-    merge_evidence,
-    reformulate_query,
 )
 from app.rag.evidence_sufficiency import assess_sufficiency
 from app.rag.hybrid_retriever import retrieve
@@ -78,29 +74,12 @@ async def search_and_answer(
     sufficient = evidence_is_sufficient(
         [e.score for e in evidence], query, [e.content for e in evidence]
     )
+    # Grounding assurance is deliberately non-adaptive: this initial authorized
+    # retrieval is the only document retrieval pass used for the decision.
     final_evidence = evidence
     final_sufficient = sufficient
     retry_performed = False
     retry_strategy: list[str] = []
-    if not sufficient:
-        retry_performed = True
-        retry_strategy = ["query_reformulation", "top_k_expansion"]
-        RETRIEVAL_RETRIES.inc()
-        retry_query = reformulate_query(rewritten)
-        expanded_top_k = min(max(top_k or 0, 12), 50)
-        retrieval_started = time.perf_counter()
-        retry_evidence = await retrieve(
-            session,
-            workspace_id=workspace_id,
-            query=retry_query,
-            top_k=expanded_top_k,
-            document_ids=effective_document_ids,
-        )
-        RETRIEVAL_LATENCY.observe(time.perf_counter() - retrieval_started)
-        final_evidence = merge_evidence(evidence, retry_evidence)
-        final_sufficient = evidence_is_sufficient(
-            [e.score for e in final_evidence], query, [e.content for e in final_evidence]
-        )
     diagnosis_started = time.perf_counter()
     support = assess_evidence_support(
         [e.score for e in final_evidence], query, [e.content for e in final_evidence]
@@ -115,9 +94,7 @@ async def search_and_answer(
         retry_strategy=retry_strategy,
     )
     DIAGNOSIS_LATENCY.observe(time.perf_counter() - diagnosis_started)
-    if diagnosis.status is DiagnosisStatus.RETRIEVAL_FAILURE_RECOVERED:
-        RETRIEVAL_RECOVERIES.inc()
-    elif diagnosis.status is DiagnosisStatus.KNOWLEDGE_ABSENT:
+    if diagnosis.status is DiagnosisStatus.KNOWLEDGE_ABSENT:
         KNOWLEDGE_ABSENCE.inc()
     elif diagnosis.status is DiagnosisStatus.PARTIAL_EVIDENCE:
         PARTIAL_EVIDENCE.inc()

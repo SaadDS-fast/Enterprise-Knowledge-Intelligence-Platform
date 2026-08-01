@@ -96,7 +96,7 @@ test("agent query and async research workspace run through the real stack", asyn
     await expect(agentResult).toContainText("Answer supported");
     await expect(agentResult.getByTestId("internal-evidence-card").first()).toBeVisible();
     await expect(agentResult.getByTestId("agent-citations")).toBeVisible();
-    await expect(agentResult).toContainText("Retrieval diagnosis");
+    await expect(agentResult).not.toContainText(/retrieval diagnosis|support score|retry/i);
     await expect(agentResult).not.toContainText(/chain.of.thought|hidden reasoning|system prompt/i);
     const agentRunUrl = await agentResult.getByRole("link", { name: "Execution timeline" }).getAttribute("href") ?? "";
     expect(agentRunUrl).toContain("/agent/runs/");

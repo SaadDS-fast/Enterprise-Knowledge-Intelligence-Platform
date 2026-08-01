@@ -1,0 +1,1810 @@
+{
+  "blind_family_ids": [
+    "V2-FAM-0001",
+    "V2-FAM-0002",
+    "V2-FAM-0007",
+    "V2-FAM-0009",
+    "V2-FAM-0010",
+    "V2-FAM-0011",
+    "V2-FAM-0013",
+    "V2-FAM-0015",
+    "V2-FAM-0016",
+    "V2-FAM-0017",
+    "V2-FAM-0018",
+    "V2-FAM-0019",
+    "V2-FAM-0020",
+    "V2-FAM-0021",
+    "V2-FAM-0022",
+    "V2-FAM-0023",
+    "V2-FAM-0024",
+    "V2-FAM-0025",
+    "V2-FAM-0026",
+    "V2-FAM-0028",
+    "V2-FAM-0030",
+    "V2-FAM-0031",
+    "V2-FAM-0032",
+    "V2-FAM-0034",
+    "V2-FAM-0038",
+    "V2-FAM-0040",
+    "V2-FAM-0041",
+    "V2-FAM-0042",
+    "V2-FAM-0043",
+    "V2-FAM-0045",
+    "V2-FAM-0046",
+    "V2-FAM-0047",
+    "V2-FAM-0048",
+    "V2-FAM-0049",
+    "V2-FAM-0051",
+    "V2-FAM-0052",
+    "V2-FAM-0053",
+    "V2-FAM-0057",
+    "V2-FAM-0058",
+    "V2-FAM-0059",
+    "V2-FAM-0060",
+    "V2-FAM-0063",
+    "V2-FAM-0065",
+    "V2-FAM-0067",
+    "V2-FAM-0068",
+    "V2-FAM-0070",
+    "V2-FAM-0071",
+    "V2-FAM-0072",
+    "V2-FAM-0073",
+    "V2-FAM-0075",
+    "V2-FAM-0076",
+    "V2-FAM-0078",
+    "V2-FAM-0079",
+    "V2-FAM-0080",
+    "V2-FAM-0081",
+    "V2-FAM-0082",
+    "V2-FAM-0083",
+    "V2-FAM-0085",
+    "V2-FAM-0086",
+    "V2-FAM-0087",
+    "V2-FAM-0089",
+    "V2-FAM-0091",
+    "V2-FAM-0095",
+    "V2-FAM-0096",
+    "V2-FAM-0097",
+    "V2-FAM-0098",
+    "V2-FAM-0099",
+    "V2-FAM-0103",
+    "V2-FAM-0105",
+    "V2-FAM-0106",
+    "V2-FAM-0107",
+    "V2-FAM-0108",
+    "V2-FAM-0109",
+    "V2-FAM-0110",
+    "V2-FAM-0111",
+    "V2-FAM-0112",
+    "V2-FAM-0113",
+    "V2-FAM-0115",
+    "V2-FAM-0116",
+    "V2-FAM-0117",
+    "V2-FAM-0118",
+    "V2-FAM-0122",
+    "V2-FAM-0124",
+    "V2-FAM-0125",
+    "V2-FAM-0126",
+    "V2-FAM-0127",
+    "V2-FAM-0129",
+    "V2-FAM-0130",
+    "V2-FAM-0136",
+    "V2-FAM-0137",
+    "V2-FAM-0138",
+    "V2-FAM-0141",
+    "V2-FAM-0142",
+    "V2-FAM-0143",
+    "V2-FAM-0146",
+    "V2-FAM-0148",
+    "V2-FAM-0151",
+    "V2-FAM-0153",
+    "V2-FAM-0154",
+    "V2-FAM-0155",
+    "V2-FAM-0157",
+    "V2-FAM-0158",
+    "V2-FAM-0159",
+    "V2-FAM-0160",
+    "V2-FAM-0161",
+    "V2-FAM-0163",
+    "V2-FAM-0165",
+    "V2-FAM-0166",
+    "V2-FAM-0167",
+    "V2-FAM-0170",
+    "V2-FAM-0171",
+    "V2-FAM-0172",
+    "V2-FAM-0173",
+    "V2-FAM-0174",
+    "V2-FAM-0175",
+    "V2-FAM-0176",
+    "V2-FAM-0177",
+    "V2-FAM-0178",
+    "V2-FAM-0179",
+    "V2-FAM-0180"
+  ],
+  "development_family_ids": [
+    "V2-FAM-0003",
+    "V2-FAM-0004",
+    "V2-FAM-0005",
+    "V2-FAM-0006",
+    "V2-FAM-0008",
+    "V2-FAM-0012",
+    "V2-FAM-0014",
+    "V2-FAM-0027",
+    "V2-FAM-0029",
+    "V2-FAM-0033",
+    "V2-FAM-0035",
+    "V2-FAM-0036",
+    "V2-FAM-0037",
+    "V2-FAM-0039",
+    "V2-FAM-0044",
+    "V2-FAM-0050",
+    "V2-FAM-0054",
+    "V2-FAM-0055",
+    "V2-FAM-0056",
+    "V2-FAM-0061",
+    "V2-FAM-0062",
+    "V2-FAM-0064",
+    "V2-FAM-0066",
+    "V2-FAM-0069",
+    "V2-FAM-0074",
+    "V2-FAM-0077",
+    "V2-FAM-0084",
+    "V2-FAM-0088",
+    "V2-FAM-0090",
+    "V2-FAM-0092",
+    "V2-FAM-0093",
+    "V2-FAM-0094",
+    "V2-FAM-0100",
+    "V2-FAM-0101",
+    "V2-FAM-0102",
+    "V2-FAM-0104",
+    "V2-FAM-0114",
+    "V2-FAM-0119",
+    "V2-FAM-0120",
+    "V2-FAM-0121",
+    "V2-FAM-0123",
+    "V2-FAM-0128",
+    "V2-FAM-0131",
+    "V2-FAM-0132",
+    "V2-FAM-0133",
+    "V2-FAM-0134",
+    "V2-FAM-0135",
+    "V2-FAM-0139",
+    "V2-FAM-0140",
+    "V2-FAM-0144",
+    "V2-FAM-0145",
+    "V2-FAM-0147",
+    "V2-FAM-0149",
+    "V2-FAM-0150",
+    "V2-FAM-0152",
+    "V2-FAM-0156",
+    "V2-FAM-0162",
+    "V2-FAM-0164",
+    "V2-FAM-0168",
+    "V2-FAM-0169"
+  ],
+  "families": [
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0001",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0002",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0003",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0004",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0005",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0006",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0007",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0008",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0009",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0010",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0011",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0012",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0013",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0014",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0015",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0016",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0017",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0018",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0019",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0020",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0021",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0022",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0023",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0024",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0025",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0026",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0027",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0028",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0029",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0030",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0031",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0032",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0033",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0034",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0035",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0036",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0037",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0038",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0039",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0040",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0041",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0042",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0043",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0044",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0045",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0046",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0047",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0048",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0049",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0050",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0051",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0052",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0053",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0054",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0055",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0056",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0057",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0058",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0059",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0060",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0061",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0062",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0063",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0064",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0065",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0066",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0067",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0068",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0069",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0070",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0071",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0072",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0073",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0074",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0075",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0076",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0077",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0078",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0079",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0080",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0081",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0082",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0083",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0084",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0085",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0086",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0087",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0088",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0089",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0090",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0091",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0092",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0093",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0094",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0095",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0096",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0097",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0098",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0099",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0100",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0101",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0102",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0103",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0104",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0105",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0106",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0107",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0108",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0109",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0110",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0111",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0112",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0113",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0114",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0115",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0116",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0117",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0118",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0119",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0120",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0121",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0122",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0123",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0124",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0125",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0126",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0127",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0128",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0129",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0130",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0131",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0132",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0133",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0134",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0135",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0136",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0137",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0138",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0139",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0140",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0141",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0142",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0143",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0144",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0145",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0146",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0147",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0148",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0149",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0150",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0151",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-01",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0152",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-02",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0153",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-03",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0154",
+      "file_type": "md",
+      "scenario_template_id": "scenario-04",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0155",
+      "file_type": "html",
+      "scenario_template_id": "scenario-05",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0156",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-06",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0157",
+      "file_type": "py",
+      "scenario_template_id": "scenario-07",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0158",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-08",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0159",
+      "file_type": "table",
+      "scenario_template_id": "scenario-09",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0160",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-10",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0161",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-11",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0162",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-12",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0163",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-13",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0164",
+      "file_type": "md",
+      "scenario_template_id": "scenario-14",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0165",
+      "file_type": "html",
+      "scenario_template_id": "scenario-15",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0166",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-16",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0167",
+      "file_type": "py",
+      "scenario_template_id": "scenario-17",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0168",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-18",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0169",
+      "file_type": "table",
+      "scenario_template_id": "scenario-19",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0170",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-20",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0171",
+      "file_type": "pdf",
+      "scenario_template_id": "scenario-21",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0172",
+      "file_type": "docx",
+      "scenario_template_id": "scenario-22",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-1"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0173",
+      "file_type": "txt",
+      "scenario_template_id": "scenario-23",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-2"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0174",
+      "file_type": "md",
+      "scenario_template_id": "scenario-24",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-3"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0175",
+      "file_type": "html",
+      "scenario_template_id": "scenario-25",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-4"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0176",
+      "file_type": "csv",
+      "scenario_template_id": "scenario-26",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-5"
+    },
+    {
+      "authority_pattern": "policy",
+      "document_family_id": "V2-FAM-0177",
+      "file_type": "py",
+      "scenario_template_id": "scenario-27",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-6"
+    },
+    {
+      "authority_pattern": "contract",
+      "document_family_id": "V2-FAM-0178",
+      "file_type": "yaml",
+      "scenario_template_id": "scenario-28",
+      "tenant_id": "v2-tenant-1",
+      "version_pattern": "current-superseded-future",
+      "workspace_id": "v2-workspace-7"
+    },
+    {
+      "authority_pattern": "board-minutes",
+      "document_family_id": "V2-FAM-0179",
+      "file_type": "table",
+      "scenario_template_id": "scenario-29",
+      "tenant_id": "v2-tenant-2",
+      "version_pattern": "current-amendment",
+      "workspace_id": "v2-workspace-8"
+    },
+    {
+      "authority_pattern": "runbook",
+      "document_family_id": "V2-FAM-0180",
+      "file_type": "cfg",
+      "scenario_template_id": "scenario-30",
+      "tenant_id": "v2-tenant-3",
+      "version_pattern": "current-override",
+      "workspace_id": "v2-workspace-9"
+    }
+  ],
+  "seed": 902417,
+  "version": "grounding-assurance-v2-families"
+}

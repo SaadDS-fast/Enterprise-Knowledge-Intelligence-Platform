@@ -333,3 +333,27 @@ are removed by the profile trap.
   gated skips. Enterprise Chromium: 1 passed. Live Ollama Chromium: 1 passed.
 - Operational correlation and audit coverage passed for all requested actions; prohibited
   private audit payload terms: 0.
+
+## Grounding assurance partial result (2026-08-01)
+
+- Corpus: 300 fictional document records; suite: 1,350 cases; development: 450; blind: 900.
+- New blind holdout: consumed once, checksum
+  `d090a6e007de9c385ca0b5563e716f5382bb1e5e09051ad46cdd66baa3d50f5a`.
+- Blind distribution: 0 answered, 900 refused, 0 conflict. Refusal accuracy 1.0000;
+  unsupported visible claims, unauthorized citations, scope leaks, and post-insufficiency
+  adaptive actions all 0.
+- Claim/citation/conflict metrics are not reportable because their denominators are zero.
+  Overall status is PARTIAL PASS; the consumed holdout was not rerun.
+
+## Grounding Assurance v2 result (2026-08-01)
+
+- Independent corpus: 540 documents in 180 families; 450 development and 900 blind cases.
+- Blind denominators/results: 360 supported, 405 refused, 135 conflict; all passed.
+- Claim and citation precision/recall: 1.0000. Refusal accuracy and conflict precision/
+  recall: 1.0000. False-conflict rate: 0.
+- Every critical fact category: 1.0000. Mutation and evidence-ablation assurance: 1.0000.
+- Unauthorized/unsupported claims and citations, tenant/selected-scope leakage, diagnosis
+  leakage, adaptive attempts, post-insufficiency reformulations, and Top-K changes: 0.
+- Backend: 225 passed, 4 gated skips, 79% coverage. Frontend: 27/27 passed, typecheck/build,
+  zero lint errors/one inherited warning. Default, Agent/Research/accessibility, live Ollama,
+  semantic, and reranker profiles passed.

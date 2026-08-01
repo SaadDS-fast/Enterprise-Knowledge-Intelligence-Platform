@@ -15,7 +15,6 @@ import ConfidenceIndicator from "./ConfidenceIndicator";
 import ConflictCard from "./ConflictCard";
 import { ExternalEvidenceCard, InternalEvidenceCard } from "./EvidenceCard";
 import OutcomeBadge from "./OutcomeBadge";
-import RetrievalDiagnosisView from "./RetrievalDiagnosisView";
 
 const recentRunsKey = "ekip_recent_agent_runs";
 
@@ -210,8 +209,6 @@ export default function AgentWorkspace() {
           </div>
           <h3>Answer</h3>
           <p className="answer">{result.answer ?? "No supported answer was produced."}</p>
-          <h3>Retrieval diagnosis</h3>
-          <RetrievalDiagnosisView diagnosis={result.retrieval_diagnosis} />
           <h3>Citations</h3>
           <CitationList citations={result.citations} />
           <h3>Internal evidence</h3>
@@ -249,9 +246,11 @@ export default function AgentWorkspace() {
           <ClaimStatus claims={result.claims} />
           <h3>Tools used</h3>
           <div className="tool-list">
-            {result.tools_used.map((tool) => (
+            {result.tools_used
+              .filter((tool) => !["retrieval_diagnosis", "query_reformulation"].includes(tool))
+              .map((tool) => (
               <span key={tool}>{tool.replaceAll("_", " ")}</span>
-            ))}
+              ))}
           </div>
         </section>
       ) : null}

@@ -89,16 +89,17 @@ test("runtime registration, ingestion, search, isolation, and logout", async ({ 
   );
   await expect(page.getByTestId("search-answer")).toContainText("March 2025");
   await expect(page.getByTestId("evidence-list")).toContainText("Operations Analytics");
-  await expect(page.getByTestId("retrieval-diagnosis")).toContainText("Initial retrieval only");
+  await expect(page.getByTestId("retrieval-diagnosis")).toHaveCount(0);
 
   await page.getByTestId("search-query").fill("What is the capital of Virellia?");
   await page.getByTestId("search-submit").click();
   await expect(page.getByTestId("search-verdict")).toHaveText(
     /Insufficient evidence|Information not found in selected documents/,
   );
-  await expect(page.getByTestId("retrieval-diagnosis")).toContainText(
-    "Information does not appear to exist",
+  await expect(page.getByTestId("search-answer")).toHaveText(
+    "The available documents do not provide enough verified evidence to answer this question.",
   );
+  await expect(page.getByTestId("retrieval-diagnosis")).toHaveCount(0);
 
   await page.getByTestId("logout-button").click();
   await page.getByTestId("auth-mode-toggle").click();

@@ -77,7 +77,7 @@ describe("SearchBar", () => {
     await waitFor(() => expect(screen.getByText("Search failed with 500")).toBeInTheDocument());
   });
 
-  it("renders collapsible semantic retrieval diagnostics without vectors", async () => {
+  it("does not expose internal retrieval classifications or scores", async () => {
     mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
       answer: "PKR 5,000 per day.",
       evidence: [],
@@ -109,62 +109,10 @@ describe("SearchBar", () => {
     await userEvent.type(screen.getByTestId("search-query"), "What is the meal allowance?");
     fireEvent.click(screen.getByTestId("search-submit"));
 
-    await screen.findByText(/Hybrid lexical \+ semantic retrieval/);
-    expect(screen.getByText(/Reranker applied/)).toBeInTheDocument();
-    expect(screen.getByText(/Selected-document scope/)).toBeInTheDocument();
-    expect(screen.getByText(/Retrieval recovery used/)).toBeInTheDocument();
-    expect(screen.getByText("Technical retrieval diagnostics")).toBeInTheDocument();
-    expect(document.body.textContent).not.toMatch(/embedding_values|raw_vector/);
-  });
-
-  it.each([
-    ["SUFFICIENT_EVIDENCE", "Evidence found directly"],
-    ["RETRIEVAL_FAILURE_RECOVERED", "Evidence found after an additional search"],
-    [
-      "RETRIEVAL_FAILURE_UNRESOLVED",
-      "Relevant evidence may exist, but the search could not verify it",
-    ],
-    ["KNOWLEDGE_ABSENT", "Information does not appear to exist in the selected documents"],
-    ["PARTIAL_EVIDENCE", "Only partial evidence found"],
-    ["CONFLICTING_EVIDENCE", "Conflicting evidence found"],
-    ["AMBIGUOUS_QUERY", "Question needs clarification"],
-  ])("renders diagnosis state %s", async (status, label) => {
-    mockedApi
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce({
-        answer: "I do not have enough evidence to answer that.",
-        evidence: [],
-        sufficient_evidence: false,
-        abstained: true,
-        request_id: "req-1",
-        retrieval_diagnosis: {
-          status,
-          initial_evidence_sufficient: status === "SUFFICIENT_EVIDENCE",
-          retry_performed: status !== "SUFFICIENT_EVIDENCE",
-          retry_strategy: status === "SUFFICIENT_EVIDENCE" ? [] : ["query_reformulation"],
-          initial_support_score: 0.1,
-          final_support_score: 0.42,
-          evidence_count: 0,
-          reason_code: "TEST",
-        },
-        outcome: status === "CONFLICTING_EVIDENCE" ? "CONFLICTING_EVIDENCE" : "INSUFFICIENT_EVIDENCE",
-        support_status: "ABSENT",
-        confidence_category: "none",
-        citations: [],
-        conflicts: [],
-        topic_items: [],
-        active_document_scope: [],
-      });
-
-    render(<SearchBar />);
-
-    await userEvent.type(
-      screen.getByPlaceholderText("Ask a question grounded in your documents..."),
-      "What happened?",
+    await screen.findByText("PKR 5,000 per day.");
+    expect(document.body.textContent).not.toMatch(
+      /RETRIEVAL_FAILURE|support score|retry|recovery|embedding_values|raw_vector/i,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Search knowledge" }));
-
-    await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
   });
 
   it("sends selected document scope and renders topic items", async () => {

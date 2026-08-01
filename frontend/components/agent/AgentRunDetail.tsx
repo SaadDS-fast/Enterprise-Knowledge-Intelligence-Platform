@@ -14,7 +14,6 @@ import CitationList from "./CitationList";
 import ClaimStatus from "./ClaimStatus";
 import ExecutionTimeline from "./ExecutionTimeline";
 import OutcomeBadge from "./OutcomeBadge";
-import RetrievalDiagnosisView from "./RetrievalDiagnosisView";
 
 export default function AgentRunDetail({ runId }: { runId: string }) {
   const [run, setRun] = useState<AgentRunDetailType | null>(null);
@@ -45,7 +44,11 @@ export default function AgentRunDetail({ runId }: { runId: string }) {
   const responseState = result.response_state as CanonicalResponseState | undefined;
   const citations = Array.isArray(result.citations) ? result.citations : [];
   const claims = Array.isArray(result.claims) ? result.claims : [];
-  const tools = Array.isArray(result.tools_used) ? result.tools_used : [];
+  const tools = Array.isArray(result.tools_used)
+    ? result.tools_used.filter(
+        (tool) => !["retrieval_diagnosis", "query_reformulation"].includes(String(tool)),
+      )
+    : [];
   const summaries = String(run.safe_plan_summary ?? "")
     .split(";")
     .map((item) => item.trim())
@@ -69,8 +72,6 @@ export default function AgentRunDetail({ runId }: { runId: string }) {
       {result.abstained ? <p className="muted">Abstained: yes</p> : <p className="muted">Abstained: no</p>}
       <h3>Citations</h3>
       <CitationList citations={citations} />
-      <h3>Retrieval diagnosis</h3>
-      <RetrievalDiagnosisView diagnosis={result.retrieval_diagnosis as Record<string, unknown>} />
       <h3>Claim verification</h3>
       <ClaimStatus claims={claims} />
       <h3>Tools used</h3>

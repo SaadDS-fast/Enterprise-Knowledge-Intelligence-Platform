@@ -8,16 +8,6 @@ import type { DocumentItem, SearchResult } from "@/types";
 
 import EvidencePanel from "./EvidencePanel";
 
-const diagnosisCopy: Record<string, string> = {
-  SUFFICIENT_EVIDENCE: "Evidence found directly",
-  RETRIEVAL_FAILURE_RECOVERED: "Evidence found after an additional search",
-  RETRIEVAL_FAILURE_UNRESOLVED: "Relevant evidence may exist, but the search could not verify it",
-  KNOWLEDGE_ABSENT: "Information does not appear to exist in the selected documents",
-  PARTIAL_EVIDENCE: "Only partial evidence found",
-  CONFLICTING_EVIDENCE: "Conflicting evidence found",
-  AMBIGUOUS_QUERY: "Question needs clarification",
-};
-
 const outcomeCopy: Record<string, string> = {
   ANSWER_SUPPORTED: "Answer supported",
   ANSWER_PARTIALLY_SUPPORTED: "Partially supported",
@@ -77,7 +67,6 @@ export default function SearchBar() {
     }
   }
 
-  const diagnosis = result?.retrieval_diagnosis;
   const outcome =
     result?.response_state?.primary_state ??
     result?.outcome ??
@@ -162,33 +151,6 @@ export default function SearchBar() {
                 .replaceAll("_", " ")}
             </span>
           </div>
-          {diagnosis ? (
-            <div className="diagnosis" aria-label="Retrieval diagnosis" data-testid="retrieval-diagnosis">
-              <strong>{diagnosisCopy[diagnosis.status] ?? "Retrieval diagnosis available"}</strong>
-              <span>
-                {diagnosis.retry_performed ? "Additional retrieval attempted" : "Initial retrieval only"} ·
-                support score {diagnosis.final_support_score.toFixed(2)}
-              </span>
-              <span>
-                {diagnosis.semantic_used
-                  ? "Hybrid lexical + semantic retrieval"
-                  : diagnosis.fallback_used
-                    ? "Semantic model unavailable — lexical fallback used"
-                    : "Lexical retrieval"}
-                {diagnosis.reranker_used ? " · Reranker applied" : ""}
-                {diagnosis.selected_document_scope ? " · Selected-document scope" : ""}
-                {diagnosis.retrieval_recovery_used ? " · Retrieval recovery used" : ""}
-              </span>
-              <details>
-                <summary>Technical retrieval diagnostics</summary>
-                <small>
-                  Candidates: {diagnosis.candidate_count ?? 0} · Evidence:{" "}
-                  {diagnosis.final_evidence_count ?? diagnosis.evidence_count} · Duration:{" "}
-                  {diagnosis.retrieval_duration_ms ?? 0} ms
-                </small>
-              </details>
-            </div>
-          ) : null}
           <p className="muted" data-testid="search-result-scope">
             Result scope: {activeScope}
           </p>

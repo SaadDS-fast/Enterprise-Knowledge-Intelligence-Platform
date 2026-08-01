@@ -1,0 +1,26 @@
+{
+  "metrics": {
+    "cases": 450,
+    "citation_integrity": 1.0,
+    "conflict": 67,
+    "conflict_accuracy": 1.0,
+    "fixed_profiles": {
+      "agent": "PASS",
+      "extractive": "PASS",
+      "lexical": "PASS",
+      "ollama": "PASS",
+      "ollama_fallback": "PASS",
+      "reranker": "PASS",
+      "research": "PASS",
+      "semantic": "PASS"
+    },
+    "refusal_accuracy": 1.0,
+    "refused": 203,
+    "selected_document_isolation": 1.0,
+    "support_threshold": 0.72,
+    "supported": 180,
+    "supported_answer_precision": 1.0,
+    "tenant_isolation": 1.0
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,68 @@
+{
+  "blind_checksum": "4515b533b96cfc907aeb08721ff05df21654d211466116ad59c43638565f32aa",
+  "corpus_checksum": "8c4f93bcc70df03393e30d57a3e45700b59204ac8708907483a79bdc4e9981c6",
+  "development_metrics": {
+    "cases": 450,
+    "citation_integrity": 1.0,
+    "conflict": 67,
+    "conflict_accuracy": 1.0,
+    "fixed_profiles": {
+      "agent": "PASS",
+      "extractive": "PASS",
+      "lexical": "PASS",
+      "ollama": "PASS",
+      "ollama_fallback": "PASS",
+      "reranker": "PASS",
+      "research": "PASS",
+      "semantic": "PASS"
+    },
+    "refusal_accuracy": 1.0,
+    "refused": 203,
+    "selected_document_isolation": 1.0,
+    "support_threshold": 0.72,
+    "supported": 180,
+    "supported_answer_precision": 1.0,
+    "tenant_isolation": 1.0
+  },
+  "executions_completed": 1,
+  "expected_decisions": {
+    "ANSWER": 360,
+    "CONFLICT": 135,
+    "INSUFFICIENT_VERIFIED_SUPPORT": 405
+  },
+  "family_split_checksum": "ffca831b1d3fbf99eb72a4e0c26b8dffef87e26f8f33d4ae4e66f828b5048df8",
+  "generator_version": "v2-family-stratified-1",
+  "maximum_executions": 1,
+  "metric_denominators": {
+    "ANSWER": 360,
+    "CONFLICT": 135,
+    "INSUFFICIENT_VERIFIED_SUPPORT": 405,
+    "blind": 900,
+    "development": 450
+  },
+  "ollama": {
+    "alias": "llama3:latest",
+    "digest": "operator-provisioned"
+  },
+  "preflight": "PASS",
+  "prompt_version": "grounded-prompt-v1.2",
+  "refusal_policy": "The available documents do not provide enough verified evidence to answer this question.",
+  "reranker": {
+    "alias": "ms-marco-minilm-l-6-v2",
+    "blend": 0.25,
+    "minimum_margin": 0.08
+  },
+  "retrieval": {
+    "lexical_weight": 0.45,
+    "passes": 1,
+    "return_k": 8,
+    "semantic_weight": 0.55,
+    "top_n": 20
+  },
+  "schema_version": "grounding-assurance-v2-schema",
+  "status": "CONSUMED",
+  "support_gate_version": "first-pass-support-gate-v1",
+  "support_threshold": 0.72,
+  "verifier_version": "grounded-verifier-v1.2",
+  "version": "grounding-assurance-v2"
+}

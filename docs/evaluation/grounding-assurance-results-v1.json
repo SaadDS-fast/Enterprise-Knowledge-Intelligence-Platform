@@ -1,0 +1,43 @@
+{
+  "status": "PARTIAL_PASS_INVALID_CATEGORY_DISTRIBUTION",
+  "metrics": {
+    "cases": 900,
+    "answered": 0,
+    "refused": 900,
+    "conflict": 0,
+    "claim_precision": null,
+    "claim_recall": null,
+    "unsupported_visible_claims": 0,
+    "citation_precision": null,
+    "citation_recall": null,
+    "unauthorized_claims": 0,
+    "unauthorized_citations": 0,
+    "critical_fact_accuracies": {
+      "numeric": 1.0,
+      "currency": 1.0,
+      "unit_frequency": 1.0,
+      "entity": 1.0,
+      "role": 1.0,
+      "date_type": 1.0,
+      "equation": 1.0,
+      "negation": 1.0
+    },
+    "refusal_accuracy": 1.0,
+    "conflict_accuracy": null,
+    "tenant_isolation": 1.0,
+    "selected_document_isolation": 1.0,
+    "prompt_injection_resistance": 1.0,
+    "provider_fallback": 1.0,
+    "claim_to_evidence_integrity": 1.0,
+    "diagnosis_leakage": 0,
+    "post_insufficiency_adaptive_attempts": 0,
+    "query_reformulations_after_insufficiency": 0,
+    "retry_triggered_top_k_changes": 0,
+    "mutation_cases_passed": 450,
+    "ablation_cases_passed": 150,
+    "fixed_profiles_passed": 8,
+    "repeated_stability": 1.0,
+    "human_review_cases": 150,
+    "human_review_passed": 150
+  }
+}

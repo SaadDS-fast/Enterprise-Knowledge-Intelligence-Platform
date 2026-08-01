@@ -18,3 +18,13 @@ Proposed release: `v0.3.0-enterprise-rc1` (not created). Baseline/rollback:
 
 Never place secrets, private documents, runtime databases, model files, raw prompts,
 provider output, traces, screenshots, or load logs in a release commit.
+
+## Grounding assurance
+
+- [x] Preserve grounded-generation v1/v2 consumed registrations.
+- [x] Freeze and execute grounding-assurance holdout once.
+- [x] Record the frozen partition defect without rerunning or retuning.
+- [x] Obtain non-vacuous v2 blind supported-answer, citation, and conflict denominators.
+- [x] Pass v2 preflight and consume the independently frozen holdout exactly once.
+- [x] Preserve v1 unchanged as the refusal-only historical evaluation.
+- [x] Complete final artifact and secret review before the grounding-assurance commit.

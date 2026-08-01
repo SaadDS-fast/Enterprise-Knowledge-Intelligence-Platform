@@ -308,7 +308,7 @@ def test_agent_topic_list_heading_answer(client, monkeypatch) -> None:
     assert body["conflicts"] == []
 
 
-def test_agent_query_reformulation_and_retry(client, auth_headers, monkeypatch) -> None:
+def test_agent_uses_one_document_retrieval_pass(client, auth_headers, monkeypatch) -> None:
     upload_ready_document(
         client,
         auth_headers,
@@ -317,7 +317,8 @@ def test_agent_query_reformulation_and_retry(client, auth_headers, monkeypatch) 
     )
     body = agent_query(client, auth_headers, monkeypatch, "Who is responsible for Project Helios?")
     assert "query_reformulation" in body["tools_used"]
-    assert body["retrieval_diagnosis"]["retry_performed"] is True
+    assert body["retrieval_diagnosis"]["retry_performed"] is False
+    assert body["tools_used"].count("internal_search") == 1
     assert body["evidence"]
 
 
@@ -382,7 +383,9 @@ def test_agent_prompt_injection_inside_uploaded_document(client, auth_headers, m
     )
     body = agent_query(client, auth_headers, monkeypatch, "Who owns Project Injecta?")
     assert body["abstained"] is True
-    assert body["answer"].startswith("I could not find sufficient evidence")
+    assert body["answer"] == (
+        "The available documents do not provide enough verified evidence to answer this question."
+    )
 
 
 def test_agent_external_disabled_no_network(client, auth_headers, monkeypatch) -> None:
@@ -505,7 +508,9 @@ def test_agent_prompt_injection_inside_external_result(client, auth_headers, mon
     assert body["abstained"] is True
     assert body["external_access_performed"] is True
     assert body["citations"] == []
-    assert body["answer"].startswith("I could not find sufficient evidence")
+    assert body["answer"] == (
+        "The available documents do not provide enough verified evidence to answer this question."
+    )
 
 
 def test_agent_cross_tenant_denial(client, auth_headers, monkeypatch) -> None:

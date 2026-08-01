@@ -38,12 +38,11 @@ from app.db.models import AgentRun, AgentStep, AgentToolCall, AuditEvent
 from app.observability.metrics import (
     AGENT_DURATION,
     AGENT_FALLBACKS,
-    AGENT_REPLANS,
     AGENT_RUNS_COMPLETED,
     AGENT_RUNS_FAILED,
     AGENT_RUNS_STARTED,
 )
-from app.rag.evidence_diagnosis import DiagnosisStatus, reformulate_query
+from app.rag.evidence_diagnosis import DiagnosisStatus
 from app.rag.response_state import legacy_fields, response_state_from_legacy
 from app.services.search_service import search_and_answer
 from app.tenancy.context import TenantContext
@@ -183,62 +182,6 @@ class AgentOrchestrator:
             initial_sufficient = final_sufficient
             retry_performed = False
             retry_strategy: list[str] = []
-
-            retry_candidate = reformulate_query(active_query)
-            should_retry = (not final_sufficient) or retry_candidate != active_query
-            if should_retry and self.budget.max_retrieval_retries > 0:
-                runtime.retrieval_retries += 1
-                self.budget.ensure_retrieval_retry(runtime.retrieval_retries)
-                AGENT_REPLANS.inc()
-                await self._record_state(
-                    session,
-                    run,
-                    runtime,
-                    AgentStateName.REPLAN,
-                    "Evidence insufficient; retrieval retry requested",
-                )
-                retry_performed = True
-                retry_strategy = ["query_reformulation", "top_k_expansion"]
-                retry_query = await self._execute_tool(
-                    session,
-                    run,
-                    runtime,
-                    tenant,
-                    "query_reformulation",
-                    {"query": active_query, "retry": True},
-                    payload,
-                )
-                retry_search = await self._execute_tool(
-                    session,
-                    run,
-                    runtime,
-                    tenant,
-                    "internal_search",
-                    {
-                        "query": retry_query.query or active_query,
-                        "top_k": min(max(payload.top_k or 0, 12), 50),
-                    },
-                    payload,
-                )
-                merged_by_chunk = {item.chunk_id: item for item in final_evidence}
-                for item in retry_search.evidence:
-                    current = merged_by_chunk.get(item.chunk_id)
-                    if current is None or item.score > current.score:
-                        merged_by_chunk[item.chunk_id] = item
-                final_evidence = sorted(
-                    merged_by_chunk.values(), key=lambda item: item.score, reverse=True
-                )
-                verifier = await self._execute_tool(
-                    session,
-                    run,
-                    runtime,
-                    tenant,
-                    "evidence_verifier",
-                    {"query": payload.query, "evidence": final_evidence},
-                    payload,
-                )
-                final_evidence = verifier.evidence
-                final_sufficient = bool(verifier.sufficient_evidence)
 
             await self._record_state(
                 session,

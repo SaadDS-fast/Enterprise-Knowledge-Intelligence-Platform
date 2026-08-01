@@ -1,0 +1,32 @@
+{
+  "version": "grounding-assurance-holdout-v1",
+  "status": "CONSUMED",
+  "corpus_checksum": "62912093532fa2de3f6f469dba00964c985b138d9a22174cc176faf46519c497",
+  "holdout_checksum": "d090a6e007de9c385ca0b5563e716f5382bb1e5e09051ad46cdd66baa3d50f5a",
+  "development_cases": 450,
+  "blind_cases": 900,
+  "support_threshold": 0.72,
+  "support_gate_version": "first-pass-support-gate-v1",
+  "prompt_version": "grounded-prompt-v1.2",
+  "schema_version": "grounding-assurance-schema-v1",
+  "verifier_version": "grounded-verifier-v1.2",
+  "retrieval": {
+    "passes": 1,
+    "lexical_weight": 0.45,
+    "semantic_weight": 0.55,
+    "top_n": 20,
+    "return_k": 8
+  },
+  "reranker": {
+    "alias": "ms-marco-minilm-l-6-v2",
+    "blend": 0.25,
+    "minimum_margin": 0.08
+  },
+  "model": {
+    "alias": "llama3:latest",
+    "digest": "operator-provisioned"
+  },
+  "refusal_policy": "The available documents do not provide enough verified evidence to answer this question.",
+  "executions_completed": 1,
+  "maximum_executions": 1
+}
