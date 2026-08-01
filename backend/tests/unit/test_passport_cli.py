@@ -5,9 +5,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from app.passport.cli import main
-from app.passport.verifier import MAX_MANIFEST_BYTES
+import pytest
+
+from app.passport.cli import exit_classification, main
+from app.passport.verifier import MAX_MANIFEST_BYTES, VerificationResult
 from tests.unit.test_passport_core import ANSWER, signed_artifact, trust_bundle
+from tests.unit.test_passport_validation_matrix import snapshot
 
 
 def _write(path: Path, content: bytes) -> Path:
@@ -21,6 +24,7 @@ def test_cli_json_output_is_machine_readable_and_offline(tmp_path: Path, capsys)
     signature_path = _write(tmp_path / "passport.sig", signature.encode("ascii"))
     trust_path = _write(tmp_path / "trust.json", trust_bundle())
     answer_path = _write(tmp_path / "answer.txt", ANSWER)
+    snapshot_path = _write(tmp_path / "snapshot.json", snapshot())
 
     exit_code = main(
         [
@@ -31,6 +35,8 @@ def test_cli_json_output_is_machine_readable_and_offline(tmp_path: Path, capsys)
             str(trust_path),
             "--answer",
             str(answer_path),
+            "--snapshot",
+            str(snapshot_path),
             "--at",
             "2026-08-01T00:00:00+00:00",
             "--format",
@@ -41,6 +47,9 @@ def test_cli_json_output_is_machine_readable_and_offline(tmp_path: Path, capsys)
     result = json.loads(capsys.readouterr().out)
     assert exit_code == 0
     assert result["overall"] == "valid"
+    assert result["status"] == "VERIFIED"
+    assert result["exit_classification"] == "verified"
+    assert result["exit_code"] == 0
     assert result["signature_valid"] is True
 
 
@@ -84,9 +93,9 @@ def test_cli_text_output_is_deterministic_and_contains_no_evidence(tmp_path: Pat
         "--at",
         "2026-08-01T00:00:00+00:00",
     ]
-    assert main(arguments) == 0
+    assert main(arguments) == 2
     first = capsys.readouterr().out
-    assert main(arguments) == 0
+    assert main(arguments) == 2
     second = capsys.readouterr().out
     assert first == second
     assert "Manager approval" not in first
@@ -150,9 +159,12 @@ def test_cli_accepts_explicit_symlink_paths_without_path_interpretation(
                 "2026-08-01T00:00:00+00:00",
             ]
         )
-        == 0
+        == 2
     )
-    assert "overall: valid" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "status: VERIFIED_WITHOUT_SNAPSHOT" in output
+    assert "exit_classification: review_required" in output
+    assert "exit_code: 2" in output
 
 
 def test_module_cli_form_runs(tmp_path: Path) -> None:
@@ -179,7 +191,7 @@ def test_module_cli_form_runs(tmp_path: Path) -> None:
         capture_output=True,
         text=True,
     )
-    assert completed.returncode == 0
+    assert completed.returncode == 2
     assert json.loads(completed.stdout)["status"] == "VERIFIED_WITHOUT_SNAPSHOT"
 
 
@@ -207,5 +219,27 @@ def test_installed_script_form_runs(tmp_path: Path) -> None:
         capture_output=True,
         text=True,
     )
-    assert completed.returncode == 0
+    assert completed.returncode == 2
     assert json.loads(completed.stdout)["status"] == "VERIFIED_WITHOUT_SNAPSHOT"
+
+
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [
+        ("VERIFIED", (0, "verified")),
+        ("VERIFIED_WITHOUT_SNAPSHOT", (2, "review_required")),
+        ("STALE", (2, "review_required")),
+        ("EXPIRED", (2, "review_required")),
+        ("INDETERMINATE", (2, "review_required")),
+        ("REVOKED", (1, "invalid")),
+        ("INVALID_SIGNATURE", (1, "invalid")),
+        ("CONTENT_MODIFIED", (1, "invalid")),
+        ("SNAPSHOT_MISMATCH", (1, "invalid")),
+        ("UNKNOWN_KEY", (1, "invalid")),
+        ("INVALID_SCHEMA", (1, "invalid")),
+        ("UNSUPPORTED_ALGORITHM", (1, "invalid")),
+    ],
+)
+def test_cli_status_exit_contract(status: str, expected: tuple[int, str]) -> None:
+    result = VerificationResult(status=status)  # type: ignore[arg-type]
+    assert exit_classification(result) == expected

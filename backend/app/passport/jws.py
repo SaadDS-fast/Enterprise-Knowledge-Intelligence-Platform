@@ -24,6 +24,8 @@ def _protected_header(key_id: str) -> dict[str, str]:
 def sign_detached(payload: bytes, private_key: Ed25519PrivateKey, key_id: str) -> str:
     """Sign canonical manifest bytes and return compact JWS with a detached payload."""
 
+    if not payload:
+        raise JWSError("empty_detached_payload")
     protected = b64url_encode(canonicalize(_protected_header(key_id)))
     signing_input = protected.encode("ascii") + b"." + b64url_encode(payload).encode("ascii")
     signature = private_key.sign(signing_input)
@@ -40,6 +42,8 @@ def parse_header(detached_jws: str) -> dict[str, Any]:
         raise JWSError("invalid_protected_header") from exc
     if not isinstance(header, dict):
         raise JWSError("invalid_protected_header")
+    if b64url_encode(canonicalize(header)) != parts[0]:
+        raise JWSError("protected_header_not_canonical")
     if header.get("alg") != "EdDSA":
         raise JWSError("unsupported_algorithm")
     if header != _protected_header(str(header.get("kid", ""))):
@@ -50,6 +54,8 @@ def parse_header(detached_jws: str) -> dict[str, Any]:
 def verify_detached(payload: bytes, detached_jws: str, public_key: Ed25519PublicKey) -> str:
     """Verify a detached JWS and return its protected key identifier."""
 
+    if not payload:
+        raise JWSError("empty_detached_payload")
     header = parse_header(detached_jws)
     protected, _, encoded_signature = detached_jws.split(".")
     try:

@@ -6,8 +6,8 @@ Overall release gates: **PASS**.
 
 | Area | Result | Evidence |
 |---|---|---|
-| Focused passport matrix | Pass | 74 tests: canonicalization, Ed25519/JWS, hashes, synthetic eligibility, snapshots, lifecycle, statuses, CLI, mutations and socket blocking |
-| Backend full suite | Pass | 299 passed, 4 environment-gated skips, 0 failures |
+| Focused passport matrix | Pass | 99 tests: canonicalization, independent Ed25519/JWS interoperability, hashes, synthetic eligibility, snapshots, lifecycle, all status-to-exit mappings, mutations, precedence and socket blocking |
+| Backend full suite | Pass | 324 passed, 4 environment-gated skips, 0 failures |
 | Backend coverage | Pass | 80% total; passport package 526/561 statements, approximately 94% |
 | Compile / Ruff | Pass | Compileall; Ruff lint and format over `app tests` |
 | Mypy | Scoped pass | `app/passport` passes; repository-wide configured run exposes 29 pre-existing errors in untouched modules |
@@ -21,7 +21,12 @@ Overall release gates: **PASS**.
 Canonicalization is classified as a **restricted RFC 8785-compatible profile** for the tested
 supported JSON domain. Eight stable canonical vectors cover ordering, nesting, arrays, Unicode,
 escapes, equivalent field order and integers; fractional/exponent and non-finite numbers are
-rejected. The 37 protected mutation/attack vectors were detected or deterministically classified.
+rejected. The protected mutation/attack vectors were detected or deterministically classified.
+
+The independent audit added 25 tests. It classifies the envelope as RFC 7515 Appendix F standard
+encoded detached JWS, not RFC 7797, and verifies interoperability in both directions with an
+independent Base64URL/JSON/PyCA path. The CLI maps only `VERIFIED` to exit `0`; review-required
+statuses map to exit `2`; invalid, revoked, malformed and input-failure outcomes map to exit `1`.
 
 No consumed grounding holdout was executed. Existing full-suite tests confirmed one-pass Agent
 retrieval, neutral refusal, supported answers, conflicts, tenant isolation, support threshold

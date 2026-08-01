@@ -8,6 +8,12 @@
   is synthetic; no application retrieval or generation result is passed to it.
 - Canonicalization is a custom, restricted RFC 8785-compatible profile for the tested JSON domain.
   Fractional/exponent numbers and non-finite values are rejected rather than serialized.
+- The custom JWS implementation is deliberately not a general JOSE stack. It supports only EdDSA,
+  an exact protected `alg`/`kid`/`typ` header, canonical protected-header JSON and RFC 7515
+  Appendix F standard encoded detached payloads. RFC 7797, `crit`, `b64`, `cty`, unprotected
+  headers, algorithm negotiation, remote key discovery, embedded JWKs and X.509 chains are
+  rejected. Replacing it with a library requires equivalent exact-policy, canonical-byte,
+  detached-payload and status/precedence behavior plus the independent interoperability matrix.
 - `vap-snapshot-1` validates an explicitly supplied synthetic authorized snapshot. Phase 1 does not
   export, authorize, encrypt, transmit or retain production evidence.
 - The caller-supplied `vap-trust-1` bundle is the explicit local trust anchor. Root signing and

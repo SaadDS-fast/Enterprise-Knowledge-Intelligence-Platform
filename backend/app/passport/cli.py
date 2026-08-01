@@ -10,6 +10,21 @@ from pathlib import Path
 
 from app.passport.verifier import VerificationResult, verify_passport
 
+VERIFIED_STATUSES = frozenset({"VERIFIED"})
+REVIEW_REQUIRED_STATUSES = frozenset(
+    {"VERIFIED_WITHOUT_SNAPSHOT", "STALE", "EXPIRED", "INDETERMINATE"}
+)
+
+
+def exit_classification(result: VerificationResult) -> tuple[int, str]:
+    """Map verifier status to the stable automation contract."""
+
+    if result.status in VERIFIED_STATUSES:
+        return 0, "verified"
+    if result.status in REVIEW_REQUIRED_STATUSES:
+        return 2, "review_required"
+    return 1, "invalid"
+
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="vap", description="Verify a VAP-1 passport offline")
@@ -27,9 +42,12 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _render_text(result: VerificationResult) -> str:
+def _render_text(result: VerificationResult, exit_code: int, classification: str) -> str:
     lines = [
+        f"status: {result.status}",
         f"overall: {result.overall}",
+        f"exit_classification: {classification}",
+        f"exit_code: {exit_code}",
         f"certificate_id: {result.certificate_id or '-'}",
         f"schema_valid: {str(result.schema_valid).lower()}",
         f"canonical_manifest: {str(result.canonical_manifest).lower()}",
@@ -56,13 +74,19 @@ def main(argv: list[str] | None = None) -> int:
             expected_configuration_digest=args.expected_configuration_digest,
         )
     except OSError as exc:
-        result = VerificationResult(errors=[f"file_error:{exc}"])
+        result = VerificationResult(status="INVALID_SCHEMA", errors=[f"file_error:{exc}"])
+
+    exit_code, classification = exit_classification(result)
 
     if args.format == "json":
-        print(json.dumps(result.model_dump(mode="json"), sort_keys=True, separators=(",", ":")))
+        output = result.model_dump(mode="json") | {
+            "exit_classification": classification,
+            "exit_code": exit_code,
+        }
+        print(json.dumps(output, sort_keys=True, separators=(",", ":")))
     else:
-        print(_render_text(result))
-    return 0 if result.overall in {"valid", "valid_review_required"} else 1
+        print(_render_text(result, exit_code, classification))
+    return exit_code
 
 
 if __name__ == "__main__":

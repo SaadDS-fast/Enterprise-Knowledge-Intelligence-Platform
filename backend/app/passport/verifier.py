@@ -73,11 +73,11 @@ def verify_passport(
     """Verify a passport without retrieval, generation, persistence, or network access."""
 
     if len(manifest_bytes) > MAX_MANIFEST_BYTES:
-        return _invalid("manifest_too_large")
+        return _invalid("manifest_too_large", status="INVALID_SCHEMA")
     if len(detached_jws.encode("ascii", errors="ignore")) > MAX_SIGNATURE_BYTES:
-        return _invalid("signature_too_large")
+        return _invalid("signature_too_large", status="INVALID_SIGNATURE")
     if len(trust_bundle_bytes) > MAX_TRUST_BUNDLE_BYTES:
-        return _invalid("trust_bundle_too_large")
+        return _invalid("trust_bundle_too_large", status="INVALID_SCHEMA")
     if snapshot_bytes is not None and len(snapshot_bytes) > MAX_SNAPSHOT_BYTES:
         return _invalid("snapshot_too_large", status="SNAPSHOT_MISMATCH")
 

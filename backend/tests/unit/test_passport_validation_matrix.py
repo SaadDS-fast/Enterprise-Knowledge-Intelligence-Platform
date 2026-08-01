@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import socket
 from datetime import UTC, datetime
@@ -10,7 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from app.passport.canonical import CanonicalizationError, canonicalize, parse_json_strict
 from app.passport.hashing import b64url_encode, content_digest
 from app.passport.issuer import IssuanceRejected, build_synthetic_manifest
-from app.passport.jws import sign_detached
+from app.passport.jws import JWSError, sign_detached, verify_detached
 from app.passport.verifier import verify_passport
 from tests.unit.test_passport_core import (
     PRIVATE_KEY,
@@ -59,6 +60,118 @@ def issuance_input(**updates: object) -> dict[str, object]:
 def resign(data: dict[str, object], *, key_id: str = "test-key-1") -> tuple[bytes, str]:
     payload = canonicalize(data)
     return payload, sign_detached(payload, PRIVATE_KEY, key_id)
+
+
+def independent_b64url(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
+
+
+def independent_sign(payload: bytes, header: dict[str, object]) -> str:
+    protected_json = json.dumps(
+        header, ensure_ascii=False, separators=(",", ":"), sort_keys=True
+    ).encode("utf-8")
+    protected = independent_b64url(protected_json)
+    encoded_payload = independent_b64url(payload)
+    signature = PRIVATE_KEY.sign(f"{protected}.{encoded_payload}".encode("ascii"))
+    return f"{protected}..{independent_b64url(signature)}"
+
+
+def independent_verify(payload: bytes, envelope: str) -> dict[str, object]:
+    protected, detached, signature = envelope.split(".")
+    assert detached == ""
+    header = json.loads(base64.urlsafe_b64decode(protected + "=" * (-len(protected) % 4)))
+    raw_signature = base64.urlsafe_b64decode(signature + "=" * (-len(signature) % 4))
+    signing_input = f"{protected}.{independent_b64url(payload)}".encode("ascii")
+    PRIVATE_KEY.public_key().verify(raw_signature, signing_input)
+    return header
+
+
+def test_standard_encoded_detached_jws_interoperates_in_both_directions() -> None:
+    payload, production_envelope = signed_artifact()
+    header = independent_verify(payload, production_envelope)
+    assert header == {
+        "alg": "EdDSA",
+        "kid": "test-key-1",
+        "typ": "application/vap+jws",
+    }
+
+    independent_envelope = independent_sign(payload, header)
+    assert verify_detached(payload, independent_envelope, PRIVATE_KEY.public_key()) == "test-key-1"
+    assert verify_passport(payload, independent_envelope, trust_bundle()).signature_valid is True
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        {"alg": "none", "kid": "test-key-1", "typ": "application/vap+jws"},
+        {"alg": "HS256", "kid": "test-key-1", "typ": "application/vap+jws"},
+        {"alg": "EdDSA", "kid": "test-key-1", "typ": "changed"},
+        {"alg": "EdDSA", "kid": "changed", "typ": "application/vap+jws"},
+        {"alg": "EdDSA", "kid": "test-key-1", "typ": "application/vap+jws", "cty": "x"},
+        {
+            "alg": "EdDSA",
+            "kid": "test-key-1",
+            "typ": "application/vap+jws",
+            "crit": ["x"],
+            "x": True,
+        },
+        {
+            "alg": "EdDSA",
+            "kid": "test-key-1",
+            "typ": "application/vap+jws",
+            "b64": False,
+            "crit": ["b64"],
+        },
+        {"alg": "EdDSA", "kid": "test-key-1", "typ": "application/vap+jws", "b64": True},
+    ],
+)
+def test_protected_header_profile_rejects_all_extensions_and_changes(
+    header: dict[str, object],
+) -> None:
+    payload = canonicalize(manifest())
+    envelope = independent_sign(payload, header)
+    result = verify_passport(payload, envelope, trust_bundle())
+    expected = "UNSUPPORTED_ALGORITHM" if header["alg"] != "EdDSA" else "INVALID_SIGNATURE"
+    assert result.status == expected
+
+
+def test_protected_header_must_be_canonical_and_have_no_duplicate_fields() -> None:
+    payload = canonicalize(manifest())
+    spaced = b'{ "alg":"EdDSA", "kid":"test-key-1", "typ":"application/vap+jws" }'
+    protected = independent_b64url(spaced)
+    signature = PRIVATE_KEY.sign(f"{protected}.{independent_b64url(payload)}".encode("ascii"))
+    result = verify_passport(
+        payload, f"{protected}..{independent_b64url(signature)}", trust_bundle()
+    )
+    assert result.status == "INVALID_SIGNATURE"
+    assert result.errors == ["protected_header_not_canonical"]
+
+    duplicate = b'{"alg":"EdDSA","alg":"EdDSA","kid":"test-key-1","typ":"application/vap+jws"}'
+    protected = independent_b64url(duplicate)
+    signature = PRIVATE_KEY.sign(f"{protected}.{independent_b64url(payload)}".encode("ascii"))
+    result = verify_passport(
+        payload, f"{protected}..{independent_b64url(signature)}", trust_bundle()
+    )
+    assert result.status == "INVALID_SIGNATURE"
+
+
+def test_padded_noncanonical_and_unprotected_envelopes_are_rejected() -> None:
+    payload, envelope = signed_artifact()
+    protected, _, signature = envelope.split(".")
+    for changed in [
+        f"{protected}=..{signature}",
+        f"{protected}..{signature}=",
+        f"{protected}.unprotected.{signature}",
+        f"{protected}...{signature}",
+    ]:
+        assert verify_passport(payload, changed, trust_bundle()).status == "INVALID_SIGNATURE"
+
+
+def test_empty_detached_payload_is_rejected_by_profile() -> None:
+    with pytest.raises(JWSError, match="empty_detached_payload"):
+        sign_detached(b"", PRIVATE_KEY, "test-key-1")
+    with pytest.raises(JWSError, match="empty_detached_payload"):
+        verify_detached(b"", "AA..AA", PRIVATE_KEY.public_key())
 
 
 def test_canonicalization_reference_matrix() -> None:
@@ -392,3 +505,45 @@ def test_verification_never_creates_network_socket(monkeypatch: pytest.MonkeyPat
     payload, signature = signed_artifact()
     result = verify_passport(payload, signature, trust_bundle(), snapshot_bytes=snapshot())
     assert result.status == "VERIFIED"
+
+
+def test_compound_failure_precedence_preserves_integrity_and_trust_failures() -> None:
+    payload, signature = signed_artifact()
+    expired_at = datetime(2028, 1, 1, tzinfo=UTC)
+
+    modified_and_expired = verify_passport(
+        payload,
+        signature,
+        trust_bundle(),
+        answer_bytes=b"modified",
+        at=expired_at,
+    )
+    assert modified_and_expired.status == "CONTENT_MODIFIED"
+
+    unknown_and_bad_snapshot = verify_passport(
+        payload,
+        signature,
+        trust_bundle(key_id="unknown"),
+        snapshot_bytes=b"bad",
+    )
+    assert unknown_and_bad_snapshot.status == "UNKNOWN_KEY"
+
+    stale_data = json.loads(snapshot())
+    stale_data["documents"][0]["document_version"] = "2"
+    stale_snapshot = canonicalize(stale_data)
+    corrupted = signature[:-1] + ("A" if signature[-1] != "A" else "B")
+    invalid_and_stale = verify_passport(
+        payload, corrupted, trust_bundle(), snapshot_bytes=stale_snapshot
+    )
+    assert invalid_and_stale.status == "INVALID_SIGNATURE"
+
+    mismatch_and_expired = verify_passport(
+        payload,
+        signature,
+        trust_bundle(),
+        snapshot_bytes=canonicalize(
+            json.loads(snapshot()) | {"scope_fingerprint": content_digest("SCOPE", b"different")}
+        ),
+        at=expired_at,
+    )
+    assert mismatch_and_expired.status == "SNAPSHOT_MISMATCH"

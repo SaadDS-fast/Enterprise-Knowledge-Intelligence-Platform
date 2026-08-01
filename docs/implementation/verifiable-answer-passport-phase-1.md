@@ -30,8 +30,11 @@ deeper than 64 containers and noncanonical encodings are rejected. This is not a
 RFC 8785 conformance for every JSON number.
 
 Ed25519 is provided by PyCA `cryptography`; detached compact-JWS construction and validation are a
-narrow custom implementation. Only a protected `alg=EdDSA`, `kid`, and
-`typ=application/vap+jws` header is accepted. Untrusted input cannot select another algorithm.
+narrow custom implementation of RFC 7515 **standard encoded detached JWS**. The payload is Base64URL
+encoded in the signing input and omitted only from compact serialization. RFC 7797 is not used;
+`b64` and `crit` headers are rejected. Only the exact protected `alg=EdDSA`, `kid`, and
+`typ=application/vap+jws` header is accepted in canonical JSON. Untrusted input cannot select
+another algorithm.
 `cryptography>=46,<51` is now a direct Apache-2.0-or-BSD-3-Clause dependency because the passport
 imports it directly. Pydantic remains the existing direct MIT-licensed schema dependency
 (`>=2.11,<3`). PyJWT remains an existing MIT-licensed dependency (`[crypto]>=2.10,<3`) for the wider
@@ -60,9 +63,10 @@ python -m app.passport.cli verify passport.json passport.sig \
   --trust-bundle trust-bundle.json --format json
 ```
 
-The command performs no network operation. Exit code `0` means cryptographically valid
-(`valid` or `valid_review_required`); exit code `1` means invalid or an input/file error. There is no
-debug mode and normal invalidity produces no stack trace. The stable machine result schema reports:
+The command performs no network operation. Exit code `0` means `VERIFIED` with a validated snapshot;
+exit code `2` means cryptographically non-tampered but review-required; exit code `1` means invalid,
+revoked, malformed, or an input/file error. There is no debug mode and normal invalidity produces no
+stack trace. The stable machine result schema reports:
 
 - `VERIFIED`: signature and supplied snapshot validated;
 - `VERIFIED_WITHOUT_SNAPSHOT`: signature valid; evidence content was not independently checked;
@@ -70,6 +74,11 @@ debug mode and normal invalidity produces no stack trace. The stable machine res
 - `STALE`: snapshot document version differs;
 - `REVOKED`, `INVALID_SIGNATURE`, `CONTENT_MODIFIED`, `SNAPSHOT_MISMATCH`, `UNKNOWN_KEY`,
   `INVALID_SCHEMA`, `UNSUPPORTED_ALGORITHM`, or `INDETERMINATE`.
+
+`VERIFIED` maps to exit `0`; `VERIFIED_WITHOUT_SNAPSHOT`, `STALE`, `EXPIRED`, and `INDETERMINATE`
+map to exit `2`; every other status maps to exit `1`. Expired is review-required rather than invalid
+because historical signature validity is retained. Revoked is always invalid. JSON and text output
+include the status, exit classification and numeric exit code.
 
 Precedence is schema/canonical form → protected envelope → key lookup → signature → revocation →
 historical key interval → answer/scope/configuration → verification time → snapshot → freshness.

@@ -7,7 +7,7 @@ Status: Phase 1 implementation profile, 2026-08-01
 | Artifact | Version | Purpose |
 |---|---|---|
 | Passport manifest | `vap-1` | Signed answer, claim, citation, document, scope and assurance bindings |
-| Detached envelope | `application/vap+jws` | Compact detached JWS with protected `alg`, `kid`, and `typ` |
+| Detached envelope | `application/vap+jws` | Standard encoded detached compact JWS with protected `alg`, `kid`, and `typ` |
 | Trust bundle | `vap-trust-1` | Explicit offline public-key trust input and lifecycle metadata |
 | Evidence snapshot | `vap-snapshot-1` | Optional synthetic authorized document/evidence bytes for offline checking |
 | Hash profile | `VAP1` | Domain prefix used before every protected byte string |
@@ -39,17 +39,39 @@ the complete canonical passport directly.
 
 ## Signature envelope
 
-PyCA `cryptography` supplies Ed25519 primitives. `app.passport.jws` is a narrow custom detached-JWS
-implementation. The only accepted protected header is structurally equivalent to:
+PyCA `cryptography` supplies Ed25519 primitives; it is not a JOSE implementation.
+`app.passport.jws` is a narrow custom implementation of **standard encoded detached JWS**: the
+payload segment is omitted from compact serialization, while `BASE64URL(payload)` remains in the
+JWS signing input. This follows the detached-content method in RFC 7515 Appendix F. It does **not**
+use RFC 7797: `b64=false` and `crit=["b64"]` are absent and rejected.
+
+The only accepted protected header is exactly:
 
 ```json
 {"alg":"EdDSA","kid":"<opaque key id>","typ":"application/vap+jws"}
 ```
 
-The compact form is `BASE64URL(protected)..BASE64URL(signature)`. The signing input uses the
-standard encoded payload form even though the serialized payload segment is detached. Algorithm,
-type and key ID are allowlisted by code; untrusted input cannot select a verifier. The manifest key
-ID must equal the protected key ID.
+The compact form is `BASE64URL(protected)..BASE64URL(signature)` and the signing input is
+`BASE64URL(protected) || "." || BASE64URL(payload)`. Protected-header JSON must use the VAP
+canonical serializer. Base64URL is unpadded and canonical. The profile has no unprotected header.
+`cty`, `crit`, `b64`, extensions, duplicate fields, unknown critical fields, altered type/key/
+algorithm, noncanonical protected JSON, padding and non-minimal Base64URL are rejected. Because RFC
+7797 is unsupported, a missing `crit` member is correct for this profile; adding `crit` is invalid.
+The manifest key ID must equal the protected key ID.
+
+The custom code remains justified only while this profile stays this narrow. Existing PyJWT public
+APIs target JWT/general JWS workflows and do not provide the required strict VAP protected-header,
+canonical-header and stable error/status contract without additional policy code. Unsupported JOSE
+features include general JSON serialization, multiple signatures, unprotected headers, arbitrary
+algorithms, RFC 7797, remote key discovery, embedded JWKs/X.509 chains and critical extensions.
+Replacement with a maintained JOSE library is required if the profile expands, interoperability
+partners require broader JOSE support, a suitable library can enforce the exact profile, or custom
+envelope maintenance can no longer receive dedicated security tests/review.
+
+Interoperability is proven in both directions by an independent test path using only Python's JSON/
+Base64 libraries plus PyCA Ed25519: the production signer verifies under independently assembled
+RFC 7515 signing input, and an independently assembled/signed envelope verifies in the production
+verifier. The independent path does not call the production envelope builder or Base64 helpers.
 
 ## Trust and lifecycle
 
@@ -88,6 +110,18 @@ Stable statuses are `VERIFIED`, `VERIFIED_WITHOUT_SNAPSHOT`, `EXPIRED`, `STALE`,
 `INVALID_SIGNATURE`, `CONTENT_MODIFIED`, `SNAPSHOT_MISMATCH`, `UNKNOWN_KEY`, `INVALID_SCHEMA`,
 `UNSUPPORTED_ALGORITHM`, and `INDETERMINATE`. Detailed independent fields prevent freshness from
 being represented as signature validity.
+
+CLI automation maps status, not the broader `overall` field:
+
+- exit `0` / `verified`: `VERIFIED` only;
+- exit `2` / `review_required`: `VERIFIED_WITHOUT_SNAPSHOT`, `STALE`, `EXPIRED`, or
+  `INDETERMINATE`;
+- exit `1` / `invalid`: every trust, integrity, schema, algorithm, content, snapshot, unknown-key,
+  malformed-input or file error, including `REVOKED`.
+
+Expiry uses exit `2` because a valid historical signature remains distinguishable while policy
+review is mandatory. Revocation uses exit `1` because the trust decision is invalid. JSON output
+contains `status`, `exit_code`, and `exit_classification`; text output prints the same fields.
 
 ## Security boundary
 
