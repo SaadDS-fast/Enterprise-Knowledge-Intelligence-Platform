@@ -223,7 +223,9 @@ class Settings(BaseSettings):
     agent_max_steps: int = Field(default=6, ge=1, le=25)
     agent_max_tool_calls: int = Field(default=12, ge=0, le=50)
     agent_timeout_seconds: float = Field(default=90.0, gt=0, le=600)
-    agent_max_retrieval_retries: int = Field(default=2, ge=0, le=10)
+    # Retained for configuration compatibility. The non-adaptive execution path
+    # does not perform a second document retrieval after insufficient support.
+    agent_max_retrieval_retries: int = Field(default=0, ge=0, le=0)
     agent_planner_provider: AgentPlannerProvider = AgentPlannerProvider.DETERMINISTIC
     agent_web_search_enabled: bool = False
     web_search_provider: WebSearchProvider = WebSearchProvider.DISABLED

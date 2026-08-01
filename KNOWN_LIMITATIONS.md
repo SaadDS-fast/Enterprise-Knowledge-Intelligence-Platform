@@ -187,3 +187,13 @@ closure passed after correcting the evaluation harness's factual-support classif
 single-blend reranker ordering; no frozen production calibration changed. Remaining limits
 are environmental: the synthetic local corpus is not a production-capacity claim, optional
 models remain operator-provisioned, and accessibility is not third-party certification.
+
+The first grounding-assurance blind holdout is consumed but not release-qualifying. Its
+frozen ordered split contains only refusal cases, so it demonstrates fail-closed refusal
+behavior but cannot measure supported-answer, citation, or conflict correctness. A future
+independently versioned holdout would be required; this consumed fixture must not be rerun.
+
+Grounding Assurance v2 supplies that independent, family-isolated benchmark and passed its
+single frozen execution. This demonstrates the defined synthetic benchmark and fail-closed
+architecture, not universal correctness or production-capacity performance. The generated
+150-case sheet is only prepared for human review; no manual review completion is claimed.

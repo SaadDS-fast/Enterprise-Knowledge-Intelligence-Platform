@@ -1,0 +1,51 @@
+{
+  "checks": {
+    "case_ids_unique": true,
+    "checksums_complete": true,
+    "conflict_nonzero": true,
+    "critical_categories_nonzero": true,
+    "decisions_complete": true,
+    "evidence_split_isolated": true,
+    "family_overlap_zero": true,
+    "metric_denominators_nonzero": true,
+    "question_overlap_zero": true,
+    "refusal_nonzero": true,
+    "supported_nonzero": true
+  },
+  "critical_category_denominators": {
+    "authority_conflict": 23,
+    "comparison_complete": 23,
+    "composite_complete": 23,
+    "currency": 23,
+    "current_conflict": 23,
+    "current_version": 23,
+    "effective_date": 23,
+    "effective_overlap": 23,
+    "entity": 23,
+    "equation": 23,
+    "equation_condition": 23,
+    "evidence_ablation": 23,
+    "false_conflict_control": 23,
+    "frequency": 23,
+    "historical_version": 23,
+    "list": 23,
+    "mutation": 23,
+    "negation": 23,
+    "numeric": 24,
+    "override_conflict": 23,
+    "percentage": 23,
+    "prompt_injection": 23,
+    "publication_date": 23,
+    "role": 23,
+    "table": 23,
+    "unit": 23
+  },
+  "denominators": {
+    "ANSWER": 360,
+    "CONFLICT": 135,
+    "INSUFFICIENT_VERIFIED_SUPPORT": 405,
+    "blind": 900,
+    "development": 450
+  },
+  "status": "PASS"
+}
