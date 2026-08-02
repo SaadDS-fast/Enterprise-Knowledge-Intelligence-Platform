@@ -1,5 +1,20 @@
 # Known Limitations
 
+## Verifiable Answer Passport Phase 2 limitations (2026-08-02)
+
+- Issuance is internal, disabled by default and limited to compatible finalized Standard Search
+  answers. Independent Agent terminal answers and finalized Research reports remain ineligible
+  because their current boundaries lack complete authoritative projection metadata.
+- No production signer, key lifecycle, persistent passport record, durable cross-request
+  deduplication, public API, download, frontend status, evidence exporter or AWS/cloud integration
+  exists. Enabled execution without a signer returns an internal unavailable result.
+- Document bindings protect the authoritative stored checksum as an immutable input. A future
+  separately authorized evidence exporter must define snapshot byte reconstruction before snapshot
+  verification of production content is offered.
+- Audit emission is implemented as a minimal injected sink and tested, but production audit-table
+  persistence is deferred until the secure signer/lifecycle integration is designed.
+- Cancellation and duplicate suppression are request-scoped only; no persistence was added.
+
 ## Verifiable Answer Passport Phase 1 limitations (2026-08-01)
 
 - Phase 1 is a cryptographic core and standalone verifier. It is not integrated with production

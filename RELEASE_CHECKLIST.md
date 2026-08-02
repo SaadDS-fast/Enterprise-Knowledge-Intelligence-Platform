@@ -1,5 +1,17 @@
 # Enterprise release checklist
 
+## Verifiable Answer Passport Phase 2
+
+- [x] Internal hook occurs only after canonical answer finalization.
+- [x] `ANSWER_PASSPORT_ENABLED` defaults to `false`.
+- [x] Disabled and missing-signer paths produce no artifact.
+- [x] Refusal, conflict, error, cancellation and incomplete mappings are ineligible.
+- [x] Projection scope/version/checksum data is server-derived.
+- [x] Issuance failure leaves the answer and citations unchanged.
+- [x] No public API, migration, frontend workflow, persistence, evidence export or production key.
+- [x] Phase 1 offline verifier and CLI dependency boundary remains intact.
+- [x] Complete backend/frontend/Docker/security validation and record final counts.
+
 Proposed release: `v0.3.0-enterprise-rc1` (not created). Baseline/rollback:
 `736a402`.
 

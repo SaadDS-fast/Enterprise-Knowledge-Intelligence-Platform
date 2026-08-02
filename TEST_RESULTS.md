@@ -1,5 +1,27 @@
 # Test Results
 
+## Verifiable Answer Passport Phase 2 — 2026-08-02
+
+Focused Phase 1/2 passport tests cover immutable projections, server-derived scope and document
+metadata, exact displayed mappings, extractive/Ollama metadata, disabled/no-signer behavior,
+supported/refused/conflict/error/cancelled states, concurrent at-most-once issuance, cancellation,
+sanitized signer failure, minimal audit metadata, cross-scope substitution and offline verification.
+
+Full backend, frontend, Docker, Alembic and security results are recorded in `VALIDATION_REPORT.md`.
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Focused passport | Pass | 117 tests across Phase 1 core/CLI/matrix and Phase 2 issuance |
+| Backend | Pass | 342 passed, 4 environment-gated skips; 80% coverage |
+| Issuance coverage | Pass | 92% (`app/passport/issuance.py`) |
+| Formatting/lint | Pass | compileall and Ruff over `app tests` |
+| Typing | Scoped pass | issuance module has zero Mypy errors; repository run reports 42 pre-existing errors in untouched modules |
+| Security | Pass | Bandit zero findings; pip-audit no known vulnerabilities |
+| Frontend | Pass | lint (0 errors/1 known warning), typecheck, 11 files/27 tests, production build |
+| Frontend audit | Pass | 0 production vulnerabilities |
+| Docker/migrations | Pass | Compose config, backend/frontend/ingestion-worker build, Alembic no new operations |
+| Browser E2E | Pass | default 1 passed/8 skipped; agentic 5 passed/4 skipped |
+
 ## Verifiable Answer Passport Phase 1 — 2026-08-01
 
 Overall release gates: **PASS**.
