@@ -11,6 +11,7 @@
     "test:e2e": "playwright test",
     "test:e2e:isolated:default": "../scripts/run_isolated_e2e.sh default",
     "test:e2e:isolated:agentic": "../scripts/run_isolated_e2e.sh agentic",
+    "test:e2e:isolated:passport": "../scripts/run_isolated_e2e.sh passport",
     "test:e2e:isolated:phase2b": "../scripts/run_isolated_e2e.sh phase2b",
     "test:e2e:ui": "playwright test --ui",
     "typecheck": "tsc --noEmit",

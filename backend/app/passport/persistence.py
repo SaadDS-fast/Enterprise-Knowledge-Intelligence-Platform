@@ -19,7 +19,7 @@ from app.passport.canonical import canonicalize, parse_json_strict
 from app.passport.hashing import b64url_decode, content_digest
 from app.passport.issuance import InternalIssuanceResult, IssuanceStatus, SupportedAnswerProjection
 from app.passport.jws import parse_header
-from app.passport.schema import PassportManifest
+from app.passport.schema import PassportManifest, TrustBundle
 from app.passport.trust_lifecycle import (
     LifecycleTrustBundle,
     TrustBundleSignature,
@@ -75,6 +75,13 @@ def validate_trust_material(trust: TrustMaterial, *, organization_id: UUID) -> T
 
     if len(trust.verifier_bundle) > MAX_VERIFIER_BUNDLE_BYTES:
         raise StoredArtifactError("verifier_bundle_size_limit")
+    try:
+        verifier_data = parse_json_strict(trust.verifier_bundle)
+        if canonicalize(verifier_data) != trust.verifier_bundle:
+            raise StoredArtifactError("verifier_bundle_not_canonical")
+        TrustBundle.model_validate(verifier_data)
+    except (ValueError, UnicodeError) as exc:
+        raise StoredArtifactError("invalid_verifier_bundle") from exc
     if trust.lifecycle_bundle is None:
         if trust.lifecycle_signature is not None:
             raise StoredArtifactError("orphan_trust_bundle_signature")

@@ -11,7 +11,7 @@ from app.exceptions.base import AppError
 from app.exceptions.codes import ErrorCode
 from app.llm.base import GenerationRequest
 from app.llm.gateway import get_llm_gateway
-from app.models.schemas import EvidenceItem, SearchResponse
+from app.models.schemas import AnswerPassportReference, EvidenceItem, SearchResponse
 from app.observability.metrics import (
     ABSTENTIONS,
     DIAGNOSIS_LATENCY,
@@ -26,7 +26,10 @@ from app.passport.issuance import (
     project_search_response,
     response_eligibility_reason,
 )
-from app.passport.persistence import PassportPersistenceCoordinator
+from app.passport.persistence import (
+    PassportPersistenceCoordinator,
+    PassportPersistenceStatus,
+)
 from app.rag.abstention import abstention_message
 from app.rag.evidence import (
     SupportStatus,
@@ -50,6 +53,7 @@ from app.rag.topic_lists import (
 )
 from app.repositories.answer_passports import SQLAlchemyAnswerPassportRepository
 from app.security.audit import record_audit_event
+from app.security.authorization import can_manage_documents
 from app.security.prompt_security import scan_prompt
 
 
@@ -65,6 +69,7 @@ async def search_and_answer(
     passport_context: IssuanceContext | None = None,
     passport_persistence_coordinator: PassportPersistenceCoordinator | None = None,
     passport_actor_id: UUID | None = None,
+    passport_actor_role: str | None = None,
 ) -> SearchResponse:
     """Run the unchanged answer lifecycle, then optionally perform internal passport issuance."""
 
@@ -140,13 +145,29 @@ async def search_and_answer(
         )
     else:
         persistence = passport_persistence_coordinator
-    await persistence.persist_issued(
+    persisted = await persistence.persist_issued(
         issuance,
         projection,
         organization_id=UUID(projection.tenant_id),
         workspace_id=workspace_id,
         actor_id=passport_actor_id,
     )
+    if (
+        persisted.status
+        in {
+            PassportPersistenceStatus.PERSISTED,
+            PassportPersistenceStatus.DUPLICATE,
+        }
+        and persisted.record is not None
+    ):
+        response.passport_reference = AnswerPassportReference(
+            passport_id=persisted.record.passport_id,
+            schema_version=persisted.record.schema_version,
+            metadata_available=settings.answer_passport_export_enabled,
+            export_available=settings.answer_passport_export_enabled
+            and passport_actor_role is not None
+            and can_manage_documents(passport_actor_role),
+        )
     return response
 
 

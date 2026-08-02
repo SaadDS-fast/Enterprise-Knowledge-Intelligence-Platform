@@ -1,5 +1,15 @@
 # Enterprise release checklist
 
+## Verifiable Answer Passport Phase 4
+
+- [x] Minimal Search reference is emitted only after durable persistence.
+- [x] Indicator and metadata preserve separate backend-computed assurance concepts.
+- [x] Viewer/editor/admin UX follows, but never replaces, backend authorization.
+- [x] ZIP/trust downloads enforce safe names, types, sizes, opaque handling, and URL cleanup.
+- [x] Offline commands, exit codes, and independent trust-bootstrap warning are documented.
+- [x] Record final backend/frontend/E2E/Docker/security gate counts before commit.
+- [x] No client issuance, evidence export, production signer, list/mutation API, AWS, or thesis change.
+
 ## Verifiable Answer Passport Phase 3B
 
 - [x] Flags default false; no production signer or private configuration.

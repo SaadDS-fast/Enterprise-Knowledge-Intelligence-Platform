@@ -219,6 +219,7 @@ def test_controlled_trust_bundle_is_scoped_and_public_only(
     payload = response.json()
     assert payload["bundle_version"] == 2
     assert payload["bundle_checksum"]
+    assert payload["verifier_bundle"].startswith('{"generated_at"')
     assert payload["trust_mode"] == "unsigned-development"
     lowered = response.text.lower()
     assert "private_key" not in lowered and "seed" not in lowered and "credential" not in lowered

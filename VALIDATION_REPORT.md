@@ -492,6 +492,25 @@ key, seed, credential, token, private-key configuration, or generated artifact. 
 migration, frontend flow, persistent/production provider, AWS/KMS/cloud integration, retrieval or
 generation change was added. Trust bootstrap remains an independently trusted-channel obligation.
 
+# Verifiable Answer Passport Phase 4 (2026-08-02)
+
+Status: **PASS**. A successfully persisted supported Search answer may now carry only an opaque
+`vap-1` reference and server-derived metadata/export availability hints. The authenticated Search
+UI renders a non-assertive indicator and an on-demand, inline assurance panel that preserves the
+backend's distinct integrity, freshness, lifecycle, trust, and export-policy concepts.
+
+All authorization remains server-side. The browser streams bounded responses, requires the
+approved ZIP media type, ignores response filenames in favor of a validated UUID-derived name,
+does not unpack or persist artifacts, and revokes transient object URLs after Chromium consumes
+the user-initiated click. The separate trust action downloads only the Phase 1-compatible public
+verifier bundle and presents the independent trust-bootstrap warning. Offline CLI commands and
+exit semantics are documented without claiming universal truth.
+
+Backend, frontend, isolated browser, Docker, Alembic, and dependency/security gates passed as
+recorded in `TEST_RESULTS.md`. Existing Mypy debt remains 42 errors in 26 files. No client-side
+issuance/signing, evidence export, production signer, database mutation/list endpoint, AWS/cloud,
+retrieval/generation, Agent/Research passport, or thesis-diagnostic behavior was introduced.
+
 # Enterprise end-to-end release hardening (2026-07-31)
 
 Candidate: `v0.3.0-enterprise-rc1` (proposed only). Baseline and rollback commit:

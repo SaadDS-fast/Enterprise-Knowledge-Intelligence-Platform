@@ -1,5 +1,16 @@
 # Known Limitations
 
+## Verifiable Answer Passport Phase 4 limitations (2026-08-02)
+
+- The frontend appears only for a server-returned persisted Search passport reference. Agent and
+  Research remain ineligible until complete authoritative claim/citation projection exists.
+- Feature defaults remain disabled and no production signer/provider or trust publication service
+  exists. The feature-enabled browser profile uses synthetic intercepted public contracts only.
+- Same-service trust download does not establish initial trust. Durable accepted trust state,
+  independent anchor authentication, retention/redaction, and production audit durability remain.
+- No client-side verification, evidence display/export, workspace passport list, public route,
+  AWS/KMS/HSM, or retrieval/generation behavior is included.
+
 ## Verifiable Answer Passport Phase 3B limitations (2026-08-02)
 
 - Persistence and export are disabled by default and no production signer/provider exists.

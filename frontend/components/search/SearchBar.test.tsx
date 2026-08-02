@@ -312,4 +312,54 @@ describe("SearchBar", () => {
     expect(screen.getByTestId("search-verdict")).not.toHaveTextContent(/insufficient|failed/i);
     expect(document.body.textContent).not.toMatch(/answer_segments|fact_ids|\/Users\//i);
   });
+
+  it("shows the passport indicator only when the server returns a persisted reference", async () => {
+    mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+      answer: "A supported unchanged answer.",
+      evidence: [],
+      sufficient_evidence: true,
+      abstained: false,
+      outcome: "ANSWER_SUPPORTED",
+      support_status: "SUPPORTED",
+      confidence_category: "high",
+      citations: [],
+      conflicts: [],
+      active_document_scope: [],
+      passport_reference: {
+        passport_id: "urn:uuid:00000000-0000-0000-0000-000000000042",
+        schema_version: "vap-1",
+        metadata_available: true,
+        export_available: true,
+      },
+    });
+    render(<SearchBar />);
+    await userEvent.type(screen.getByTestId("search-query"), "Show supported answer");
+    fireEvent.click(screen.getByTestId("search-submit"));
+    expect(await screen.findByTestId("passport-card")).toHaveTextContent("Answer Passport");
+    expect(screen.getByTestId("search-answer")).toHaveTextContent("A supported unchanged answer.");
+  });
+
+  it.each(["CONFLICTING_EVIDENCE", "PROCESSING_FAILED", "INSUFFICIENT_EVIDENCE"])(
+    "does not imply passport availability for %s",
+    async (outcome) => {
+      mockedApi.mockResolvedValueOnce([]).mockResolvedValueOnce({
+        answer: "Neutral terminal response.",
+        evidence: [],
+        sufficient_evidence: false,
+        abstained: true,
+        outcome,
+        support_status: outcome === "CONFLICTING_EVIDENCE" ? "CONFLICT" : "ABSENT",
+        confidence_category: "none",
+        citations: [],
+        conflicts: [],
+        active_document_scope: [],
+        passport_reference: null,
+      });
+      render(<SearchBar />);
+      await userEvent.type(screen.getByTestId("search-query"), "Show terminal response");
+      fireEvent.click(screen.getByTestId("search-submit"));
+      await screen.findByText("Neutral terminal response.");
+      expect(screen.queryByTestId("passport-card")).not.toBeInTheDocument();
+    },
+  );
 });

@@ -19,6 +19,11 @@ case "$profile" in
     export E2E_AGENT_RESEARCH_ENABLED=false
     export E2E_PHASE2B_ENABLED=true
     ;;
+  passport)
+    export E2E_AGENTIC_ENABLED=false
+    export E2E_AGENTIC_RAG_ENABLED=false
+    export E2E_AGENT_RESEARCH_ENABLED=false
+    ;;
   ollama)
     export E2E_AGENTIC_ENABLED=false
     export E2E_AGENTIC_RAG_ENABLED=false
@@ -37,7 +42,7 @@ case "$profile" in
     export E2E_ENTERPRISE_ENABLED=true
     ;;
   *)
-    echo "usage: $0 {default|agentic|phase2b|ollama|enterprise}" >&2
+    echo "usage: $0 {default|agentic|phase2b|passport|ollama|enterprise}" >&2
     exit 2
     ;;
 esac
@@ -90,7 +95,12 @@ node scripts/e2e_preflight.mjs
 $compose run --rm backend alembic upgrade head
 $compose run --rm backend alembic check
 
-if [ "$profile" = "phase2b" ]; then
+if [ "$profile" = "passport" ]; then
+  (
+    cd frontend
+    npx playwright test tests/e2e/passport-flow.spec.ts --project=chromium --workers=1
+  )
+elif [ "$profile" = "phase2b" ]; then
   (
     cd frontend
     npx playwright test tests/e2e/phase2b-browser.spec.ts --project=chromium

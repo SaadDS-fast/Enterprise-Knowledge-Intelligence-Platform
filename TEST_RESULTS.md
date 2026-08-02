@@ -361,6 +361,23 @@ are removed by the profile trap.
 - Consumed grounding holdouts were not executed. Threshold `0.72`, Search one-pass/no-retry
   behavior, and Agent retrieval retry budget `0` remain unchanged.
 
+# Verifiable Answer Passport Phase 4 (2026-08-02)
+
+- Focused backend frontend-contract suite: 8 passed; full backend: 410 passed and 4
+  environment-gated skips; total coverage 81%.
+- Compileall, Ruff check/format, and Bandit passed. Repository Mypy retained the same 42
+  pre-existing errors in 26 files; no new Phase 4 argument/type error remained.
+- pip-audit found no known vulnerabilities (the local package was skipped).
+- Frontend clean install completed; 13 files/47 tests passed. Typecheck and production build
+  passed. Lint reported zero errors and one inherited Fast Refresh warning.
+- Production npm audit found zero vulnerabilities.
+- The isolated passport Chromium journey passed 1/1. The default profile passed 2 with 8
+  accurate feature-gated skips; Agent/Research/accessibility passed 6 with 4 accurate skips.
+- Compose configuration, clean backend/frontend/ingestion-worker image builds, Alembic upgrade,
+  and Alembic no-pending-operations checks passed in disposable projects.
+- No consumed grounding holdout was executed. Threshold `0.72`, Search one-pass/no-retry,
+  Agent retry budget `0`, and the server feature defaults remain unchanged.
+
 # Search/browser acceptance closure (2026-07-31)
 
 - Focused backend/API equation, obligation-citation, and owner/date coverage: 30 passed.

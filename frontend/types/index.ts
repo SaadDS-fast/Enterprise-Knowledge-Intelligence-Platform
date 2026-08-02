@@ -104,6 +104,14 @@ export type SearchResult = {
   generation_verification: string;
   structured_output_valid: boolean;
   claim_verification_passed: boolean;
+  passport_reference?: AnswerPassportReference | null;
+};
+
+export type AnswerPassportReference = {
+  passport_id: string;
+  schema_version: "vap-1";
+  metadata_available: boolean;
+  export_available: boolean;
 };
 
 export type PrimaryResponseState =

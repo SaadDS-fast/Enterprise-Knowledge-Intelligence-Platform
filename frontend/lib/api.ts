@@ -25,6 +25,33 @@ function requestUrl(path: string): string {
   return `${API_BASE}${path}`;
 }
 
+async function readBounded(response: Response, maxBytes: number): Promise<Uint8Array> {
+  const declaredLength = Number(response.headers.get("content-length") ?? "0");
+  if (declaredLength > maxBytes) throw new APIError(413, "The download exceeds the safety limit.");
+  if (!response.body) return new Uint8Array();
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) throw new APIError(413, "The download exceeds the safety limit.");
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const output = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    output.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return output;
+}
+
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = authHeaders(options.headers);
   if (!(options.body instanceof FormData) && options.body && !headers.has("Content-Type")) {
@@ -57,6 +84,32 @@ export async function apiBlob(path: string, options: RequestInit = {}): Promise<
     );
   }
   return response.blob();
+}
+
+export async function apiBinary(
+  path: string,
+  expectedContentType: string,
+  maxBytes: number,
+): Promise<Blob> {
+  const response = await fetch(requestUrl(path), {
+    headers: authHeaders(),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new APIError(response.status, "The requested download is unavailable.");
+  const contentType = response.headers.get("content-type")?.split(";", 1)[0].trim();
+  if (contentType !== expectedContentType) throw new APIError(502, "The download format is invalid.");
+  const bytes = await readBounded(response, maxBytes);
+  return new Blob([bytes.buffer as ArrayBuffer], { type: expectedContentType });
+}
+
+export async function apiBoundedJson<T>(path: string, maxBytes: number): Promise<T> {
+  const response = await fetch(requestUrl(path), {
+    headers: authHeaders(),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new APIError(response.status, "The requested data is unavailable.");
+  const text = new TextDecoder("utf-8", { fatal: true }).decode(await readBounded(response, maxBytes));
+  return JSON.parse(text) as T;
 }
 
 export function apiUrl(path: string): string {

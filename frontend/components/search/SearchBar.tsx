@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import type { DocumentItem, SearchResult } from "@/types";
 
 import EvidencePanel from "./EvidencePanel";
+import AnswerPassportPanel from "@/components/passport/AnswerPassportPanel";
 
 const outcomeCopy: Record<string, string> = {
   ANSWER_SUPPORTED: "Answer supported",
@@ -181,6 +182,9 @@ export default function SearchBar() {
           <pre className="answer" data-testid="search-answer">
             {result.answer}
           </pre>
+          {result.passport_reference ? (
+            <AnswerPassportPanel reference={result.passport_reference} />
+          ) : null}
           {result.topic_items?.length ? (
             <>
               <h2>Topics</h2>

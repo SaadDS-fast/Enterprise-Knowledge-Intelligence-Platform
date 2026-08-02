@@ -140,6 +140,13 @@ class SearchRequest(BaseModel):
     document_ids: list[UUID] | None = None
 
 
+class AnswerPassportReference(BaseModel):
+    passport_id: str = Field(min_length=45, max_length=64)
+    schema_version: str = Field(pattern="^vap-1$")
+    metadata_available: bool
+    export_available: bool
+
+
 class SearchResponse(BaseModel):
     answer: str
     evidence: list[EvidenceItem]
@@ -165,6 +172,7 @@ class SearchResponse(BaseModel):
     generation_verification: str = "not_applicable"
     structured_output_valid: bool = False
     claim_verification_passed: bool = False
+    passport_reference: AnswerPassportReference | None = None
 
     @model_validator(mode="after")
     def enforce_canonical_response_state(self) -> SearchResponse:
@@ -190,6 +198,7 @@ class SearchResponse(BaseModel):
         self.confidence_category = compatible["confidence_category"]
         if state.primary_state not in {"SUPPORTED", "SUPPORTED_COMPOSITE"}:
             self.answer_value = None
+            self.passport_reference = None
         if state.primary_state not in {
             "SUPPORTED",
             "SUPPORTED_COMPOSITE",

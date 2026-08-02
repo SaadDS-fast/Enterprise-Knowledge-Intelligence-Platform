@@ -55,6 +55,7 @@ class PassportMetadataResponse(BaseModel):
 class TrustBundleResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
     bundle: str
+    verifier_bundle: str
     signature: str | None = None
     trust_mode: str
     bundle_version: int | None = Field(default=None, ge=1)
@@ -74,9 +75,9 @@ async def _trust(request: Request, tenant: Tenant) -> TrustMaterial | None:
         return None
     try:
         trust = await provider.current(tenant.organization_id, tenant.workspace_id)
-        return validate_trust_material(trust, organization_id=tenant.organization_id)
     except Exception:
         return None
+    return validate_trust_material(trust, organization_id=tenant.organization_id)
 
 
 async def _record(session: AsyncSession, tenant: Tenant, passport_id: str) -> AnswerPassport | None:
@@ -116,7 +117,21 @@ async def metadata(
         raise AppError(
             ErrorCode.PROVIDER_UNAVAILABLE, "Passport artifact is unavailable", 503
         ) from None
-    trust = await _trust(request, tenant)
+    try:
+        trust = await _trust(request, tenant)
+    except StoredArtifactError:
+        await record_audit_event(
+            session,
+            action="PASSPORT_INTEGRITY_FAILED",
+            resource_type="answer_passport",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            resource_id=passport_id[:80],
+        )
+        await session.commit()
+        raise AppError(
+            ErrorCode.PROVIDER_UNAVAILABLE, "Passport artifact is unavailable", 503
+        ) from None
     status, freshness, key_status = current_status(
         record, manifest, now=datetime.now(UTC), trust=trust
     )
@@ -154,7 +169,8 @@ async def metadata(
         key_lifecycle_status=key_status,
         trust_bundle_version=trust.bundle_version if trust else None,
         trust_bundle_checksum=trust.bundle_checksum if trust else None,
-        export_available=can_manage_documents(tenant.role),
+        export_available=can_manage_documents(tenant.role)
+        and (status != "KEY_REVOKED" or tenant.role in {RoleName.ADMIN, RoleName.OWNER}),
     )
 
 
@@ -237,7 +253,10 @@ async def trust_bundle(
     if not settings.answer_passport_export_enabled:
         raise _feature_unavailable()
     require_role(tenant.role, RoleName.EDITOR)
-    trust = await _trust(request, tenant)
+    try:
+        trust = await _trust(request, tenant)
+    except StoredArtifactError:
+        trust = None
     if trust is None or trust.lifecycle_bundle is None:
         raise AppError(ErrorCode.PROVIDER_UNAVAILABLE, "Trust material is unavailable", 503)
     await record_audit_event(
@@ -251,6 +270,7 @@ async def trust_bundle(
     await session.commit()
     return TrustBundleResponse(
         bundle=trust.lifecycle_bundle.decode("utf-8"),
+        verifier_bundle=trust.verifier_bundle.decode("utf-8"),
         signature=trust.lifecycle_signature.decode("ascii") if trust.lifecycle_signature else None,
         trust_mode=trust.trust_mode,
         bundle_version=trust.bundle_version,

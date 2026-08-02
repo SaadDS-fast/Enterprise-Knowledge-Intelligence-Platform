@@ -405,6 +405,97 @@ td small {
   line-height: 1.75;
 }
 
+.passport-card {
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #416e66;
+  border-radius: 12px;
+  background: #101c1d;
+}
+
+.passport-heading,
+.passport-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.passport-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.passport-heading span,
+.passport-message {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.passport-details {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 10px;
+}
+
+.passport-status-grid,
+.passport-metadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.passport-status-grid div,
+.passport-metadata div {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.passport-status-grid dt,
+.passport-metadata dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 5px;
+}
+
+.passport-status-grid dd,
+.passport-metadata dd {
+  margin: 0;
+}
+
+.passport-positive { color: var(--accent); }
+.passport-review { color: var(--warning); }
+.passport-blocked { color: var(--danger); }
+.passport-neutral { color: var(--muted); }
+
+.offline-guide {
+  margin-top: 20px;
+  padding-top: 4px;
+}
+
+.offline-guide p {
+  line-height: 1.6;
+}
+
+.offline-guide pre {
+  padding: 12px;
+  background: #090d13;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .success {
   color: var(--accent);
 }
