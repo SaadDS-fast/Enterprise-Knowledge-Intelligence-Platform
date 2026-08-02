@@ -20,11 +20,21 @@ from app.passport.hashing import b64url_decode, content_digest
 from app.passport.issuance import InternalIssuanceResult, IssuanceStatus, SupportedAnswerProjection
 from app.passport.jws import parse_header
 from app.passport.schema import PassportManifest
+from app.passport.trust_lifecycle import (
+    LifecycleTrustBundle,
+    TrustBundleSignature,
+    TrustBundleStatus,
+    validate_trust_bundle,
+)
 from app.passport.verifier import verify_passport
 from app.repositories.answer_passports import AnswerPassportRepository
 
 MAX_MANIFEST_BYTES = 1_048_576
 MAX_SIGNATURE_CHARS = 8_192
+MAX_VERIFIER_BUNDLE_BYTES = 1_048_576
+MAX_LIFECYCLE_BUNDLE_BYTES = 4_194_304
+MAX_LIFECYCLE_SIGNATURE_BYTES = 16_384
+MAX_EXPORT_PACKAGE_BYTES = 6_291_456
 EXPORT_MEDIA_TYPE = "application/vnd.ekip.answer-passport+zip"
 AuditSink = Callable[[dict[str, object]], Awaitable[None]]
 
@@ -58,6 +68,53 @@ class TrustMaterial(BaseModel):
 
 class TrustMaterialProvider(Protocol):
     async def current(self, organization_id: UUID, workspace_id: UUID) -> TrustMaterial: ...
+
+
+def validate_trust_material(trust: TrustMaterial, *, organization_id: UUID) -> TrustMaterial:
+    """Reject oversized, non-canonical, substituted, or inconsistent public trust material."""
+
+    if len(trust.verifier_bundle) > MAX_VERIFIER_BUNDLE_BYTES:
+        raise StoredArtifactError("verifier_bundle_size_limit")
+    if trust.lifecycle_bundle is None:
+        if trust.lifecycle_signature is not None:
+            raise StoredArtifactError("orphan_trust_bundle_signature")
+        return trust
+    if len(trust.lifecycle_bundle) > MAX_LIFECYCLE_BUNDLE_BYTES or (
+        trust.lifecycle_signature is not None
+        and len(trust.lifecycle_signature) > MAX_LIFECYCLE_SIGNATURE_BYTES
+    ):
+        raise StoredArtifactError("trust_bundle_size_limit")
+    try:
+        parsed = parse_json_strict(trust.lifecycle_bundle)
+        if canonicalize(parsed) != trust.lifecycle_bundle:
+            raise StoredArtifactError("trust_bundle_not_canonical")
+        bundle = LifecycleTrustBundle.model_validate(parsed)
+        if trust.lifecycle_signature is not None:
+            TrustBundleSignature.model_validate(parse_json_strict(trust.lifecycle_signature))
+    except (ValueError, UnicodeError) as exc:
+        raise StoredArtifactError("invalid_trust_material") from exc
+    result = validate_trust_bundle(
+        trust.lifecycle_bundle,
+        signature_bytes=trust.lifecycle_signature,
+        at=bundle.generated_at,
+        allow_unsigned_test_bundle=trust.lifecycle_signature is None,
+    )
+    if result.status not in {
+        TrustBundleStatus.VALID,
+        TrustBundleStatus.VALID_UNSIGNED_TEST_BUNDLE,
+        # The provider boundary supplies the anchor-authenticated material; this layer
+        # still verifies canonical schema/checksum/signature shape and issuer binding.
+        TrustBundleStatus.UNKNOWN_TRUST_ANCHOR,
+    }:
+        raise StoredArtifactError("invalid_trust_bundle_integrity")
+    if bundle.issuer_id != str(organization_id):
+        raise StoredArtifactError("trust_bundle_issuer_mismatch")
+    if (
+        trust.bundle_version != bundle.bundle_version
+        or trust.bundle_checksum != bundle.bundle_checksum
+    ):
+        raise StoredArtifactError("trust_bundle_metadata_mismatch")
+    return trust
 
 
 def _hex_digest(value: bytes) -> str:
@@ -286,7 +343,7 @@ def current_status(
     )
     if result.status == "REVOKED":
         return "KEY_REVOKED", freshness, "REVOKED"
-    if result.status in {"INVALID_SIGNATURE", "INVALID_TRUST_BUNDLE", "UNKNOWN_KEY"}:
+    if result.overall == "invalid":
         return "ARTIFACT_INVALID", freshness, "UNKNOWN"
     key_state = "RETIRED" if result.key_status == "retired" else "ACTIVE"
     if freshness == "EXPIRED":
@@ -334,7 +391,10 @@ def build_export_package(
             info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
             info.external_attr = 0o100600 << 16
             archive.writestr(info, content)
-    return output.getvalue()
+    package = output.getvalue()
+    if len(package) > MAX_EXPORT_PACKAGE_BYTES:
+        raise StoredArtifactError("export_package_size_limit")
+    return package
 
 
 def safe_download_name(passport_id: str) -> str:

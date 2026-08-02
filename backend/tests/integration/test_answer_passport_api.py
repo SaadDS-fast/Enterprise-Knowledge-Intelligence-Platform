@@ -62,27 +62,30 @@ class ScopedTrustProvider:
         return self.material
 
 
-async def _trust_provider(workspace_id: UUID) -> ScopedTrustProvider:
+async def _trust_provider(
+    workspace_id: UUID, *, bundle_issuer_id: str | None = None
+) -> ScopedTrustProvider:
     async with AsyncSessionLocal() as session:
         organization_id = await session.scalar(
             select(Workspace.organization_id).where(Workspace.id == workspace_id)
         )
         assert organization_id is not None
     now = datetime.now(UTC)
+    issuer_id = bundle_issuer_id or str(organization_id)
     keys = EphemeralSigningProvider()
     registry = InMemoryKeyMetadataRegistry()
     lifecycle = KeyLifecycleService(registry, keys, clock=lambda: now)
     await keys.create("public-test-key")
     await lifecycle.register_pending(
-        issuer_id=str(organization_id),
+        issuer_id=issuer_id,
         key_id="public-test-key",
         not_before=now - timedelta(days=1),
         not_after=now + timedelta(days=30),
     )
-    await lifecycle.activate(str(organization_id), "public-test-key")
+    await lifecycle.activate(issuer_id, "public-test-key")
     built = await TrustBundleBuilder(clock=lambda: now).build(
-        issuer_id=str(organization_id),
-        records=await registry.list(str(organization_id)),
+        issuer_id=issuer_id,
+        records=await registry.list(issuer_id),
         bundle_version=2,
         next_update=now + timedelta(days=1),
         valid_until=now + timedelta(days=2),
@@ -219,4 +222,31 @@ def test_controlled_trust_bundle_is_scoped_and_public_only(
     assert payload["trust_mode"] == "unsigned-development"
     lowered = response.text.lower()
     assert "private_key" not in lowered and "seed" not in lowered and "credential" not in lowered
+    del client.app.state.passport_trust_material_provider
+
+
+def test_trust_bundle_issuer_substitution_is_rejected(client, auth_headers, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "answer_passport_export_enabled", True)
+    workspace_id = UUID(auth_headers["X-Workspace-ID"])
+    client.app.state.passport_trust_material_provider = asyncio.run(
+        _trust_provider(workspace_id, bundle_issuer_id=str(UUID(int=42)))
+    )
+    response = client.get("/api/v1/passport-trust-bundles/current", headers=auth_headers)
+    assert response.status_code == 503
+    assert "issuer" not in response.text.lower()
+    del client.app.state.passport_trust_material_provider
+
+
+def test_metadata_rejects_cryptographically_invalid_stored_artifact(
+    client, auth_headers, monkeypatch
+) -> None:
+    monkeypatch.setattr(settings, "answer_passport_export_enabled", True)
+    workspace_id = UUID(auth_headers["X-Workspace-ID"])
+    passport_id = asyncio.run(_persist(workspace_id))
+    provider = asyncio.run(_trust_provider(workspace_id))
+    provider.material = provider.material.model_copy(update={"verifier_bundle": b'{"bad":true}'})
+    client.app.state.passport_trust_material_provider = provider
+    response = client.get(f"/api/v1/answer-passports/{passport_id}", headers=auth_headers)
+    assert response.status_code == 503
+    assert response.json()["error"]["message"] == "Passport artifact is unavailable"
     del client.app.state.passport_trust_material_provider

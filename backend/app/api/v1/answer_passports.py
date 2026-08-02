@@ -25,6 +25,7 @@ from app.passport.persistence import (
     current_status,
     safe_download_name,
     validate_stored_record,
+    validate_trust_material,
 )
 from app.repositories.answer_passports import SQLAlchemyAnswerPassportRepository
 from app.security.audit import record_audit_event
@@ -72,7 +73,8 @@ async def _trust(request: Request, tenant: Tenant) -> TrustMaterial | None:
     if provider is None:
         return None
     try:
-        return await provider.current(tenant.organization_id, tenant.workspace_id)
+        trust = await provider.current(tenant.organization_id, tenant.workspace_id)
+        return validate_trust_material(trust, organization_id=tenant.organization_id)
     except Exception:
         return None
 
@@ -118,6 +120,17 @@ async def metadata(
     status, freshness, key_status = current_status(
         record, manifest, now=datetime.now(UTC), trust=trust
     )
+    if status == "ARTIFACT_INVALID":
+        await record_audit_event(
+            session,
+            action="PASSPORT_INTEGRITY_FAILED",
+            resource_type="answer_passport",
+            actor_user_id=tenant.user_id,
+            workspace_id=tenant.workspace_id,
+            resource_id=passport_id[:80],
+        )
+        await session.commit()
+        raise AppError(ErrorCode.PROVIDER_UNAVAILABLE, "Passport artifact is unavailable", 503)
     await record_audit_event(
         session,
         action="PASSPORT_METADATA_VIEWED",

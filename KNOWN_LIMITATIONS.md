@@ -5,6 +5,8 @@
 - Persistence and export are disabled by default and no production signer/provider exists.
 - PostgreSQL enforces row immutability. Retention, legal erasure, and redaction require a future
   separately authorized lifecycle rather than ordinary update/delete operations.
+- API view/export audit rows commit before returning. The injected persistence coordinator sink is
+  best-effort and not an atomic durable outbox; production durability remains future work.
 - Trust is available only through injected public material. Initial anchor distribution, durable
   accepted trust state, and authenticated publication remain external.
 - Revoked export is admin-only forensic policy; expired/stale exports are review artifacts.

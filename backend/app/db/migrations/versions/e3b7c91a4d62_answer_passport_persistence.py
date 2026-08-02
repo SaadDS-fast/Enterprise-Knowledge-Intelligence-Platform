@@ -106,19 +106,38 @@ def upgrade() -> None:
     )
     if op.get_bind().dialect.name == "postgresql":
         op.execute("""
-        CREATE FUNCTION deny_answer_passport_mutation() RETURNS trigger AS $$
+        CREATE FUNCTION enforce_answer_passport_workspace_scope_v1() RETURNS trigger AS $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM workspaces
+            WHERE id = NEW.workspace_id AND organization_id = NEW.organization_id
+          ) THEN
+            RAISE EXCEPTION 'answer passport workspace scope is invalid';
+          END IF;
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        CREATE TRIGGER trg_answer_passports_workspace_scope
+        BEFORE INSERT ON answer_passports
+        FOR EACH ROW EXECUTE FUNCTION enforce_answer_passport_workspace_scope_v1();
+
+        CREATE FUNCTION deny_answer_passport_mutation_v1() RETURNS trigger AS $$
         BEGIN RAISE EXCEPTION 'answer passport records are immutable'; END;
         $$ LANGUAGE plpgsql;
         CREATE TRIGGER trg_answer_passports_immutable
         BEFORE UPDATE OR DELETE ON answer_passports
-        FOR EACH ROW EXECUTE FUNCTION deny_answer_passport_mutation();
+        FOR EACH ROW EXECUTE FUNCTION deny_answer_passport_mutation_v1();
         """)
 
 
 def downgrade() -> None:
     if op.get_bind().dialect.name == "postgresql":
         op.execute("DROP TRIGGER IF EXISTS trg_answer_passports_immutable ON answer_passports")
-        op.execute("DROP FUNCTION IF EXISTS deny_answer_passport_mutation()")
+        op.execute("DROP FUNCTION IF EXISTS deny_answer_passport_mutation_v1()")
+        op.execute(
+            "DROP TRIGGER IF EXISTS trg_answer_passports_workspace_scope ON answer_passports"
+        )
+        op.execute("DROP FUNCTION IF EXISTS enforce_answer_passport_workspace_scope_v1()")
     op.drop_index(op.f("ix_answer_passports_artifact_checksum"), table_name="answer_passports")
     op.drop_index(op.f("ix_answer_passports_workspace_id"), table_name="answer_passports")
     op.drop_index(op.f("ix_answer_passports_organization_id"), table_name="answer_passports")

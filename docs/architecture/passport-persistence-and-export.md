@@ -9,5 +9,10 @@ Every read includes passport, organization, and workspace IDs derived from authe
 context. Metadata is viewer-readable; export requires editor; revoked forensic export requires
 admin. Missing and cross-tenant artifacts share the same 404 behavior.
 
+PostgreSQL independently checks workspace-to-organization ownership on INSERT and denies every
+UPDATE/DELETE. This protects direct SQL paths in addition to the repository scope check.
+
 Checksums, canonical schema, signed ID/scope/key/answer/time bindings, and optional injected public
 trust are checked before output. The trust provider is server-controlled with no network discovery.
+API export audit rows commit before the response is returned. Coordinator persistence audit sinks
+are bounded best-effort notifications and are not a durable transactional outbox.

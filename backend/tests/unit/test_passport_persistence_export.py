@@ -6,10 +6,12 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from app.db.models.answer_passport import AnswerPassport
 from app.passport.canonical import canonicalize, parse_json_strict
+from app.passport.hashing import b64url_encode
 from app.passport.issuance import (
     ANSWER_NORMALIZATION_VERSION,
     CLAIM_VERIFIER_VERSION,
@@ -28,12 +30,14 @@ from app.passport.persistence import (
     PassportPersistenceCoordinator,
     PassportPersistenceStatus,
     StoredArtifactError,
+    TrustMaterial,
     artifact_checksum,
     build_export_package,
     current_status,
     persistence_idempotency_key,
     safe_download_name,
     validate_stored_record,
+    validate_trust_material,
 )
 from app.repositories.answer_passports import PassportPersistenceCollision
 
@@ -123,11 +127,11 @@ def projection(
 
 
 async def issued(
-    organization_id: UUID, workspace_id: UUID
+    organization_id: UUID, workspace_id: UUID, *, signer: Signer | None = None
 ) -> tuple[InternalIssuanceResult, SupportedAnswerProjection]:
     projected = projection(organization_id, workspace_id)
     result = await PassportIssuanceCoordinator(
-        enabled=True, signer=Signer(), clock=lambda: NOW, identifier=uuid4
+        enabled=True, signer=signer or Signer(), clock=lambda: NOW, identifier=uuid4
     ).issue(projected, context=IssuanceContext())
     assert result.status is IssuanceStatus.ISSUED
     return result, projected
@@ -299,3 +303,73 @@ def test_safe_filename_and_artifact_checksum_are_bounded() -> None:
     with pytest.raises(StoredArtifactError):
         safe_download_name("urn:uuid:x\r\nContent-Disposition: bad")
     assert artifact_checksum(b"a", "b") != artifact_checksum(b"ab", "")
+
+
+def test_oversized_trust_material_is_rejected_before_packaging() -> None:
+    with pytest.raises(StoredArtifactError, match="verifier_bundle_size_limit"):
+        validate_trust_material(
+            TrustMaterial(verifier_bundle=b"x" * 1_048_577), organization_id=uuid4()
+        )
+
+
+@pytest.mark.asyncio
+async def test_compound_status_precedence_is_revocation_then_freshness() -> None:
+    organization_id, workspace_id = uuid4(), uuid4()
+    repository = MemoryRepository(organization_id, workspace_id)
+    signer = Signer()
+    issuance, projected = await issued(organization_id, workspace_id, signer=signer)
+    result = await PassportPersistenceCoordinator(
+        repository, enabled=True, clock=lambda: NOW
+    ).persist_issued(
+        issuance, projected, organization_id=organization_id, workspace_id=workspace_id
+    )
+    assert result.record is not None
+    manifest = validate_stored_record(result.record)
+    public_key = b64url_encode(
+        signer.private.public_key().public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+    )
+
+    def trust(status: str) -> TrustMaterial:
+        return TrustMaterial(
+            verifier_bundle=canonicalize(
+                {
+                    "schema_version": "vap-trust-1",
+                    "generated_at": NOW.isoformat().replace("+00:00", "Z"),
+                    "keys": [
+                        {
+                            "key_id": signer.key_id,
+                            "algorithm": "EdDSA",
+                            "public_key": public_key,
+                            "status": status,
+                            "not_before": (NOW - timedelta(days=1))
+                            .isoformat()
+                            .replace("+00:00", "Z"),
+                            "not_after": (NOW + timedelta(days=365))
+                            .isoformat()
+                            .replace("+00:00", "Z"),
+                            "retired_at": (NOW + timedelta(days=1))
+                            .isoformat()
+                            .replace("+00:00", "Z")
+                            if status == "retired"
+                            else None,
+                            "revoked_at": (NOW + timedelta(days=1))
+                            .isoformat()
+                            .replace("+00:00", "Z")
+                            if status == "revoked"
+                            else None,
+                        }
+                    ],
+                }
+            )
+        )
+
+    expired_at = NOW + timedelta(days=31)
+    assert current_status(result.record, manifest, now=expired_at, trust=trust("revoked"))[0] == (
+        "KEY_REVOKED"
+    )
+    assert current_status(result.record, manifest, now=expired_at, trust=trust("retired"))[0] == (
+        "EXPIRED"
+    )
