@@ -1,5 +1,24 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
+
+Validation result: **PASS** after a separate lifecycle-hardening follow-up.
+
+- Registry-linearized signing now excludes rotation, retirement, and revocation until provider
+  signing completes, with no mid-request key switch. Rotation remains a single publication of
+  successor ACTIVE and predecessor RETIRED; cancellation and failure preserve unambiguous state.
+- Revocation chronology is bounded and irreversible. Offline verification separates signature
+  validity from issuance-time validity and retirement cutoff, with revocation taking precedence.
+- Lifecycle revisions bind trust-bundle advancement; checksum/chain/history and audit-field
+  validation resist rollback, forks, record removal, substitution, and log-forging input.
+- Lifecycle-generated public trust data now includes a deterministic Phase 1 `vap-trust-1`
+  projection, and a synthetic lifecycle-issued passport verifies through the existing offline
+  verifier without exposing private material.
+- Full backend passed 386 tests with 4 skips and 81% coverage. Bandit and dependency audits are
+  clean. Frontend, Docker backend build, and Alembic drift checks passed.
+- Thesis firewall and architecture isolation remain intact. No production provider, persistence,
+  API, migration, frontend workflow, AWS/KMS integration, or consumed holdout was added or run.
+
 ## Verifiable Answer Passport Phase 2 gate — 2026-08-02
 
 Phase 2 integrates an internal, disabled-by-default, supported-only projection and issuance
@@ -433,6 +452,21 @@ passed 5 with 3 gated skips. Backend passed 215 with 4 environment-gated skips a
 coverage; frontend passed 34/34 tests and its production build. Docker builds and
 Alembic upgrade/check passed in disposable profiles. Both consumed holdouts were
 neither executed nor modified.
+
+# Verifiable Answer Passport Phase 3A (2026-08-02)
+
+Status: **PASS**. Phase 3A supplies strict immutable public key metadata, atomic in-memory
+lifecycle transitions and rotation, opaque provider signing, server-side issuance-key resolution,
+deterministic public-only lifecycle trust bundles, optional distinct-anchor signatures, and
+rollback-aware offline validation. Retired/revoked public records are retained; revocation is
+irreversible; key IDs cannot be reused; no state permits two active keys.
+
+All focused and full regressions, scanners, frontend, Docker, Alembic, and applicable isolated
+browser profiles passed as recorded in `TEST_RESULTS.md`. Repository-wide Mypy retains 42 known
+baseline errors while scoped changed modules pass. Key-material scans found no serialized private
+key, seed, credential, token, private-key configuration, or generated artifact. No public API,
+migration, frontend flow, persistent/production provider, AWS/KMS/cloud integration, retrieval or
+generation change was added. Trust bootstrap remains an independently trusted-channel obligation.
 
 # Enterprise end-to-end release hardening (2026-07-31)
 

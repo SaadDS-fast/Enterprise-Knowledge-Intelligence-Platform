@@ -1,5 +1,19 @@
 # Known Limitations
 
+## Verifiable Answer Passport Phase 3A limitations (2026-08-02)
+
+- Registry, provider, lifecycle revision, trust state, audit sink, and keys are process-local test
+  implementations. Multi-process durability, crash recovery, distributed exclusion, production
+  audit persistence, and authenticated publication are Phase 3B concerns.
+- The `vap-trust-1` output is an offline compatibility projection, not an API or distribution
+  service. Verifiers need an independently authenticated anchor and durable rollback state.
+- Retirement cutoff is optional for backward compatibility. Lifecycle-generated bundles include
+  it; an older bundle without it cannot prove a precise retirement instant.
+- Audit delivery follows atomic state commit. Sink failure is non-transactional; production needs
+  an atomic outbox or equivalent durable mechanism.
+- There is no production provider, persistence/configuration, API, migration, frontend workflow,
+  passport storage, evidence export, network refresh, AWS/KMS/HSM, or retrieval/generation change.
+
 ## Verifiable Answer Passport Phase 2 limitations (2026-08-02)
 
 - Issuance is internal, disabled by default and limited to compatible finalized Standard Search
@@ -205,6 +219,15 @@ operator-provisioned and can be unavailable or open its circuit breaker. Those c
 intentionally use deterministic extractive fallback. The 5.0 GB loaded model footprint
 is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
 holdouts are both consumed and must never be rerun or used for tuning.
+
+# Verifiable Answer Passport Phase 3A limitations
+
+The key lifecycle is a provider-neutral foundation with ephemeral in-memory references only. It
+does not provide durable transactions, production signing, private-key persistence, bundle
+publication, independent anchor delivery, persistent rollback state, API/UI access, cloud/KMS/HSM
+integration, database storage, or evidence export. A signed bundle cannot solve initial trust
+distribution. Phase 1 trust input and status precedence are unchanged. External cryptographic and
+operational review remains required before any production issuance.
 
 The previously recorded Search/browser equation, negation-citation, and single-source
 owner/date gaps are closed. The verifier remains intentionally conservative for novel

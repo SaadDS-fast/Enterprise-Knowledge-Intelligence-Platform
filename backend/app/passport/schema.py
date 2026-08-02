@@ -137,6 +137,7 @@ class TrustKey(StrictModel):
     status: Literal["trusted", "retired", "revoked"]
     not_before: datetime
     not_after: datetime
+    retired_at: datetime | None = None
     revoked_at: datetime | None = None
 
     @field_validator("public_key")
@@ -154,6 +155,11 @@ class TrustKey(StrictModel):
             raise ValueError("invalid_key_validity_interval")
         if self.status == "revoked" and self.revoked_at is None:
             raise ValueError("revoked_key_requires_revoked_at")
+        if self.retired_at is not None:
+            if self.retired_at.tzinfo is None:
+                raise ValueError("retired_at_requires_timezone")
+            if self.retired_at < self.not_before:
+                raise ValueError("retired_at_precedes_validity_interval")
         if self.revoked_at is not None and self.revoked_at.tzinfo is None:
             raise ValueError("revoked_at_requires_timezone")
         return self

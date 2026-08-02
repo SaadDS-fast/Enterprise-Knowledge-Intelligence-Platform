@@ -1,5 +1,16 @@
 # Enterprise release checklist
 
+## Verifiable Answer Passport Phase 3A
+
+- [x] Immutable checksummed PENDING/ACTIVE/RETIRED/REVOKED metadata and strict transitions.
+- [x] Zero-or-one active key, irreversible revocation, non-reusable IDs, historical retention.
+- [x] Atomic in-memory rotation and server-side Phase 2 resolved signer.
+- [x] Deterministic public-only lifecycle bundles, chaining, rollback checks, optional anchor.
+- [x] Trust bootstrap and Phase 3B production prerequisites documented.
+- [x] No API, migration, frontend, production key provider, private-key config, or AWS/KMS work.
+- [x] Record complete Phase 3A backend/frontend/E2E/Docker/security validation below.
+- [x] Commit only after every mandatory gate passes; never push, merge, or tag in this task.
+
 ## Verifiable Answer Passport Phase 2
 
 - [x] Internal hook occurs only after canonical answer finalization.

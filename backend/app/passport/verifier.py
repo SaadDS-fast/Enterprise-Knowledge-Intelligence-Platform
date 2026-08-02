@@ -131,9 +131,9 @@ def verify_passport(
     if key.status == "revoked":
         return _invalid("signing_key_revoked", status="REVOKED", **base)
 
-    historical_validity = (
-        "valid" if key.not_before <= manifest.issued_at <= key.not_after else "outside_interval"
-    )
+    inside_interval = key.not_before <= manifest.issued_at <= key.not_after
+    before_retirement = key.retired_at is None or manifest.issued_at <= key.retired_at
+    historical_validity = "valid" if inside_interval and before_retirement else "outside_interval"
     base["historical_key_validity"] = historical_validity
     if historical_validity == "outside_interval":
         return _invalid("signature_issued_outside_key_validity", status="INVALID_SIGNATURE", **base)
