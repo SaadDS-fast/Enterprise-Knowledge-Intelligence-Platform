@@ -1,5 +1,37 @@
 # Test Results
 
+## Verifiable Answer Passport Phase 1 — 2026-08-01
+
+Overall release gates: **PASS**.
+
+| Area | Result | Evidence |
+|---|---|---|
+| Focused passport matrix | Pass | 99 tests: canonicalization, independent Ed25519/JWS interoperability, hashes, synthetic eligibility, snapshots, lifecycle, all status-to-exit mappings, mutations, precedence and socket blocking |
+| Backend full suite | Pass | 324 passed, 4 environment-gated skips, 0 failures |
+| Backend coverage | Pass | 80% total; passport package 526/561 statements, approximately 94% |
+| Compile / Ruff | Pass | Compileall; Ruff lint and format over `app tests` |
+| Mypy | Scoped pass | `app/passport` passes; repository-wide configured run exposes 29 pre-existing errors in untouched modules |
+| Security | Pass | Bandit: zero findings; pip-audit: no known vulnerabilities |
+| Frontend | Pass | lint: 0 errors/1 previously recorded Fast Refresh warning; typecheck; 11 files/27 tests; production build |
+| Frontend audit | Pass | `npm audit --omit=dev`: 0 vulnerabilities |
+| Docker | Pass | Compose config and current-source backend image build |
+| Schema drift | Pass | Docker PostgreSQL `alembic check`: no new upgrade operations |
+| CLI | Pass | module and installed `ekip-vap` forms, text/JSON, stable exit codes, malformed/missing/oversized input, explicit symlink behavior |
+
+Canonicalization is classified as a **restricted RFC 8785-compatible profile** for the tested
+supported JSON domain. Eight stable canonical vectors cover ordering, nesting, arrays, Unicode,
+escapes, equivalent field order and integers; fractional/exponent and non-finite numbers are
+rejected. The protected mutation/attack vectors were detected or deterministically classified.
+
+The independent audit added 25 tests. It classifies the envelope as RFC 7515 Appendix F standard
+encoded detached JWS, not RFC 7797, and verifies interoperability in both directions with an
+independent Base64URL/JSON/PyCA path. The CLI maps only `VERIFIED` to exit `0`; review-required
+statuses map to exit `2`; invalid, revoked, malformed and input-failure outcomes map to exit `1`.
+
+No consumed grounding holdout was executed. Existing full-suite tests confirmed one-pass Agent
+retrieval, neutral refusal, supported answers, conflicts, tenant isolation, support threshold
+`0.72`, and Agent retry budget `0` remain unchanged.
+
 Validated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 
 ## v0.2.1 Operational Hardening Results

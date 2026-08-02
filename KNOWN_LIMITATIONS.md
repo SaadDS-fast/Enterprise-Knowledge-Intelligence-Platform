@@ -1,5 +1,35 @@
 # Known Limitations
 
+## Verifiable Answer Passport Phase 1 limitations (2026-08-01)
+
+- Phase 1 is a cryptographic core and standalone verifier. It is not integrated with production
+  answers, APIs, persistence, frontend workflows, deployment, AWS or any cloud signer.
+- The synthetic issuer exists only to make eligibility rejection testable. Every issuance fixture
+  is synthetic; no application retrieval or generation result is passed to it.
+- Canonicalization is a custom, restricted RFC 8785-compatible profile for the tested JSON domain.
+  Fractional/exponent numbers and non-finite values are rejected rather than serialized.
+- The custom JWS implementation is deliberately not a general JOSE stack. It supports only EdDSA,
+  an exact protected `alg`/`kid`/`typ` header, canonical protected-header JSON and RFC 7515
+  Appendix F standard encoded detached payloads. RFC 7797, `crit`, `b64`, `cty`, unprotected
+  headers, algorithm negotiation, remote key discovery, embedded JWKs and X.509 chains are
+  rejected. Replacing it with a library requires equivalent exact-policy, canonical-byte,
+  detached-payload and status/precedence behavior plus the independent interoperability matrix.
+- `vap-snapshot-1` validates an explicitly supplied synthetic authorized snapshot. Phase 1 does not
+  export, authorize, encrypt, transmit or retain production evidence.
+- The caller-supplied `vap-trust-1` bundle is the explicit local trust anchor. Root signing and
+  distribution, KMS/HSM integration and production key ceremonies remain future work.
+- Offline revocation/freshness knowledge is only as current as the supplied trust bundle and
+  verifier clock. No hidden network refresh occurs.
+- Signature integrity proves that protected bytes validate under the selected trusted public key;
+  it does not prove current factual truth, universal correctness or viewer authorization.
+- Without a snapshot, evidence content is not independently validated and is reported as
+  `not_supplied`, not as valid.
+- Repository-wide Mypy currently reports 29 pre-existing errors in untouched modules. The complete
+  `app/passport` package passes the configured strict Mypy check.
+- GroundSeal Passport is a provisional product name and has not been trademark-cleared.
+- No diagnosis, retry, reformulation, recovery or other thesis-reserved behavior exists in the
+  passport package.
+
 Updated on 2026-07-23 from branch `release/v0.2.1-operational-hardening`.
 
 ## Implemented And Runtime-Tested

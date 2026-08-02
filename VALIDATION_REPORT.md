@@ -1,5 +1,52 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 1 release gate — 2026-08-01
+
+**Status: PASS.** Validated on `feat/verifiable-answer-passport` from implementation baseline
+`7a3e96615e7b31a769bf5d858d27f92c3e001b05`. The phase is limited to the pure cryptographic core,
+synthetic-only eligibility/snapshot fixtures and standalone offline verifier.
+
+Implemented artifacts are `vap-1`, detached `application/vap+jws`, `vap-trust-1`, and optional
+synthetic `vap-snapshot-1`. PyCA cryptography supplies Ed25519. Canonical JSON and the narrow
+RFC 7515 Appendix F standard encoded detached-JWS envelope are custom, tested code; RFC 7797 is
+not used. Canonicalization is a restricted RFC 8785-compatible profile, not unrestricted RFC
+conformance.
+
+Release evidence:
+
+- 99 focused passport tests passed, including 25 independent-audit additions, 8 canonical golden
+  vectors, independent signer/verifier interoperability in both directions, exact JOSE-header
+  attacks, compound-failure precedence and every status-to-exit mapping.
+- Complete backend: 324 passed, 4 environment-gated skips; 80% total coverage and approximately
+  94% passport-package coverage.
+- Compileall, Ruff lint/format, passport Mypy, Bandit (zero findings), and pip-audit (no known
+  vulnerabilities) passed.
+- The required repository-wide Mypy command was executed and exposed 29 pre-existing errors only
+  in untouched modules; no passport Mypy errors exist.
+- Frontend npm clean install, lint (0 errors/1 pre-existing warning), typecheck, 27 tests, production
+  build and production audit (0 vulnerabilities) passed.
+- Docker Compose config, backend image build and PostgreSQL Alembic drift check passed; no migration
+  is required.
+- Module and installed CLI forms passed. Exit `0` is only `VERIFIED`; exit `2` is review-required
+  (`VERIFIED_WITHOUT_SNAPSHOT`, `STALE`, `EXPIRED`, `INDETERMINATE`); exit `1` covers every other
+  status and input failure. Normal invalidity has no traceback.
+- Integrity and trust failures deterministically take precedence over freshness: content changes,
+  unknown keys, invalid signatures and snapshot mismatches cannot be softened by expiry/staleness.
+- Socket/DNS creation was blocked during successful verification; static dependency tests exclude
+  retrieval, generation, embeddings, rerankers, Agent, Research, APIs, persistence and networking.
+- Snapshot absence remains `not_supplied`; a valid signature does not claim current factual truth,
+  universal correctness, or evidence authorization.
+- Secret hygiene found no tracked/intentional private key, PEM, credential or token. The test signer
+  is ephemeral and never serialized.
+- Support threshold remains `0.72`; Search remains one configured retrieval pass and Agent retry
+  budget remains `0`. No holdout was executed or changed.
+- No production issuance, endpoint, migration, frontend workflow, AWS/cloud integration, push,
+  merge or tag was introduced during validation.
+
+Detailed protocol and limitations are in
+`docs/implementation/verifiable-answer-passport-protocol-v1.md`,
+`docs/implementation/verifiable-answer-passport-phase-1.md`, and `KNOWN_LIMITATIONS.md`.
+
 Validated on 2026-07-23 on branch `release/v0.2.1-operational-hardening`.
 
 ## v0.2.1 Operational Hardening Addendum
