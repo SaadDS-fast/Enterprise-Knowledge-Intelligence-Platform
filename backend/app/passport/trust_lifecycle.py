@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
@@ -15,7 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.passport.canonical import canonicalize, parse_json_strict
 from app.passport.hashing import b64url_decode, b64url_encode
-from app.passport.key_lifecycle import SigningKeyMetadata, SigningKeyState
+from app.passport.key_lifecycle import KeyMetadataRegistry, SigningKeyMetadata, SigningKeyState
 
 
 class TrustBundleStatus(StrEnum):
@@ -96,6 +97,13 @@ class LifecycleTrustBundle(BaseModel):
     def checksum_is_sha256(cls, value: str) -> str:
         if len(b64url_decode(value)) != 32:
             raise ValueError("bundle_checksum_must_be_sha256")
+        return value
+
+    @field_validator("previous_bundle_checksum")
+    @classmethod
+    def previous_checksum_is_sha256(cls, value: str | None) -> str | None:
+        if value is not None and len(b64url_decode(value)) != 32:
+            raise ValueError("previous_bundle_checksum_must_be_sha256")
         return value
 
     @model_validator(mode="after")
@@ -222,6 +230,13 @@ class TrustedBundleState(BaseModel):
     latest_generated_at: datetime
     retained_key_ids: frozenset[str] = Field(default_factory=frozenset)
 
+    @field_validator("latest_bundle_checksum")
+    @classmethod
+    def latest_checksum_is_sha256(cls, value: str) -> str:
+        if len(b64url_decode(value)) != 32:
+            raise ValueError("latest_bundle_checksum_must_be_sha256")
+        return value
+
 
 class TrustBundleValidationResult(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -241,6 +256,7 @@ class BuiltTrustBundle(BaseModel):
 
     bundle: bytes
     signature: bytes | None
+    verifier_bundle: bytes
     bundle_checksum: str
     bundle_version: int
 
@@ -249,6 +265,40 @@ def _bundle_checksum(data: dict[str, object]) -> str:
     unsigned = dict(data)
     unsigned.pop("bundle_checksum", None)
     return b64url_encode(hashlib.sha256(canonicalize(unsigned)).digest())
+
+
+def _phase1_verifier_bundle(records: Sequence[SigningKeyMetadata], generated_at: datetime) -> bytes:
+    """Project lifecycle metadata into the backward-compatible Phase 1 verifier schema."""
+
+    keys: list[dict[str, object]] = []
+    for item in sorted(records, key=lambda record: (record.rotation_generation, record.key_id)):
+        if item.lifecycle_state is SigningKeyState.PENDING:
+            continue
+        status = {
+            SigningKeyState.ACTIVE: "trusted",
+            SigningKeyState.RETIRED: "retired",
+            SigningKeyState.REVOKED: "revoked",
+        }[item.lifecycle_state]
+        keys.append(
+            {
+                "key_id": item.key_id,
+                "algorithm": "EdDSA",
+                "public_key": item.public_key,
+                "status": status,
+                "not_before": item.not_before,
+                "not_after": item.not_after,
+                "retired_at": item.retired_at,
+                "revoked_at": item.revoked_at,
+            }
+        )
+    if not keys:
+        raise ValueError("no_verification_eligible_keys")
+    from app.passport.schema import TrustBundle
+
+    bundle = TrustBundle.model_validate(
+        {"schema_version": "vap-trust-1", "generated_at": generated_at, "keys": keys}
+    )
+    return canonicalize(bundle.model_dump(mode="json"))
 
 
 class TrustBundleBuilder:
@@ -306,9 +356,48 @@ class TrustBundleBuilder:
         return BuiltTrustBundle(
             bundle=raw,
             signature=signature,
+            verifier_bundle=_phase1_verifier_bundle(records, generated_at),
             bundle_checksum=bundle.bundle_checksum,
             bundle_version=bundle.bundle_version,
         )
+
+
+class InMemoryTrustBundleSeries:
+    """Test reference that binds bundle versions to atomic registry lifecycle revisions."""
+
+    def __init__(self, registry: KeyMetadataRegistry, builder: TrustBundleBuilder) -> None:
+        self.registry = registry
+        self.builder = builder
+        self.__locks: dict[str, asyncio.Lock] = {}
+        self.__latest: dict[str, BuiltTrustBundle] = {}
+
+    async def build(
+        self,
+        *,
+        issuer_id: str,
+        next_update: datetime,
+        valid_until: datetime,
+        signer: TrustAnchorSigner | None = None,
+    ) -> BuiltTrustBundle:
+        lock = self.__locks.setdefault(issuer_id, asyncio.Lock())
+        async with lock:
+            version, records = await self.registry.versioned_snapshot(issuer_id)
+            if version < 1:
+                raise ValueError("empty_lifecycle_registry")
+            previous = self.__latest.get(issuer_id)
+            if previous is not None and version <= previous.bundle_version:
+                raise ValueError("bundle_version_not_advanced")
+            artifact = await self.builder.build(
+                issuer_id=issuer_id,
+                records=records,
+                bundle_version=version,
+                next_update=next_update,
+                valid_until=valid_until,
+                previous_bundle_checksum=previous.bundle_checksum if previous else None,
+                signer=signer,
+            )
+            self.__latest[issuer_id] = artifact
+            return artifact
 
 
 def _result(status: TrustBundleStatus, **values: object) -> TrustBundleValidationResult:

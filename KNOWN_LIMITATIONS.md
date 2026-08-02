@@ -1,5 +1,19 @@
 # Known Limitations
 
+## Verifiable Answer Passport Phase 3A limitations (2026-08-02)
+
+- Registry, provider, lifecycle revision, trust state, audit sink, and keys are process-local test
+  implementations. Multi-process durability, crash recovery, distributed exclusion, production
+  audit persistence, and authenticated publication are Phase 3B concerns.
+- The `vap-trust-1` output is an offline compatibility projection, not an API or distribution
+  service. Verifiers need an independently authenticated anchor and durable rollback state.
+- Retirement cutoff is optional for backward compatibility. Lifecycle-generated bundles include
+  it; an older bundle without it cannot prove a precise retirement instant.
+- Audit delivery follows atomic state commit. Sink failure is non-transactional; production needs
+  an atomic outbox or equivalent durable mechanism.
+- There is no production provider, persistence/configuration, API, migration, frontend workflow,
+  passport storage, evidence export, network refresh, AWS/KMS/HSM, or retrieval/generation change.
+
 ## Verifiable Answer Passport Phase 2 limitations (2026-08-02)
 
 - Issuance is internal, disabled by default and limited to compatible finalized Standard Search

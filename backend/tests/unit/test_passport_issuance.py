@@ -42,6 +42,7 @@ from app.passport.key_lifecycle import (
     LifecyclePassportSigner,
     SigningKeyState,
 )
+from app.passport.trust_lifecycle import TrustBundleBuilder
 from app.passport.verifier import verify_passport
 from app.rag.response_state import (
     CanonicalResponseState,
@@ -170,6 +171,21 @@ async def test_lifecycle_signer_selects_active_key_server_side() -> None:
     assert result.status is IssuanceStatus.ISSUED
     assert result.signer_key_id == "active-server-key"
     assert b'"key_id":"active-server-key"' in (result.manifest or b"")
+    generated_trust = await TrustBundleBuilder(clock=lambda: ISSUED_AT).build(
+        issuer_id="issuer-a",
+        records=await registry.list("issuer-a"),
+        bundle_version=2,
+        next_update=datetime(2026, 8, 3, tzinfo=UTC),
+        valid_until=datetime(2026, 8, 4, tzinfo=UTC),
+    )
+    verified = verify_passport(
+        result.manifest or b"",
+        result.detached_signature or "",
+        generated_trust.verifier_bundle,
+        answer_bytes=projection().answer,
+        at=ISSUED_AT,
+    )
+    assert verified.status == "VERIFIED_WITHOUT_SNAPSHOT"
     await lifecycle.transition("issuer-a", "active-server-key", SigningKeyState.RETIRED)
     unavailable = await PassportIssuanceCoordinator(enabled=True, signer=signer).issue(
         projection(), context=IssuanceContext()

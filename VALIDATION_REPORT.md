@@ -1,5 +1,24 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
+
+Validation result: **PASS** after a separate lifecycle-hardening follow-up.
+
+- Registry-linearized signing now excludes rotation, retirement, and revocation until provider
+  signing completes, with no mid-request key switch. Rotation remains a single publication of
+  successor ACTIVE and predecessor RETIRED; cancellation and failure preserve unambiguous state.
+- Revocation chronology is bounded and irreversible. Offline verification separates signature
+  validity from issuance-time validity and retirement cutoff, with revocation taking precedence.
+- Lifecycle revisions bind trust-bundle advancement; checksum/chain/history and audit-field
+  validation resist rollback, forks, record removal, substitution, and log-forging input.
+- Lifecycle-generated public trust data now includes a deterministic Phase 1 `vap-trust-1`
+  projection, and a synthetic lifecycle-issued passport verifies through the existing offline
+  verifier without exposing private material.
+- Full backend passed 386 tests with 4 skips and 81% coverage. Bandit and dependency audits are
+  clean. Frontend, Docker backend build, and Alembic drift checks passed.
+- Thesis firewall and architecture isolation remain intact. No production provider, persistence,
+  API, migration, frontend workflow, AWS/KMS integration, or consumed holdout was added or run.
+
 ## Verifiable Answer Passport Phase 2 gate — 2026-08-02
 
 Phase 2 integrates an internal, disabled-by-default, supported-only projection and issuance

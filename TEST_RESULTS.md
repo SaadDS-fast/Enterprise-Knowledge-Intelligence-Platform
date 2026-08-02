@@ -1,5 +1,18 @@
 # Test Results
 
+## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
+
+- Lifecycle/trust/issuance focused set: 62 passed (40 prior plus 22 independent audit cases).
+  Broader passport core and validation selection: 142 passed.
+- Full backend: 386 passed, 4 environment-gated skips; 81% total coverage. Compileall and Ruff
+  lint/format passed. Changed passport modules pass Mypy; repository application Mypy retains 42
+  pre-existing errors in unrelated files.
+- Bandit: zero findings. pip-audit: no known vulnerabilities; unpublished local package skipped.
+- Frontend: clean install, lint (0 errors/1 known warning), typecheck, 11 files/27 tests, build, and
+  production audit (0 vulnerabilities) passed.
+- Docker Compose config, backend image build, and PostgreSQL Alembic drift check passed.
+- No consumed grounding holdout or browser E2E was run.
+
 ## Verifiable Answer Passport Phase 2 — 2026-08-02
 
 Focused Phase 1/2 passport tests cover immutable projections, server-derived scope and document

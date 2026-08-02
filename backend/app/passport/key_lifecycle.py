@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import re
 from collections.abc import Awaitable, Callable, Sequence
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -71,12 +72,20 @@ def _utc(value: datetime, name: str) -> datetime:
     return value
 
 
+def _safe_opaque(value: str | None, name: str) -> str | None:
+    if value is not None and (
+        len(value) > 200 or re.fullmatch(r"[A-Za-z0-9._:@/-]+", value) is None
+    ):
+        raise KeyLifecycleError(f"unsafe_{name}")
+    return value
+
+
 class SigningKeyMetadata(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     metadata_schema_version: Literal["vap-key-metadata-1"]
-    issuer_id: str = Field(min_length=1, max_length=200)
-    key_id: str = Field(min_length=1, max_length=200)
+    issuer_id: str = Field(min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
+    key_id: str = Field(min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
     algorithm: Literal["EdDSA"]
     public_key: str
     lifecycle_state: SigningKeyState
@@ -88,8 +97,12 @@ class SigningKeyMetadata(BaseModel):
     revoked_at: datetime | None = None
     revocation_reason: RevocationReason | None = None
     rotation_generation: int = Field(ge=1)
-    predecessor_key_id: str | None = Field(default=None, min_length=1, max_length=200)
-    successor_key_id: str | None = Field(default=None, min_length=1, max_length=200)
+    predecessor_key_id: str | None = Field(
+        default=None, min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$"
+    )
+    successor_key_id: str | None = Field(
+        default=None, min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$"
+    )
     metadata_checksum: str
 
     @field_validator("public_key")
@@ -143,6 +156,12 @@ class SigningKeyMetadata(BaseModel):
             raise ValueError("retirement_precedes_activation")
         if self.revoked_at is not None and self.revoked_at < self.created_at:
             raise ValueError("revocation_precedes_creation")
+        if self.revoked_at is not None and self.activated_at is not None:
+            if self.revoked_at < self.activated_at:
+                raise ValueError("revocation_precedes_activation")
+        if self.revoked_at is not None and self.retired_at is not None:
+            if self.revoked_at < self.retired_at:
+                raise ValueError("revocation_precedes_retirement")
         if self.predecessor_key_id == self.key_id or self.successor_key_id == self.key_id:
             raise ValueError("self_referential_key_link")
         if metadata_checksum(self) != self.metadata_checksum:
@@ -172,22 +191,38 @@ class LifecycleAuditEvent(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     event_type: LifecycleEventType
-    event_id: str = Field(min_length=1, max_length=200)
-    issuer_id: str = Field(min_length=1, max_length=200)
+    event_id: str = Field(min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
+    issuer_id: str = Field(min_length=1, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
     timestamp: datetime
-    key_id: str | None = Field(default=None, max_length=200)
-    previous_key_id: str | None = Field(default=None, max_length=200)
+    key_id: str | None = Field(default=None, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
+    previous_key_id: str | None = Field(
+        default=None, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$"
+    )
     lifecycle_state: SigningKeyState | None = None
     bundle_version: int | None = Field(default=None, ge=1)
     checksum: str | None = None
     reason_code: RevocationReason | None = None
-    actor_id: str | None = Field(default=None, max_length=200)
-    correlation_id: str | None = Field(default=None, max_length=200)
+    actor_id: str | None = Field(default=None, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$")
+    correlation_id: str | None = Field(
+        default=None, max_length=200, pattern=r"^[A-Za-z0-9._:@/-]+$"
+    )
 
     @field_validator("timestamp")
     @classmethod
     def validate_timestamp(cls, value: datetime) -> datetime:
         return _utc(value, "timestamp")
+
+    @field_validator("checksum")
+    @classmethod
+    def validate_optional_checksum(cls, value: str | None) -> str | None:
+        if value is not None:
+            try:
+                valid = len(b64url_decode(value)) == 32
+            except ValueError:
+                valid = False
+            if not valid:
+                raise ValueError("checksum_must_be_sha256")
+        return value
 
 
 LifecycleAuditSink = Callable[[LifecycleAuditEvent], Awaitable[None]]
@@ -249,12 +284,19 @@ RegistryMutation = Callable[
     [tuple[SigningKeyMetadata, ...], frozenset[str]],
     tuple[Sequence[SigningKeyMetadata], T],
 ]
+LockedRegistryOperation = Callable[[tuple[SigningKeyMetadata, ...]], Awaitable[T]]
 
 
 class KeyMetadataRegistry(Protocol):
     async def list(self, issuer_id: str) -> tuple[SigningKeyMetadata, ...]: ...
 
     async def mutate(self, issuer_id: str, operation: RegistryMutation[T]) -> T: ...
+
+    async def locked(self, issuer_id: str, operation: LockedRegistryOperation[T]) -> T: ...
+
+    async def versioned_snapshot(
+        self, issuer_id: str
+    ) -> tuple[int, tuple[SigningKeyMetadata, ...]]: ...
 
 
 class InMemoryKeyMetadataRegistry:
@@ -263,6 +305,7 @@ class InMemoryKeyMetadataRegistry:
     def __init__(self) -> None:
         self.__records: dict[str, dict[str, SigningKeyMetadata]] = {}
         self.__used_ids: dict[str, set[str]] = {}
+        self.__versions: dict[str, int] = {}
         self.__locks: dict[str, asyncio.Lock] = {}
 
     def _lock(self, issuer_id: str) -> asyncio.Lock:
@@ -291,7 +334,24 @@ class InMemoryKeyMetadataRegistry:
                 raise KeyLifecycleError("key_id_reuse")
             self.__records[issuer_id] = {item.key_id: item for item in records}
             self.__used_ids.setdefault(issuer_id, set()).update(proposed_ids)
+            self.__versions[issuer_id] = self.__versions.get(issuer_id, 0) + 1
             return result
+
+    async def locked(self, issuer_id: str, operation: LockedRegistryOperation[T]) -> T:
+        """Run an async operation against one atomic issuer snapshot while excluding mutation."""
+
+        async with self._lock(issuer_id):
+            records = tuple(self.__records.get(issuer_id, {}).values())
+            _validate_registry(issuer_id, records)
+            return await operation(records)
+
+    async def versioned_snapshot(
+        self, issuer_id: str
+    ) -> tuple[int, tuple[SigningKeyMetadata, ...]]:
+        async with self._lock(issuer_id):
+            records = tuple(self.__records.get(issuer_id, {}).values())
+            _validate_registry(issuer_id, records)
+            return self.__versions.get(issuer_id, 0), records
 
 
 def _validate_registry(issuer_id: str, records: Sequence[SigningKeyMetadata]) -> None:
@@ -345,15 +405,22 @@ class KeyLifecycleService:
 
     async def _audit(self, event_type: LifecycleEventType, issuer_id: str, **data: object) -> None:
         if self.audit_sink is not None:
-            await self.audit_sink(
-                LifecycleAuditEvent(
+            try:
+                event = LifecycleAuditEvent(
                     event_type=event_type,
                     event_id=self.identifier(),
                     issuer_id=issuer_id,
                     timestamp=self.clock(),
                     **data,
                 )
-            )
+                await self.audit_sink(event)
+            except asyncio.CancelledError:
+                # The lifecycle commit has already linearized. Do not misreport it as cancelled.
+                return
+            except Exception:
+                # Audit delivery is observational in Phase 3A. A failed injected sink cannot
+                # roll back or disguise an already-linearized lifecycle transition.
+                return
 
     async def register_pending(
         self,
@@ -365,6 +432,7 @@ class KeyLifecycleService:
         predecessor_key_id: str | None = None,
         actor_id: str | None = None,
     ) -> SigningKeyMetadata:
+        actor_id = _safe_opaque(actor_id, "actor_id")
         now = _utc(self.clock(), "clock")
         public_key = await self.provider.public_key(key_id)
 
@@ -427,6 +495,7 @@ class KeyLifecycleService:
     async def activate(
         self, issuer_id: str, key_id: str, *, actor_id: str | None = None
     ) -> SigningKeyMetadata:
+        actor_id = _safe_opaque(actor_id, "actor_id")
         records = await self.registry.list(issuer_id)
         pending = next((item for item in records if item.key_id == key_id), None)
         if pending is None:
@@ -470,6 +539,7 @@ class KeyLifecycleService:
         not_after: datetime,
         actor_id: str | None = None,
     ) -> SigningKeyMetadata:
+        actor_id = _safe_opaque(actor_id, "actor_id")
         before = await self.registry.list(issuer_id)
         prior = next(
             (item for item in before if item.lifecycle_state is SigningKeyState.ACTIVE), None
@@ -541,6 +611,7 @@ class KeyLifecycleService:
         reason: RevocationReason | None = None,
         actor_id: str | None = None,
     ) -> SigningKeyMetadata:
+        actor_id = _safe_opaque(actor_id, "actor_id")
         now = _utc(self.clock(), "clock")
 
         def operation(
@@ -596,6 +667,24 @@ class KeyLifecycleService:
             raise KeyLifecycleError("private_public_key_mismatch")
         return record
 
+    async def sign_active(self, issuer_id: str, key_id: str, payload: bytes, at: datetime) -> str:
+        """Sign at a registry-linearized point that excludes lifecycle transitions."""
+
+        at = _utc(at, "issuance_time")
+
+        async def operation(records: tuple[SigningKeyMetadata, ...]) -> str:
+            active = [item for item in records if item.lifecycle_state is SigningKeyState.ACTIVE]
+            if len(active) != 1 or active[0].key_id != key_id:
+                raise KeyLifecycleError("resolved_key_changed")
+            record = active[0]
+            if not (record.not_before <= at < record.not_after):
+                raise KeyLifecycleError("active_signer_outside_validity_interval")
+            if await self.provider.public_key(key_id) != record.public_key:
+                raise KeyLifecycleError("private_public_key_mismatch")
+            return await self.provider.sign(key_id, payload)
+
+        return await self.registry.locked(issuer_id, operation)
+
 
 class LifecyclePassportSigner:
     """Phase 2 resolved-key signer; selection is server-side and rechecked before signing."""
@@ -608,7 +697,4 @@ class LifecyclePassportSigner:
         return (await self.service.resolve_active(self.issuer_id, at)).key_id
 
     async def sign_for_key(self, payload: bytes, key_id: str, at: datetime) -> str:
-        active = await self.service.resolve_active(self.issuer_id, at)
-        if active.key_id != key_id:
-            raise KeyLifecycleError("resolved_key_changed")
-        return await self.service.provider.sign(key_id, payload)
+        return await self.service.sign_active(self.issuer_id, key_id, payload, at)

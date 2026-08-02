@@ -11,6 +11,11 @@ Allowed transitions are `PENDING→ACTIVE`, `PENDING→REVOKED`, `ACTIVE→RETIR
 same-state transition, activation bypassing correspondence checks, revocation without a reason,
 and key-ID reuse is rejected. Activation is explicit; no scheduler or background service exists.
 
+Activation, retirement, and revocation linearize when the registry publishes the validated
+immutable snapshot. Rotation publishes both changes together. Cancellation before assignment can
+leave only a harmless pending successor; after assignment the operation is committed. Audit-sink
+cancellation or failure after commit does not alter lifecycle state.
+
 Metadata is immutable, extra-forbidden, UTC-only, EdDSA-only, canonically Base64URL encoded, and
 SHA-256 checksummed. It contains issuer/key identifiers, raw public Ed25519 bytes, lifecycle and
 validity timestamps, generation and predecessor/successor links, and bounded public revocation

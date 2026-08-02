@@ -9,3 +9,7 @@ The passport signing key does not automatically sign its own bundle. The optiona
 is separate and ephemeral in tests. Unknown, modified, revoked, expired, or substituted anchors
 fail closed. Unsigned artifacts are accepted only under an explicit local-test policy. A production
 root, ceremony, distribution channel, compromise process, and durable rollback state are deferred.
+
+The in-memory trusted state and registry provide process-local semantics only. Production must
+distribute the initial anchor over an independently trusted channel and durably, atomically persist
+accepted version/checksum state; an untrusted publication location cannot bootstrap its own trust.

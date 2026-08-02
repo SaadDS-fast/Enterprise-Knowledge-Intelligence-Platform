@@ -154,7 +154,7 @@ async def test_revocation_between_resolution_and_signing_fails_closed() -> None:
         SigningKeyState.REVOKED,
         reason=RevocationReason.KEY_COMPROMISE,
     )
-    with pytest.raises(KeyLifecycleError, match="active_signer_unavailable"):
+    with pytest.raises(KeyLifecycleError, match="resolved_key_changed"):
         await signer.sign_for_key(b"canonical", selected, NOW)
 
 

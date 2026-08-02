@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 
 from app.passport.canonical import canonicalize, parse_json_strict
+from app.passport.hashing import b64url_encode
 from app.passport.key_lifecycle import (
     EphemeralSigningProvider,
     InMemoryKeyMetadataRegistry,
@@ -154,7 +155,7 @@ async def test_rollback_version_collision_chain_and_issuer_substitution() -> Non
     )
     lower = validate_trust_bundle(first.bundle, at=NOW, trusted_state=state)
     assert lower.status is TrustBundleStatus.VERSION_ROLLBACK
-    third, _ = await built(signed=False, version=3, previous="wrong")
+    third, _ = await built(signed=False, version=3, previous=b64url_encode(b"w" * 32))
     broken = validate_trust_bundle(third.bundle, at=NOW, trusted_state=state)
     assert broken.status is TrustBundleStatus.CHAIN_MISMATCH
     parsed = parse_json_strict(third.bundle)
@@ -174,11 +175,12 @@ async def test_rollback_version_collision_chain_and_issuer_substitution() -> Non
 
 @pytest.mark.asyncio
 async def test_historical_key_removal_is_rejected() -> None:
-    artifact, _ = await built(signed=False, version=2, previous="prior")
+    prior = b64url_encode(b"p" * 32)
+    artifact, _ = await built(signed=False, version=2, previous=prior)
     state = TrustedBundleState(
         issuer_id="issuer-a",
         latest_bundle_version=1,
-        latest_bundle_checksum="prior",
+        latest_bundle_checksum=prior,
         latest_generated_at=NOW,
         retained_key_ids=frozenset({"key-1", "revoked-old"}),
     )
