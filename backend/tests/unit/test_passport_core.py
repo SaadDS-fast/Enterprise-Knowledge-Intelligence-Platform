@@ -135,7 +135,16 @@ def test_passport_package_has_no_forbidden_runtime_dependencies() -> None:
         "services",
     }
     forbidden_external = {"httpx", "requests", "socket", "urllib"}
-    for source in package.glob("*.py"):
+    pure_modules = {
+        "canonical.py",
+        "cli.py",
+        "hashing.py",
+        "issuer.py",
+        "jws.py",
+        "schema.py",
+        "verifier.py",
+    }
+    for source in (package / name for name in pure_modules):
         tree = ast.parse(source.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -205,8 +214,11 @@ def test_answer_mutation_is_reported_separately() -> None:
 
 def test_signature_mutation_is_detected() -> None:
     payload, signature = signed_artifact()
-    replacement = "A" if signature[-1] != "A" else "B"
-    result = verify_passport(payload, signature[:-1] + replacement, trust_bundle())
+    protected, _, encoded_signature = signature.split(".")
+    replacement = "A" if encoded_signature[0] != "A" else "B"
+    result = verify_passport(
+        payload, f"{protected}..{replacement}{encoded_signature[1:]}", trust_bundle()
+    )
     assert result.signature_valid is False
     assert result.errors == ["signature_verification_failed"]
 

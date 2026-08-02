@@ -1,5 +1,32 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 2 gate — 2026-08-02
+
+Phase 2 integrates an internal, disabled-by-default, supported-only projection and issuance
+coordinator after the canonical Standard Search finalization boundary. It adds no public response
+field, endpoint, migration, frontend workflow, persistent artifact, production key or cloud
+integration. Final gate results are recorded after complete validation.
+
+Validation result: **PASS**.
+
+- Focused passport: 117 passed. Focused Search/Agent/Research profile: 162 passed.
+- Full backend: 342 passed, 4 environment-gated skips; 80% total coverage and 92% issuance-module
+  coverage. Compileall and Ruff lint/format passed.
+- Repository Mypy was run and reports 42 pre-existing errors in untouched modules. The complete new
+  issuance module passes strict Mypy with zero errors.
+- Bandit reported zero findings. pip-audit found no known vulnerability; the unpublished local
+  package is not present on PyPI and was skipped.
+- Frontend lint passed with zero errors and one known Fast Refresh warning; typecheck, 11 Vitest
+  files/27 tests and production build passed. Production npm audit found zero vulnerabilities.
+- Docker Compose config and backend/frontend/ingestion-worker builds passed. PostgreSQL Alembic
+  check found no new upgrade operations.
+- Isolated browser profiles passed: default `1 passed, 8 skipped`; agentic `5 passed, 4 skipped`,
+  including runtime Search/isolation plus Agent and asynchronous Research workspaces.
+- Support threshold remains `0.72`; Search uses one retrieval pass; Search and Agent retry budgets
+  remain zero. No consumed grounding holdout or V1/V2 grounding artifact was changed.
+- No endpoint, public response field, migration, frontend workflow, persistent passport storage,
+  evidence exporter, production key or AWS/cloud integration was added.
+
 ## Verifiable Answer Passport Phase 1 release gate — 2026-08-01
 
 **Status: PASS.** Validated on `feat/verifiable-answer-passport` from implementation baseline

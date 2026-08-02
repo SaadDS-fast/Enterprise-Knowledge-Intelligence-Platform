@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.db.models import Document
 from app.exceptions.base import AppError
 from app.exceptions.codes import ErrorCode
@@ -17,6 +18,13 @@ from app.observability.metrics import (
     KNOWLEDGE_ABSENCE,
     PARTIAL_EVIDENCE,
     RETRIEVAL_LATENCY,
+)
+from app.passport.issuance import (
+    IssuanceContext,
+    PassportIssuanceCoordinator,
+    ProjectionRejected,
+    project_search_response,
+    response_eligibility_reason,
 )
 from app.rag.abstention import abstention_message
 from app.rag.evidence import (
@@ -43,6 +51,69 @@ from app.security.prompt_security import scan_prompt
 
 
 async def search_and_answer(
+    session: AsyncSession,
+    *,
+    workspace_id: UUID,
+    query: str,
+    top_k: int | None = None,
+    document_ids: list[UUID] | None = None,
+    request_id: str | None = None,
+    passport_coordinator: PassportIssuanceCoordinator | None = None,
+    passport_context: IssuanceContext | None = None,
+) -> SearchResponse:
+    """Run the unchanged answer lifecycle, then optionally perform internal passport issuance."""
+
+    response = await _search_and_answer(
+        session,
+        workspace_id=workspace_id,
+        query=query,
+        top_k=top_k,
+        document_ids=document_ids,
+        request_id=request_id,
+    )
+    coordinator = passport_coordinator or PassportIssuanceCoordinator(
+        enabled=settings.answer_passport_enabled
+    )
+    if not coordinator.enabled:
+        await coordinator.issue(None, context=passport_context or IssuanceContext())
+        return response
+    if coordinator.signer is None:
+        await coordinator.issue(None, context=passport_context or IssuanceContext())
+        return response
+    reason = response_eligibility_reason(response)
+    if reason is not None:
+        await coordinator.issue(
+            None,
+            context=passport_context or IssuanceContext(),
+            ineligibility_reason=reason,
+        )
+        return response
+    try:
+        projection = await project_search_response(
+            session,
+            response=response,
+            workspace_id=workspace_id,
+            completed_at=coordinator.clock(),
+            retrieval_configuration={
+                "retrieval_top_k": settings.retrieval_top_k,
+                "reranker_return_k": settings.reranker_return_k,
+                "evidence_min_score": settings.evidence_min_score,
+                "semantic_embeddings_enabled": settings.semantic_embeddings_enabled,
+                "reranker_enabled": settings.reranker_enabled,
+            },
+        )
+    except ProjectionRejected as exc:
+        await coordinator.issue(
+            None,
+            context=passport_context or IssuanceContext(),
+            ineligibility_reason=exc.reason,
+        )
+        return response
+    await coordinator.issue(projection, context=passport_context or IssuanceContext())
+    return response
+
+
+async def _search_and_answer(
     session: AsyncSession,
     *,
     workspace_id: UUID,
