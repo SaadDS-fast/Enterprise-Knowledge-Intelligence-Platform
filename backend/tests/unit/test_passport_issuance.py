@@ -35,6 +35,13 @@ from app.passport.issuance import (
     response_eligibility_reason,
 )
 from app.passport.jws import sign_detached
+from app.passport.key_lifecycle import (
+    EphemeralSigningProvider,
+    InMemoryKeyMetadataRegistry,
+    KeyLifecycleService,
+    LifecyclePassportSigner,
+    SigningKeyState,
+)
 from app.passport.verifier import verify_passport
 from app.rag.response_state import (
     CanonicalResponseState,
@@ -142,6 +149,33 @@ def trust_bundle(signer: TestSigner) -> bytes:
             ],
         }
     )
+
+
+@pytest.mark.asyncio
+async def test_lifecycle_signer_selects_active_key_server_side() -> None:
+    provider = EphemeralSigningProvider()
+    registry = InMemoryKeyMetadataRegistry()
+    lifecycle = KeyLifecycleService(registry, provider, clock=lambda: ISSUED_AT)
+    await provider.create("active-server-key")
+    await lifecycle.register_pending(
+        issuer_id="issuer-a",
+        key_id="active-server-key",
+        not_before=datetime(2026, 1, 1, tzinfo=UTC),
+        not_after=datetime(2027, 1, 1, tzinfo=UTC),
+    )
+    await lifecycle.activate("issuer-a", "active-server-key")
+    signer = LifecyclePassportSigner("issuer-a", lifecycle)
+    coordinator = PassportIssuanceCoordinator(enabled=True, signer=signer)
+    result = await coordinator.issue(projection(), context=IssuanceContext())
+    assert result.status is IssuanceStatus.ISSUED
+    assert result.signer_key_id == "active-server-key"
+    assert b'"key_id":"active-server-key"' in (result.manifest or b"")
+    await lifecycle.transition("issuer-a", "active-server-key", SigningKeyState.RETIRED)
+    unavailable = await PassportIssuanceCoordinator(enabled=True, signer=signer).issue(
+        projection(), context=IssuanceContext()
+    )
+    assert unavailable.status is IssuanceStatus.SIGNER_UNAVAILABLE
+    assert unavailable.manifest is None and unavailable.detached_signature is None
 
 
 def canonical_state(

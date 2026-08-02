@@ -141,6 +141,17 @@ class PassportSigner(Protocol):
     async def sign(self, payload: bytes) -> str: ...
 
 
+class ResolvedPassportSigner(Protocol):
+    """Optional lifecycle-aware signer path that binds selection to issuance time."""
+
+    async def resolve_key_id(self, at: datetime) -> str: ...
+
+    async def sign_for_key(self, payload: bytes, key_id: str, at: datetime) -> str: ...
+
+
+Signer = PassportSigner | ResolvedPassportSigner
+
+
 AuditSink = Callable[[dict[str, str | None]], Awaitable[None]]
 
 
@@ -321,7 +332,7 @@ def eligibility_reason(
     projection: SupportedAnswerProjection | None,
     *,
     enabled: bool,
-    signer: PassportSigner | None,
+    signer: Signer | None,
 ) -> IneligibilityReason | None:
     if not enabled:
         return IneligibilityReason.FEATURE_DISABLED
@@ -394,7 +405,7 @@ class PassportIssuanceCoordinator:
         self,
         *,
         enabled: bool,
-        signer: PassportSigner | None = None,
+        signer: Signer | None = None,
         clock: Callable[[], datetime] | None = None,
         identifier: Callable[[], UUID] | None = None,
         audit_sink: AuditSink | None = None,
@@ -440,17 +451,33 @@ class PassportIssuanceCoordinator:
             )
         try:
             certificate_id = self.identifier()
+            issuance_time = projection.completed_at
+            if hasattr(signer, "resolve_key_id") and hasattr(signer, "sign_for_key"):
+                try:
+                    signer_key_id = await signer.resolve_key_id(issuance_time)
+                except asyncio.CancelledError:
+                    raise
+                except Exception:
+                    return InternalIssuanceResult(
+                        status=IssuanceStatus.SIGNER_UNAVAILABLE,
+                        reason=IneligibilityReason.SIGNER_UNAVAILABLE,
+                    )
+            else:
+                signer_key_id = signer.key_id
             manifest = manifest_from_projection(
-                projection, certificate_id=certificate_id, signer_key_id=signer.key_id
+                projection, certificate_id=certificate_id, signer_key_id=signer_key_id
             )
             payload = canonicalize(manifest.model_dump(mode="json"))
-            signature = await signer.sign(payload)
+            if hasattr(signer, "sign_for_key"):
+                signature = await signer.sign_for_key(payload, signer_key_id, issuance_time)
+            else:
+                signature = await signer.sign(payload)
             result = InternalIssuanceResult(
                 status=IssuanceStatus.ISSUED,
                 manifest=payload,
                 detached_signature=signature,
                 passport_id=manifest.certificate_id,
-                signer_key_id=signer.key_id,
+                signer_key_id=signer_key_id,
                 schema_version="vap-1",
             )
             if self.audit_sink is not None:

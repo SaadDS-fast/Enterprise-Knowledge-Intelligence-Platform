@@ -16,3 +16,11 @@ adds no PEM, seed, key path, cloud credential, AWS KMS or secret-manager configu
 Tests use process-local ephemeral Ed25519 keys injected directly into the coordinator. They are
 never serialized or written to disk. A production provider must preserve the same exact VAP-1 JWS
 profile, at-most-once request semantics, cancellation behavior and sanitized failures.
+
+Phase 3A now defines the provider-neutral lifecycle, atomic registry and trust-distribution
+contracts, but still supplies only process-local reference providers. Production requires a
+reviewed non-exportable KMS/HSM or equivalent provider, durable serializable metadata/version
+storage, environment and issuer separation, least privilege, authenticated trust publication,
+independent trust-anchor bootstrap, rotation/revocation ceremony, monitoring, retention and audit
+persistence. No private-key environment variable, PEM/seed field, key path, AWS credential, cloud
+provider selection, automatic generation flag or production root has been added.

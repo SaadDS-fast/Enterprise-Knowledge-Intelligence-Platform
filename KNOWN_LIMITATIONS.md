@@ -206,6 +206,15 @@ intentionally use deterministic extractive fallback. The 5.0 GB loaded model foo
 is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
 holdouts are both consumed and must never be rerun or used for tuning.
 
+# Verifiable Answer Passport Phase 3A limitations
+
+The key lifecycle is a provider-neutral foundation with ephemeral in-memory references only. It
+does not provide durable transactions, production signing, private-key persistence, bundle
+publication, independent anchor delivery, persistent rollback state, API/UI access, cloud/KMS/HSM
+integration, database storage, or evidence export. A signed bundle cannot solve initial trust
+distribution. Phase 1 trust input and status precedence are unchanged. External cryptographic and
+operational review remains required before any production issuance.
+
 The previously recorded Search/browser equation, negation-citation, and single-source
 owner/date gaps are closed. The verifier remains intentionally conservative for novel
 equation forms, obligation phrasing, and compound questions outside the tested typed

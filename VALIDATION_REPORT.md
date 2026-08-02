@@ -434,6 +434,21 @@ coverage; frontend passed 34/34 tests and its production build. Docker builds an
 Alembic upgrade/check passed in disposable profiles. Both consumed holdouts were
 neither executed nor modified.
 
+# Verifiable Answer Passport Phase 3A (2026-08-02)
+
+Status: **PASS**. Phase 3A supplies strict immutable public key metadata, atomic in-memory
+lifecycle transitions and rotation, opaque provider signing, server-side issuance-key resolution,
+deterministic public-only lifecycle trust bundles, optional distinct-anchor signatures, and
+rollback-aware offline validation. Retired/revoked public records are retained; revocation is
+irreversible; key IDs cannot be reused; no state permits two active keys.
+
+All focused and full regressions, scanners, frontend, Docker, Alembic, and applicable isolated
+browser profiles passed as recorded in `TEST_RESULTS.md`. Repository-wide Mypy retains 42 known
+baseline errors while scoped changed modules pass. Key-material scans found no serialized private
+key, seed, credential, token, private-key configuration, or generated artifact. No public API,
+migration, frontend flow, persistent/production provider, AWS/KMS/cloud integration, retrieval or
+generation change was added. Trust bootstrap remains an independently trusted-channel obligation.
+
 # Enterprise end-to-end release hardening (2026-07-31)
 
 Candidate: `v0.3.0-enterprise-rc1` (proposed only). Baseline and rollback commit:
