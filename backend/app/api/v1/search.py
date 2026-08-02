@@ -30,6 +30,7 @@ async def search(
             top_k=payload.top_k,
             document_ids=payload.document_ids,
             request_id=getattr(request.state, "request_id", None),
+            passport_actor_id=tenant.user_id,
         )
     except AppError as exc:
         await record_audit_event(

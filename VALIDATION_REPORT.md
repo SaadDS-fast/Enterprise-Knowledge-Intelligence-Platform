@@ -1,5 +1,22 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 3B — 2026-08-02
+
+Validation result: **PASS**.
+
+- Exact canonical manifests and detached JWS are stored in immutable tenant/workspace rows. The
+  repository provides scoped persist/read only; PostgreSQL and ORM guards reject UPDATE/DELETE.
+- Domain-separated durable idempotency returns one record for exact retry and rejects collisions.
+  Only `ISSUED` artifacts persist; disabled, ineligible, conflict/refusal, unavailable, failed, and
+  malformed outcomes do not. Persistence failure leaves the supported response unchanged.
+- Authenticated metadata, editor export, admin-only revoked forensic export, and controlled public
+  trust routes use authoritative tenant context and non-enumerating scoped lookup.
+- Layered integrity checks deny corrupt artifacts before output. Fixed uncompressed packages contain
+  manifest, signature, export manifest, and only optionally injected public trust—never evidence.
+- Backend, frontend, API, default browser, Docker, migration, security, and dependency gates passed.
+  No production signer, frontend workflow, public issuance, evidence exporter, AWS/KMS integration,
+  thesis behavior, or consumed holdout was added or run.
+
 ## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
 
 Validation result: **PASS** after a separate lifecycle-hardening follow-up.

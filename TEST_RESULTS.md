@@ -1,5 +1,21 @@
 # Test Results
 
+## Verifiable Answer Passport Phase 3B — 2026-08-02
+
+- Focused Phase 3B: 12 persistence/export/API tests passed; combined passport regression selection
+  passed 155 tests.
+- Full backend: 398 passed, 4 environment-gated skips; 81% total coverage. Phase 3B coverage:
+  persistence 82%, repository 78%, model 100%, API 63%.
+- Compileall and Ruff passed. Changed modules pass Mypy; repository application Mypy retains 42
+  pre-existing errors in unrelated modules. Bandit found zero issues; pip-audit found no known
+  vulnerabilities and skipped only the unpublished local package.
+- Frontend clean install, lint (0 errors/1 known warning), typecheck, 11 files/27 tests, production
+  build, and npm production audit (0 vulnerabilities) passed. No frontend file changed.
+- Docker backend/frontend/ingestion-worker builds passed. Isolated PostgreSQL parent→Phase 3B
+  upgrade, drift check, trigger mutation denial, downgrade, re-upgrade, and single-head check passed.
+- Isolated default Playwright passed 1 runtime test with 8 feature-gated skips. No consumed grounding
+  holdout ran.
+
 ## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
 
 - Lifecycle/trust/issuance focused set: 62 passed (40 prior plus 22 independent audit cases).

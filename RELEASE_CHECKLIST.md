@@ -1,5 +1,14 @@
 # Enterprise release checklist
 
+## Verifiable Answer Passport Phase 3B
+
+- [x] Flags default false; no production signer or private configuration.
+- [x] Migration upgrade, downgrade, re-upgrade, single head, and mutation trigger pass.
+- [x] Scoped persistence/idempotency and metadata/export authorization tests pass.
+- [x] Corrupt denial, forensic status, fixed package, and public-only trust tests pass.
+- [x] Backend, frontend, Docker, Bandit, pip-audit, and npm audit pass.
+- [x] No evidence/private material, frontend workflow, AWS change, holdout, push, or tag.
+
 ## Verifiable Answer Passport Phase 3A
 
 - [x] Immutable checksummed PENDING/ACTIVE/RETIRED/REVOKED metadata and strict transitions.

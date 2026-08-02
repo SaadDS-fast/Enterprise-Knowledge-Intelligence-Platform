@@ -26,6 +26,7 @@ from app.passport.issuance import (
     project_search_response,
     response_eligibility_reason,
 )
+from app.passport.persistence import PassportPersistenceCoordinator
 from app.rag.abstention import abstention_message
 from app.rag.evidence import (
     SupportStatus,
@@ -47,6 +48,8 @@ from app.rag.topic_lists import (
     synthesize_topic_list,
     topic_list_abstention_message,
 )
+from app.repositories.answer_passports import SQLAlchemyAnswerPassportRepository
+from app.security.audit import record_audit_event
 from app.security.prompt_security import scan_prompt
 
 
@@ -60,6 +63,8 @@ async def search_and_answer(
     request_id: str | None = None,
     passport_coordinator: PassportIssuanceCoordinator | None = None,
     passport_context: IssuanceContext | None = None,
+    passport_persistence_coordinator: PassportPersistenceCoordinator | None = None,
+    passport_actor_id: UUID | None = None,
 ) -> SearchResponse:
     """Run the unchanged answer lifecycle, then optionally perform internal passport issuance."""
 
@@ -109,7 +114,39 @@ async def search_and_answer(
             ineligibility_reason=exc.reason,
         )
         return response
-    await coordinator.issue(projection, context=passport_context or IssuanceContext())
+    issuance = await coordinator.issue(projection, context=passport_context or IssuanceContext())
+    if passport_persistence_coordinator is None:
+
+        async def persistence_audit(payload: dict[str, object]) -> None:
+            await record_audit_event(
+                session,
+                action=str(payload.get("event_type", "PASSPORT_PERSISTENCE_FAILED")),
+                resource_type="answer_passport",
+                actor_user_id=passport_actor_id,
+                workspace_id=workspace_id,
+                resource_id=str(payload.get("passport_id") or "")[:80] or None,
+                request_id=projection.correlation_id,
+                details={
+                    key: value
+                    for key, value in payload.items()
+                    if key in {"artifact_checksum", "created"}
+                },
+            )
+
+        persistence = PassportPersistenceCoordinator(
+            SQLAlchemyAnswerPassportRepository(session),
+            enabled=settings.answer_passport_persistence_enabled,
+            audit_sink=persistence_audit,
+        )
+    else:
+        persistence = passport_persistence_coordinator
+    await persistence.persist_issued(
+        issuance,
+        projection,
+        organization_id=UUID(projection.tenant_id),
+        workspace_id=workspace_id,
+        actor_id=passport_actor_id,
+    )
     return response
 
 
