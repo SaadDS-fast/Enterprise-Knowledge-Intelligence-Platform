@@ -1,5 +1,11 @@
 # Production passport key requirements
 
+Phase 3B does not satisfy production key requirements and adds no signer. Its trust endpoint accepts
+only injected public material. Production issuance still requires reviewed non-exportable keys,
+ceremonies, access control, lifecycle operations, durable audit, tenant/environment separation, and
+independently distributed anchors. No plaintext/environment key, local production key file, AWS
+KMS, HSM, or cloud secret integration is configured.
+
 Phase 2 intentionally provides no production signer. Default and production runtime therefore have
 no signing key and fail closed for optional passport issuance.
 

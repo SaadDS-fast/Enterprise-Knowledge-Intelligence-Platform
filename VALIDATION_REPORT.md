@@ -1,5 +1,29 @@
 # Validation Report
 
+## Verifiable Answer Passport Phase 3B independent audit — 2026-08-02
+
+Validation result: **PASS**.
+
+- Exact canonical manifests and detached JWS are stored in immutable tenant/workspace rows. The
+  repository provides scoped persist/read only; PostgreSQL rejects mismatched organization/workspace
+  INSERT and PostgreSQL/ORM guards reject UPDATE/DELETE.
+- Domain-separated durable idempotency returns one record for exact retry and rejects collisions.
+  Only `ISSUED` artifacts persist; disabled, ineligible, conflict/refusal, unavailable, failed, and
+  malformed outcomes do not. Persistence failure leaves the supported response unchanged.
+- Authenticated metadata, editor export, admin-only revoked forensic export, and controlled public
+  trust routes use authoritative tenant context and non-enumerating scoped lookup.
+- Layered integrity checks deny corrupt artifacts before output. Fixed uncompressed packages contain
+  manifest, signature, export manifest, and only optionally injected public trust—never evidence.
+- The audit follow-up closes direct-SQL scope mismatch, trust/ZIP size exhaustion, trust issuer
+  substitution, and cryptographically-invalid metadata labeling. Provider trust is canonical,
+  checksum/metadata/issuer checked before use.
+- Full backend: 402 passed, 4 skips, 81% coverage; focused Phase 3B 16/16. Compileall and Ruff pass;
+  repository Mypy retains the same 42 unrelated pre-existing errors. Bandit and dependency audits
+  are clean. Frontend lint/typecheck, 27 tests, build, and production audit pass.
+- Backend, frontend, API, default browser, Docker, migration, security, and dependency gates passed.
+  No production signer, frontend workflow, public issuance, evidence exporter, AWS/KMS integration,
+  thesis behavior, or consumed holdout was added or run.
+
 ## Verifiable Answer Passport Phase 3A independent audit — 2026-08-02
 
 Validation result: **PASS** after a separate lifecycle-hardening follow-up.

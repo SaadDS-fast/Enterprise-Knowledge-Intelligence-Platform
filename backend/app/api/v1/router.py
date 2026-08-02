@@ -1,6 +1,16 @@
 from fastapi import APIRouter
 
-from app.api.v1 import agent, auth, documents, evaluation, health, jobs, research, search
+from app.api.v1 import (
+    agent,
+    answer_passports,
+    auth,
+    documents,
+    evaluation,
+    health,
+    jobs,
+    research,
+    search,
+)
 
 api_router = APIRouter()
 api_router.include_router(health.router, prefix="/health", tags=["health"])
@@ -11,3 +21,11 @@ api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
 api_router.include_router(research.router, prefix="/research", tags=["research"])
 api_router.include_router(evaluation.router, prefix="/evaluation", tags=["evaluation"])
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+api_router.include_router(
+    answer_passports.router, prefix="/answer-passports", tags=["answer-passports"]
+)
+api_router.include_router(
+    answer_passports.trust_router,
+    prefix="/passport-trust-bundles",
+    tags=["answer-passports"],
+)

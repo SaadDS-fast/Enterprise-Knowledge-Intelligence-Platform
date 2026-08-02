@@ -220,6 +220,8 @@ class Settings(BaseSettings):
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
     metrics_enabled: bool = True
     answer_passport_enabled: bool = False
+    answer_passport_persistence_enabled: bool = False
+    answer_passport_export_enabled: bool = False
     agentic_rag_enabled: bool = False
     agent_max_steps: int = Field(default=6, ge=1, le=25)
     agent_max_tool_calls: int = Field(default=12, ge=0, le=50)
