@@ -313,7 +313,7 @@ def test_oversized_trust_material_is_rejected_before_packaging() -> None:
 
 
 @pytest.mark.asyncio
-async def test_compound_status_precedence_is_revocation_then_freshness() -> None:
+async def test_compound_status_precedence_is_integrity_revocation_then_freshness() -> None:
     organization_id, workspace_id = uuid4(), uuid4()
     repository = MemoryRepository(organization_id, workspace_id)
     signer = Signer()
@@ -372,4 +372,10 @@ async def test_compound_status_precedence_is_revocation_then_freshness() -> None
     )
     assert current_status(result.record, manifest, now=expired_at, trust=trust("retired"))[0] == (
         "EXPIRED"
+    )
+    original_signature = result.record.detached_signature
+    replacement = "A" if original_signature[-1] != "A" else "B"
+    result.record.detached_signature = f"{original_signature[:-1]}{replacement}"
+    assert current_status(result.record, manifest, now=expired_at, trust=trust("revoked"))[0] == (
+        "ARTIFACT_INVALID"
     )

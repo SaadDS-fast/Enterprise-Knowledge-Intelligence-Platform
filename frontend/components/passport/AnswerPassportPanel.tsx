@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   abbreviateIdentifier,
@@ -38,6 +38,50 @@ export default function AnswerPassportPanel({ reference }: Props) {
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [message, setMessage] = useState("");
+  const controllers = useRef(new Set<AbortController>());
+  const objectUrlCleanups = useRef(new Set<() => void>());
+
+  useEffect(() => {
+    const activeControllers = controllers.current;
+    const activeCleanups = objectUrlCleanups.current;
+    return () => {
+      activeControllers.forEach((controller) => controller.abort());
+      activeControllers.clear();
+      activeCleanups.forEach((cleanup) => cleanup());
+      activeCleanups.clear();
+    };
+  }, []);
+
+  function beginRequest(): AbortController {
+    const controller = new AbortController();
+    controllers.current.add(controller);
+    return controller;
+  }
+
+  function endRequest(controller: AbortController): void {
+    controllers.current.delete(controller);
+  }
+
+  function trackObjectUrl(cleanup: () => void): void {
+    objectUrlCleanups.current.add(cleanup);
+    window.setTimeout(() => objectUrlCleanups.current.delete(cleanup), 0);
+  }
+
+  async function loadMetadata() {
+    if (!reference.metadata_available || loading) return;
+    setLoading(true);
+    setMetadata(null);
+    setMessage("");
+    const controller = beginRequest();
+    try {
+      setMetadata(await getPassportMetadata(reference.passport_id, controller.signal));
+    } catch (error) {
+      if (!controller.signal.aborted) setMessage(safePassportMessage(error));
+    } finally {
+      endRequest(controller);
+      if (!controller.signal.aborted) setLoading(false);
+    }
+  }
 
   async function toggleDetails() {
     if (expanded) {
@@ -46,43 +90,41 @@ export default function AnswerPassportPanel({ reference }: Props) {
     }
     setExpanded(true);
     if (metadata || !reference.metadata_available) return;
-    setLoading(true);
-    setMessage("");
-    try {
-      setMetadata(await getPassportMetadata(reference.passport_id));
-    } catch (error) {
-      setMessage(safePassportMessage(error));
-    } finally {
-      setLoading(false);
-    }
+    await loadMetadata();
   }
 
   async function exportPassport() {
     setDownloading(true);
     setMessage("");
+    const controller = beginRequest();
     try {
-      const blob = await getPassportExport(reference.passport_id);
-      downloadTransient(blob, safePassportFilename(reference.passport_id));
+      const blob = await getPassportExport(reference.passport_id, controller.signal);
+      const cleanup = downloadTransient(blob, safePassportFilename(reference.passport_id));
+      trackObjectUrl(cleanup);
       setMessage("Passport export downloaded.");
     } catch (error) {
-      setMessage(safePassportMessage(error));
+      if (!controller.signal.aborted) setMessage(safePassportMessage(error));
     } finally {
-      setDownloading(false);
+      endRequest(controller);
+      if (!controller.signal.aborted) setDownloading(false);
     }
   }
 
   async function downloadTrustBundle() {
     setDownloading(true);
     setMessage("");
+    const controller = beginRequest();
     try {
-      const trust = await getCurrentTrustBundle();
+      const trust = await getCurrentTrustBundle(controller.signal);
       const blob = new Blob([trust.verifier_bundle], { type: "application/json" });
-      downloadTransient(blob, "answer-passport-trust-bundle.json");
+      const cleanup = downloadTransient(blob, "answer-passport-trust-bundle.json");
+      trackObjectUrl(cleanup);
       setMessage("Public verification trust bundle downloaded.");
     } catch (error) {
-      setMessage(safePassportMessage(error));
+      if (!controller.signal.aborted) setMessage(safePassportMessage(error));
     } finally {
-      setDownloading(false);
+      endRequest(controller);
+      if (!controller.signal.aborted) setDownloading(false);
     }
   }
 
@@ -161,6 +203,9 @@ export default function AnswerPassportPanel({ reference }: Props) {
                 )}
                 <button type="button" className="ghost" onClick={downloadTrustBundle} disabled={downloading}>
                   Download public verification trust bundle
+                </button>
+                <button type="button" className="ghost" onClick={loadMetadata} disabled={loading || downloading}>
+                  Refresh assurance status
                 </button>
               </div>
             </>

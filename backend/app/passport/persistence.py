@@ -348,6 +348,8 @@ def current_status(
     result = verify_passport(
         record.manifest_bytes, record.detached_signature, trust.verifier_bundle, at=now
     )
+    if not result.signature_valid:
+        return "ARTIFACT_INVALID", freshness, "UNKNOWN"
     if result.status == "REVOKED":
         return "KEY_REVOKED", freshness, "REVOKED"
     if result.overall == "invalid":

@@ -79,28 +79,35 @@ export function safePassportMessage(error: unknown): string {
   if (error.status === 403) return "You do not have permission for this passport action.";
   if (error.status === 404) return "This verification record is unavailable.";
   if (error.status === 413) return "The download exceeds the safety limit.";
-  return error.message.startsWith("The download")
-    ? error.message
-    : "The passport service is unavailable.";
+  if (error.message === "The download format is invalid.") return error.message;
+  return "The passport service is unavailable.";
 }
 
-export function getPassportMetadata(passportId: string): Promise<PassportMetadata> {
-  return api<PassportMetadata>(`/answer-passports/${encodeURIComponent(passportId)}`);
+export function getPassportMetadata(
+  passportId: string,
+  signal?: AbortSignal,
+): Promise<PassportMetadata> {
+  return api<PassportMetadata>(`/answer-passports/${encodeURIComponent(passportId)}`, { signal });
 }
 
-export function getPassportExport(passportId: string): Promise<Blob> {
+export function getPassportExport(passportId: string, signal?: AbortSignal): Promise<Blob> {
   return apiBinary(
     `/answer-passports/${encodeURIComponent(passportId)}/export`,
     PASSPORT_MEDIA_TYPE,
     MAX_PASSPORT_DOWNLOAD_BYTES,
+    signal,
   );
 }
 
-export function getCurrentTrustBundle(): Promise<TrustBundleResponse> {
-  return apiBoundedJson<TrustBundleResponse>("/passport-trust-bundles/current", 5 * 1024 * 1024);
+export function getCurrentTrustBundle(signal?: AbortSignal): Promise<TrustBundleResponse> {
+  return apiBoundedJson<TrustBundleResponse>(
+    "/passport-trust-bundles/current",
+    5 * 1024 * 1024,
+    signal,
+  );
 }
 
-export function downloadTransient(blob: Blob, filename: string): void {
+export function downloadTransient(blob: Blob, filename: string): () => void {
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = objectUrl;
@@ -112,5 +119,12 @@ export function downloadTransient(blob: Blob, filename: string): void {
   anchor.remove();
 
   // Chromium must consume the click before the object URL is revoked.
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+  let revoked = false;
+  const cleanup = () => {
+    if (revoked) return;
+    revoked = true;
+    URL.revokeObjectURL(objectUrl);
+  };
+  window.setTimeout(cleanup, 0);
+  return cleanup;
 }

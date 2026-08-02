@@ -378,6 +378,22 @@ are removed by the profile trap.
 - No consumed grounding holdout was executed. Threshold `0.72`, Search one-pass/no-retry,
   Agent retry budget `0`, and the server feature defaults remain unchanged.
 
+## Phase 4 independent browser/security audit (2026-08-02)
+
+- Audit baseline: 20 focused frontend tests and 8 backend reference-contract tests. Six focused
+  frontend tests and one backend contract test were added; final totals are 26 and 9.
+- Adversarial coverage now includes chunked overflow cancellation, JSON media-type confusion,
+  crafted errors, answer replacement/unmount abort, lifecycle refresh, hostile metadata/XSS, and
+  client-supplied reference rejection. The compound-status test now proves integrity precedence.
+- Full backend: 411 passed, 4 environment-gated skips; coverage 81%. Compileall, Ruff check/format,
+  and scoped changed-file Mypy passed. Repository app Mypy retains 42 baseline errors in 26 files.
+- Full frontend: 13 files/53 tests passed; lint zero errors/one inherited warning; typecheck and
+  production build passed. Bandit found zero issues; pip-audit and npm production audit found no
+  known vulnerabilities.
+- Passport Chromium passed 1/1; default passed 2 with 8 gated skips; Agent/Research/accessibility
+  passed 6 with 4 gated skips. Compose config, image builds, and Alembic no-op checks passed.
+- Disposable resources and generated artifacts were removed; consumed holdouts were not executed.
+
 # Search/browser acceptance closure (2026-07-31)
 
 - Focused backend/API equation, obligation-citation, and owner/date coverage: 30 passed.

@@ -11,4 +11,6 @@ direct endpoint authorization remains mandatory and client-side bypass is denied
 ZIP and trust downloads reuse the authenticated transport. The ZIP is an opaque bounded binary
 with an exact media type and UUID-derived local filename. The browser never unpacks, previews,
 executes, caches, or stores it. Object URLs exist only for one user-initiated click and are revoked
-in `finally`. Agent and Research remain unchanged and receive no synthetic passport state.
+on the next task. Answer replacement, logout, and unmount abort pending reads and clear transient
+state. A manual refresh clears the prior status while requesting current backend metadata; there is
+no polling. Agent and Research remain unchanged and receive no synthetic passport state.

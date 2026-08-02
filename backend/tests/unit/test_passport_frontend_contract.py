@@ -5,8 +5,12 @@ import pytest
 
 from app.core.config import settings
 from app.db.models.role import RoleName
-from app.models.schemas import AnswerPassportReference
-from app.passport.issuance import IssuanceContext, PassportIssuanceCoordinator
+from app.models.schemas import AnswerPassportReference, SearchRequest, SearchResponse
+from app.passport.issuance import (
+    IssuanceContext,
+    PassportIssuanceCoordinator,
+    SupportedAnswerProjection,
+)
 from app.passport.persistence import PassportPersistenceStatus
 from app.rag.response_state import PrimaryResponseState
 from app.services import search_service
@@ -37,16 +41,16 @@ async def _run(
     primary: PrimaryResponseState = PrimaryResponseState.SUPPORTED,
     persistence_status: PassportPersistenceStatus = PassportPersistenceStatus.PERSISTED,
     role: RoleName = RoleName.EDITOR,
-):
+) -> SearchResponse:
     organization_id = UUID(int=90)
     workspace_id = UUID(int=50)
     response = response_for(primary)
 
-    async def finalized(*args: object, **kwargs: object):
+    async def finalized(*args: object, **kwargs: object) -> SearchResponse:
         del args, kwargs
         return response
 
-    async def projected(*args: object, **kwargs: object):
+    async def projected(*args: object, **kwargs: object) -> SupportedAnswerProjection:
         del args, kwargs
         return projection(tenant_id=str(organization_id), workspace_id=str(workspace_id))
 
@@ -131,3 +135,18 @@ def test_response_schema_strips_reference_from_non_supported_state() -> None:
     )
     rebuilt = type(response).model_validate(response.model_dump())
     assert rebuilt.passport_reference is None
+
+
+def test_client_supplied_reference_is_not_part_of_search_request_contract() -> None:
+    request = SearchRequest.model_validate(
+        {
+            "query": "finalized answer",
+            "passport_reference": {
+                "passport_id": "urn:uuid:00000000-0000-0000-0000-000000000099",
+                "schema_version": "vap-1",
+                "metadata_available": True,
+                "export_available": True,
+            },
+        }
+    )
+    assert "passport_reference" not in request.model_dump()

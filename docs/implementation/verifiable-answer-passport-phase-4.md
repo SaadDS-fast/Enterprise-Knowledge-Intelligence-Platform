@@ -13,3 +13,11 @@ All issuance, integrity, lifecycle, scope, and export decisions remain backend-a
 Defaults remain disabled. There is no client issuance, signing, evidence export, production signer,
 cloud integration, or retrieval/generation change. Phase 5 requires production provider design,
 durable trust publication, independent authorization review, and trust-anchor operations.
+
+## Independent audit hardening
+
+The follow-up browser audit added abort propagation for metadata and bounded downloads, active
+stream cancellation on size violations, exact JSON media-type enforcement for trust material,
+answer-keyed component isolation, idempotent object-URL cleanup, hostile-metadata rendering tests,
+and explicit lifecycle refresh. Backend compound status now gives signature corruption precedence
+over revocation, then freshness. No automatic polling or new passport lifecycle behavior was added.

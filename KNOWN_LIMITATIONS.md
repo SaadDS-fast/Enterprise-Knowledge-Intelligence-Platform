@@ -244,6 +244,14 @@ intentionally use deterministic extractive fallback. The 5.0 GB loaded model foo
 is an Ollama-reported practical measurement, not process peak RSS. The v1 and v2
 holdouts are both consumed and must never be rerun or used for tuning.
 
+# Verifiable Answer Passport Phase 4 audit limitations
+
+The browser interface does not perform cryptographic verification and cannot establish initial
+trust. Status refresh is explicit rather than automatic, and local UI state is never an
+authorization control. Aborted network reads and object URLs are cleaned up, but browser download
+history and files saved by the user remain governed by the browser and operating system. Automated
+accessibility coverage is not a third-party accessibility certification.
+
 # Verifiable Answer Passport Phase 3A limitations
 
 The key lifecycle is a provider-neutral foundation with ephemeral in-memory references only. It

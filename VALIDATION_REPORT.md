@@ -511,6 +511,21 @@ recorded in `TEST_RESULTS.md`. Existing Mypy debt remains 42 errors in 26 files.
 issuance/signing, evidence export, production signer, database mutation/list endpoint, AWS/cloud,
 retrieval/generation, Agent/Research passport, or thesis-diagnostic behavior was introduced.
 
+## Phase 4 independent browser/security audit (2026-08-02)
+
+Status: **PASS after follow-up hardening**. Independent inspection found four bounded defects:
+trust JSON did not require its declared media type, stream overflow did not actively cancel the
+reader, answer replacement/unmount did not abort all pending passport reads, and loaded lifecycle
+metadata had no explicit refresh path. It also found revocation was evaluated before signature
+corruption in the compound backend status.
+
+The follow-up corrects those defects and adds adversarial tests for hostile filenames, chunked
+overflow, crafted errors, XSS metadata, stale answer state, request cancellation, lifecycle refresh,
+and client contract manipulation. Backend authorization and non-enumerating scope checks remain the
+security boundary. No Phase 5, production signer, evidence export, retrieval/generation, cloud, or
+new lifecycle functionality was introduced. All mandatory gates pass as recorded in
+`TEST_RESULTS.md`.
+
 # Enterprise end-to-end release hardening (2026-07-31)
 
 Candidate: `v0.3.0-enterprise-rc1` (proposed only). Baseline and rollback commit:

@@ -14,3 +14,6 @@ Frontend wording preserves backend semantics:
 
 Color is supplementary; every state has text. The UI never combines these values into a universal
 truth or correctness claim and never performs browser cryptographic verification.
+
+Integrity has precedence over revocation, which has precedence over expiry or staleness. A refresh
+removes the previous presentation until the backend returns the current compound status.

@@ -27,7 +27,10 @@ function requestUrl(path: string): string {
 
 async function readBounded(response: Response, maxBytes: number): Promise<Uint8Array> {
   const declaredLength = Number(response.headers.get("content-length") ?? "0");
-  if (declaredLength > maxBytes) throw new APIError(413, "The download exceeds the safety limit.");
+  if (declaredLength > maxBytes) {
+    await response.body?.cancel();
+    throw new APIError(413, "The download exceeds the safety limit.");
+  }
   if (!response.body) return new Uint8Array();
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
@@ -37,7 +40,10 @@ async function readBounded(response: Response, maxBytes: number): Promise<Uint8A
       const { done, value } = await reader.read();
       if (done) break;
       total += value.byteLength;
-      if (total > maxBytes) throw new APIError(413, "The download exceeds the safety limit.");
+      if (total > maxBytes) {
+        await reader.cancel();
+        throw new APIError(413, "The download exceeds the safety limit.");
+      }
       chunks.push(value);
     }
   } finally {
@@ -90,10 +96,12 @@ export async function apiBinary(
   path: string,
   expectedContentType: string,
   maxBytes: number,
+  signal?: AbortSignal,
 ): Promise<Blob> {
   const response = await fetch(requestUrl(path), {
     headers: authHeaders(),
     cache: "no-store",
+    signal,
   });
   if (!response.ok) throw new APIError(response.status, "The requested download is unavailable.");
   const contentType = response.headers.get("content-type")?.split(";", 1)[0].trim();
@@ -102,12 +110,22 @@ export async function apiBinary(
   return new Blob([bytes.buffer as ArrayBuffer], { type: expectedContentType });
 }
 
-export async function apiBoundedJson<T>(path: string, maxBytes: number): Promise<T> {
+export async function apiBoundedJson<T>(
+  path: string,
+  maxBytes: number,
+  signal?: AbortSignal,
+): Promise<T> {
   const response = await fetch(requestUrl(path), {
     headers: authHeaders(),
     cache: "no-store",
+    signal,
   });
   if (!response.ok) throw new APIError(response.status, "The requested data is unavailable.");
+  const contentType = response.headers.get("content-type")?.split(";", 1)[0].trim();
+  if (contentType !== "application/json") {
+    await response.body?.cancel();
+    throw new APIError(502, "The download format is invalid.");
+  }
   const text = new TextDecoder("utf-8", { fatal: true }).decode(await readBounded(response, maxBytes));
   return JSON.parse(text) as T;
 }

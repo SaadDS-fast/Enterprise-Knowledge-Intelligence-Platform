@@ -16,7 +16,7 @@ vi.mock("@/lib/passport", async () => {
     getPassportMetadata: vi.fn(),
     getPassportExport: vi.fn(),
     getCurrentTrustBundle: vi.fn(),
-    downloadTransient: vi.fn(),
+    downloadTransient: vi.fn(() => vi.fn()),
   };
 });
 
@@ -137,5 +137,68 @@ describe("AnswerPassportPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: /view assurance details/i }));
     expect(await screen.findByText("The passport service is unavailable.")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("SQL secret stack trace");
+  });
+
+  it("aborts pending metadata when the answer is replaced or the panel unmounts", async () => {
+    vi.mocked(getPassportMetadata).mockImplementation(
+      (_passportId, signal) =>
+        new Promise((_resolve, reject) => {
+          signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+        }),
+    );
+    const { rerender, unmount } = render(<AnswerPassportPanel reference={reference} />);
+    fireEvent.click(screen.getByRole("button", { name: /view assurance details/i }));
+    const firstSignal = vi.mocked(getPassportMetadata).mock.calls[0][1];
+
+    rerender(
+      <AnswerPassportPanel
+        key="replacement"
+        reference={{ ...reference, passport_id: "urn:uuid:00000000-0000-0000-0000-000000000043" }}
+      />,
+    );
+    expect(firstSignal?.aborted).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: /view assurance details/i }));
+    const secondSignal = vi.mocked(getPassportMetadata).mock.calls[1][1];
+    unmount();
+    expect(secondSignal?.aborted).toBe(true);
+    expect(document.body.textContent).not.toContain("Aborted");
+  });
+
+  it("clears a previously verified status while refreshing to a revoked lifecycle", async () => {
+    vi.mocked(getPassportMetadata)
+      .mockResolvedValueOnce(metadata)
+      .mockResolvedValueOnce({
+        ...metadata,
+        status: "KEY_REVOKED",
+        key_lifecycle_status: "REVOKED",
+        export_available: false,
+      });
+    render(<AnswerPassportPanel reference={reference} />);
+    fireEvent.click(screen.getByRole("button", { name: /view assurance details/i }));
+    expect(await screen.findByText("Verified with current trust")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /refresh assurance status/i }));
+    expect(await screen.findByText("Signing key revoked")).toBeInTheDocument();
+    expect(screen.queryByText("Verified with current trust")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /passport zip/i })).not.toBeInTheDocument();
+  });
+
+  it("renders hostile metadata as inert text and keeps unknown status fail-closed", async () => {
+    vi.mocked(getPassportMetadata).mockResolvedValue({
+      ...metadata,
+      passport_id: '<svg onload="globalThis.injected=true">',
+      signer_key_id: 'javascript:alert(1)\n<img src=x onerror="alert(2)">',
+      issued_at: "not-a-date\u202e<script>alert(3)</script>",
+      status: "<script>VERIFIED</script>",
+      freshness: "CURRENT<script>",
+      key_lifecycle_status: "ACTIVE<script>",
+    });
+    render(<AnswerPassportPanel reference={reference} />);
+    fireEvent.click(screen.getByRole("button", { name: /view assurance details/i }));
+    expect(await screen.findByText("Verification status unavailable")).toBeInTheDocument();
+    expect(document.querySelector("svg")).toBeNull();
+    expect(document.querySelector("img")).toBeNull();
+    expect(screen.getByRole("button", { name: /passport zip/i })).toBeDisabled();
   });
 });

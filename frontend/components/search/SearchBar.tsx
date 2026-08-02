@@ -183,7 +183,10 @@ export default function SearchBar() {
             {result.answer}
           </pre>
           {result.passport_reference ? (
-            <AnswerPassportPanel reference={result.passport_reference} />
+            <AnswerPassportPanel
+              key={result.passport_reference.passport_id}
+              reference={result.passport_reference}
+            />
           ) : null}
           {result.topic_items?.length ? (
             <>
